@@ -2,3 +2,13 @@
 *.suo
 *.log
 *.user
+
+/Debug/graphplay.exe
+
+*.ilk
+*.pdb
+*.opensdf
+*.obj
+*.tlog
+*.lastbuildstate
+*.idb
