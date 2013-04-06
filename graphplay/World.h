@@ -6,7 +6,7 @@
 class World
 {
 public:
-    World(float vp_width, float vp_height);
+    World(unsigned int vp_width, unsigned int vp_height);
     ~World();
 
     void update(float dt);
@@ -15,7 +15,7 @@ public:
 private:
     glm::mat4x4 perspective;
     glm::mat4x4 model_view;
-    float vp_width, vp_height;
+    unsigned int vp_width, vp_height;
 };
 
 #endif

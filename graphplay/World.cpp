@@ -3,7 +3,7 @@
 #include <glm/ext.hpp>
 #include "World.h"
 
-World::World(float vp_width, float vp_height)
+World::World(unsigned int vp_width, unsigned int vp_height)
     : perspective(),
       model_view(),
       vp_width(vp_width),
@@ -21,7 +21,9 @@ void World::render() {
     glViewport(0, 0, vp_width, vp_height);
 
     perspective = glm::perspective<float>(
-        glm::quarter_pi<float>(), vp_width / vp_height, -1, 1000);
+        glm::quarter_pi<float>(),
+        (float)vp_width / (float)vp_height, 
+        -1, 1000);
 
     model_view = glm::lookAt<float>(
         glm::vec3(0, 0, 10),
