@@ -12,3 +12,4 @@
 *.tlog
 *.lastbuildstate
 *.idb
+/Release/graphplay.exe
