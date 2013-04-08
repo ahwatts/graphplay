@@ -13,3 +13,6 @@
 *.lastbuildstate
 *.idb
 /Release/graphplay.exe
+
+*.o
+/graphplay/graphplay

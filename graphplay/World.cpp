@@ -1,6 +1,8 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <glm/ext.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/constants.hpp>
 #include "World.h"
 
 World::World(unsigned int vp_width, unsigned int vp_height)
