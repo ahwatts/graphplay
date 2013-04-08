@@ -24,18 +24,18 @@ BasicShader::BasicShader(void) {
     GLint status, errlen;
     char *err;
 
-    vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, vertex_shader_src);
-    fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, fragment_shader_src);
-    shader_program = glCreateProgram();
+    m_vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, vertex_shader_src);
+    m_fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, fragment_shader_src);
+    m_shader_program = glCreateProgram();
 
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &status);
+    glAttachShader(m_shader_program, m_vertex_shader);
+    glAttachShader(m_shader_program, m_fragment_shader);
+    glLinkProgram(m_shader_program);
+    glGetProgramiv(m_shader_program, GL_LINK_STATUS, &status);
     if (!status) {
-        glGetProgramiv(shader_program, GL_INFO_LOG_LENGTH, &errlen);
+        glGetProgramiv(m_shader_program, GL_INFO_LOG_LENGTH, &errlen);
         err = (char*)malloc(errlen * sizeof(char));
-        glGetProgramInfoLog(shader_program, errlen, NULL, err);
+        glGetProgramInfoLog(m_shader_program, errlen, NULL, err);
         fprintf(stderr, "Could not link shader program: %s\n", err);
         free(err);
         exit(1);
@@ -43,16 +43,16 @@ BasicShader::BasicShader(void) {
 }
 
 BasicShader::~BasicShader(void) {
-    if (glIsShader(vertex_shader) == GL_TRUE) {
-        glDeleteShader(vertex_shader);
+    if (glIsShader(m_vertex_shader) == GL_TRUE) {
+        glDeleteShader(m_vertex_shader);
     }
 
-    if (glIsShader(fragment_shader) == GL_TRUE) {
-        glDeleteShader(fragment_shader);
+    if (glIsShader(m_fragment_shader) == GL_TRUE) {
+        glDeleteShader(m_fragment_shader);
     }
 
-    if (glIsProgram(shader_program) == GL_TRUE) {
-        glDeleteProgram(shader_program);
+    if (glIsProgram(m_shader_program) == GL_TRUE) {
+        glDeleteProgram(m_shader_program);
     }
 }
 

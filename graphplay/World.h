@@ -13,9 +13,9 @@ public:
     void render();
 
 private:
-    glm::mat4x4 perspective;
-    glm::mat4x4 model_view;
-    unsigned int vp_width, vp_height;
+    glm::mat4x4 m_perspective;
+    glm::mat4x4 m_model_view;
+    unsigned int m_vp_width, m_vp_height;
 };
 
 #endif

@@ -3,8 +3,10 @@
 #include <GL/freeglut.h>
 
 #include "BasicShader.h"
+#include "World.h"
 
 static BasicShader *g_shader = NULL;
+static World *g_world = NULL;
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -28,11 +30,13 @@ int main(int argc, char **argv) {
     }
 
     g_shader = new BasicShader();
+    g_world = new World(800, 600);
 
     glutDisplayFunc(&display);
     glutMainLoop();
 
     delete g_shader;
+    delete g_world;
 
     return 0;
 }

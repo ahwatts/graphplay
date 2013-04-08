@@ -73,11 +73,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicShader.cpp" />
+    <ClCompile Include="Body.cpp" />
     <ClCompile Include="graphplay.cpp" />
+    <ClCompile Include="SphereBody.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicShader.h" />
+    <ClInclude Include="Body.h" />
+    <ClInclude Include="SphereBody.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
