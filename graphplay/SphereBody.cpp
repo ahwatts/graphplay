@@ -12,9 +12,9 @@ SphereBody::SphereBody(GLuint shader)
     GLuint bufs[2];
     //glm::vec3 verts[24];
     //glm::vec4 colors[24];
-    float verts[24*3];
-    float colors[24*4];
-    int i;
+    //float verts[24*3];
+    //float colors[24*4];
+    //int i;
 
     //glm::set(verts[ 0],  0.0f, -1.0f,  0.0f);   glm::set(verts[ 3],  0.0f, -1.0f,  0.0f);
 	//glm::set(verts[ 1],  1.0f,  0.0f,  0.0f);   glm::set(verts[ 4],  0.0f,  0.0f, -1.0f);
@@ -41,9 +41,13 @@ SphereBody::SphereBody(GLuint shader)
     m_color_buffer = bufs[1];
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, 24, glm::value_ptr(verts), GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, 24, glm::value_ptr(verts), GL_STATIC_DRAW);
 }
 
 SphereBody::~SphereBody(void)
 {
+}
+
+void SphereBody::render(int flags) {
+
 }

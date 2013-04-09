@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <libxml/xmlversion.h>
+#include <libxml/parser.h>
 
 #include "BasicShader.h"
+#include "DaeFile.h"
 #include "World.h"
 
 static BasicShader *g_shader = NULL;
@@ -15,9 +18,13 @@ void display() {
 }
 
 int main(int argc, char **argv) {
-    GLenum glew_err;
+    //GLenum glew_err;
 
-    glutInit(&argc, argv);
+    LIBXML_TEST_VERSION;
+
+    DaeFile *f = DaeFile::loadDaeFile("octohedron.dae");
+
+    /*glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
@@ -36,7 +43,9 @@ int main(int argc, char **argv) {
     glutMainLoop();
 
     delete g_shader;
-    delete g_world;
+    delete g_world;*/
+
+    if (f) { delete f; }
 
     return 0;
 }

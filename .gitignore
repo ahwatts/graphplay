@@ -16,3 +16,7 @@
 
 *.o
 /graphplay/graphplay
+
+/graphplay/Debug/*.unsuccessfulbuild
+
+/Debug - Console/graphplay.exe

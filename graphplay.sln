@@ -5,10 +5,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphplay", "graphplay\grap
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug - Console|Win32 = Debug - Console|Win32
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4F233BE-5353-43D2-A6E8-3737A8B9E41C}.Debug - Console|Win32.ActiveCfg = Debug - Console|Win32
+		{A4F233BE-5353-43D2-A6E8-3737A8B9E41C}.Debug - Console|Win32.Build.0 = Debug - Console|Win32
 		{A4F233BE-5353-43D2-A6E8-3737A8B9E41C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A4F233BE-5353-43D2-A6E8-3737A8B9E41C}.Debug|Win32.Build.0 = Debug|Win32
 		{A4F233BE-5353-43D2-A6E8-3737A8B9E41C}.Release|Win32.ActiveCfg = Release|Win32
