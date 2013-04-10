@@ -1,9 +1,22 @@
-CXXFLAGS=-Wall -ggdb -I/usr/include/libxml2
-LDFLAGS=-lGL -lglut -lm -lGLEW -lstdc++ -lxml2
-OBJECT_FILES=BasicShader.o Body.o DaeFile.o SphereBody.o World.o graphplay.o
+CPPFLAGS=-Wall -ggdb $(shell xml2-config --cflags)
+LDFLAGS=-lGL -lglut -lm -lGLEW -lstdc++ $(shell xml2-config --libs)
+SOURCES=$(wildcard *.cpp)
 
-graphplay: ${OBJECT_FILES}
+graphplay: $(SOURCES:.cpp=.o)
+
+.PHONY: clean
 
 clean:
 	rm -f *.o
+	rm -f *.d
+	rm -f *.d.*
 	rm -f graphplay
+
+%.d: %.cpp
+	@set -e
+	rm -f $@
+	$(CXX) -M $(CPPFLAGS) $< > $@.tmp
+	sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' < $@.tmp > $@
+	rm -f $@.tmp
+
+include $(SOURCES:.cpp=.d)
