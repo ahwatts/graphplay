@@ -9,7 +9,7 @@
 #include "World.h"
 
 static BasicShader *g_shader = NULL;
-static World *g_world = NULL;
+// static World *g_world = NULL;
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
