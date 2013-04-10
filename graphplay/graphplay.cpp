@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
     delete g_world;*/
 
     if (f) { delete f; }
+    xmlMemoryDump();
 
     return 0;
 }
