@@ -8,6 +8,9 @@
 
 #include "DaeFile.h"
 
+xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc);
+void loadGeometry(xmlNodePtr node);
+
 DaeFile* DaeFile::loadDaeFile(const char* filename) {
     xmlDocPtr doc = NULL;
     xmlNodePtr node = NULL;
@@ -23,14 +26,7 @@ DaeFile* DaeFile::loadDaeFile(const char* filename) {
     }
 
     // Create a context for querying it with XPath.
-    xpath_ctxt = xmlXPathNewContext(doc);
-    if (xpath_ctxt == NULL) {
-        fprintf(stderr, "Failed to create XPath context!\n");
-    }
-
-    // Register a prefix for the default namespace (which doesn't have one, at
-    // least in the document I have...) so that XPath can actually find the nodes.
-    xmlXPathRegisterNs(xpath_ctxt, BAD_CAST "dae", doc->xmlRootNode->ns->href);
+    xpath_ctxt = createDaeFileXPathContext(doc);
 
     // Do the XPath search.
     xpath_result = xmlXPathEvalExpression(BAD_CAST "//dae:geometry", xpath_ctxt);
@@ -40,6 +36,7 @@ DaeFile* DaeFile::loadDaeFile(const char* filename) {
         for (i = 0; i < xmlXPathNodeSetGetLength(xpath_result->nodesetval); ++i) {
             node = xpath_result->nodesetval->nodeTab[i];
             printf("found node: name = %s\n", node->name);
+            loadGeometry(node);
         }
     }
 
@@ -57,4 +54,45 @@ DaeFile::DaeFile(void)
 
 DaeFile::~DaeFile(void)
 {
+}
+
+xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc) {
+    xmlXPathContextPtr xpath_ctxt = xmlXPathNewContext(doc);
+
+    // Make sure the context was created.
+    if (xpath_ctxt == NULL) {
+        fprintf(stderr, "Failed to create XPath context!\n");
+        exit(1);
+    }
+
+    // Register a prefix for the default namespace (which doesn't have one, at
+    // least in the document I have...) so that XPath can actually find the nodes.
+    xmlXPathRegisterNs(xpath_ctxt, BAD_CAST "dae", doc->xmlRootNode->ns->href);
+
+    return xpath_ctxt;
+}
+
+void loadGeometry(xmlNodePtr node) {
+    //printf("geometry id: %s\n", xmlGetNoNsProp(node, BAD_CAST
+    //"id"));
+
+    xmlXPathContextPtr xp_ctxt = createDaeFileXPathContext(node->doc);
+    xmlXPathObjectPtr xp_obj = NULL;
+    char xp_expr[256];
+    int i;
+
+    snprintf(xp_expr, 256, "//dae:geometry[@id=%s]/dae:polylist", xmlGetNoNsProp(node, BAD_CAST "id"));
+    printf("%s\n", xp_expr);
+    xp_obj = xmlXPathEvalExpression(BAD_CAST xp_expr, xp_ctxt);
+
+    if (xp_obj && !xmlXPathNodeSetIsEmpty(xp_obj->nodesetval)) {
+        printf("Found %d nodes!\n", xmlXPathNodeSetGetLength(xp_obj->nodesetval));
+        for (i = 0; i < xmlXPathNodeSetGetLength(xp_obj->nodesetval); ++i) {
+            node = xp_obj->nodesetval->nodeTab[i];
+            printf("found node: name = %s\n", node->name);
+        }
+    }
+
+    xmlXPathFreeObject(xp_obj);
+    xmlXPathFreeContext(xp_ctxt);
 }
