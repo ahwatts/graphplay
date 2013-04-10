@@ -1,3 +1,5 @@
+// -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #include <stdio.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
