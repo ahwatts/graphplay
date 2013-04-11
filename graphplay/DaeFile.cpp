@@ -1,12 +1,18 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <map>
 #include <stdio.h>
+#include <string.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
 #include "DaeFile.h"
+
+#ifdef _WIN32
+#define snprintf _snprintf_s
+#endif
 
 xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc);
 void loadGeometry(xmlNodePtr node);
@@ -72,27 +78,97 @@ xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc) {
     return xpath_ctxt;
 }
 
-void loadGeometry(xmlNodePtr node) {
-    //printf("geometry id: %s\n", xmlGetNoNsProp(node, BAD_CAST
-    //"id"));
+/*void loadPolyList(xmlNodePtr pl_node, xmlNodePtr mesh_node) {
+    num_polys = atoi((char *)xmlGetProp(polylist, BAD_CAST "count"));
+    printf("Polylist has %d polys.\n", num_polys);
+}*/
 
-    xmlXPathContextPtr xp_ctxt = createDaeFileXPathContext(node->doc);
-    xmlXPathObjectPtr xp_obj = NULL;
-    char xp_expr[256];
-    int i;
+class FloatSource {
+public:
+    FloatSource(int length);
+    ~FloatSource();
 
-    snprintf(xp_expr, 256, "//dae:geometry[@id=%s]/dae:polylist", xmlGetNoNsProp(node, BAD_CAST "id"));
-    printf("%s\n", xp_expr);
-    xp_obj = xmlXPathEvalExpression(BAD_CAST xp_expr, xp_ctxt);
+    float *data;
+    int length;
+};
 
-    if (xp_obj && !xmlXPathNodeSetIsEmpty(xp_obj->nodesetval)) {
-        printf("Found %d nodes!\n", xmlXPathNodeSetGetLength(xp_obj->nodesetval));
-        for (i = 0; i < xmlXPathNodeSetGetLength(xp_obj->nodesetval); ++i) {
-            node = xp_obj->nodesetval->nodeTab[i];
-            printf("found node: name = %s\n", node->name);
+FloatSource::FloatSource(int length)
+    : length(length),
+      data(new float[length])
+{ }
+
+FloatSource::~FloatSource() {
+    if (data) {
+        delete data;
+    }
+}
+
+FloatSource *loadSource(xmlNodePtr source_node) {
+    FloatSource *rv = NULL;
+    int num_floats, i;
+    xmlNodePtr farray;
+    char *all_floats, *this_float, *next_float;
+
+    // We're going to ignore the accessor element and assume that the data
+    // is in blocks of 3 going like x, y, z.
+    farray = source_node->children;
+    while (farray != NULL) {
+        if (strcmp((char*)farray->name, "float_array") == 0) {
+            break;
         }
+        farray = farray->next;
     }
 
-    xmlXPathFreeObject(xp_obj);
-    xmlXPathFreeContext(xp_ctxt);
+    num_floats = atoi((char*)xmlGetProp(farray, BAD_CAST "count"));
+    rv = new FloatSource(num_floats);
+
+    all_floats = (char*)xmlNodeListGetString(farray->doc, farray->children, 1);
+    all_floats = _strdup(all_floats);
+    this_float = strtok_s(all_floats, " ", &next_float);
+    i = 0;
+    do {
+        rv->data[i] = (float)atof(this_float);
+        ++i;
+        this_float = strtok_s(NULL, " ", &next_float);
+    } while (this_float != NULL);
+
+    free(all_floats);
+
+    return rv;
+}
+
+void loadMesh(xmlNodePtr mesh_node) {
+    xmlNodePtr curr = mesh_node->children;
+    std::map<char*, FloatSource*> sources;
+    std::map<char*, FloatSource*>::iterator it;
+    char *name;
+    FloatSource *value;
+
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "source") == 0) {
+            sources[(char*)xmlGetProp(curr, BAD_CAST "id")] = loadSource(curr);
+        }
+        curr = curr->next;
+    }
+
+    for (it = sources.begin(); it != sources.end(); it++) {
+        value = it->second;
+        sources.erase(it);
+        if (value) {
+            delete value;
+        }
+    }
+    sources.clear();
+}
+
+void loadGeometry(xmlNodePtr geometry_node) {
+    xmlNodePtr curr = geometry_node->children, polylist = NULL;
+    int num_polys = 0;
+
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "mesh") == 0) {
+            return loadMesh(curr);
+        }
+        curr = curr->next;
+    }
 }
