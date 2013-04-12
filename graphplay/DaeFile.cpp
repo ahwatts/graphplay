@@ -75,11 +75,6 @@ xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc) {
     return xpath_ctxt;
 }
 
-/*void loadPolyList(xmlNodePtr pl_node, xmlNodePtr mesh_node) {
-    num_polys = atoi((char *)xmlGetProp(polylist, BAD_CAST "count"));
-    printf("Polylist has %d polys.\n", num_polys);
-}*/
-
 class FloatSource {
 public:
     FloatSource();
@@ -179,14 +174,37 @@ std::string loadVertices(xmlNodePtr vertices_node) {
     return rv;
 }
 
+void loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sources) {
+    xmlNodePtr curr;
+    char *vcounts, *ps, *prop;
+    int num_polys;
+
+    // How many polys are there?
+    prop = (char*)xmlGetProp(pl_node, BAD_CAST "count");
+    num_polys = atoi(prop);
+    xmlFree(prop);
+
+    printf("There are %d polygons.\n", num_polys);
+
+    // Figure out which index is which.
+    /* curr = pl_node->children;
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "input") == 0) {
+
+        }
+    }*/
+}
+
 void loadMesh(xmlNodePtr mesh_node) {
-    xmlNodePtr curr = mesh_node->children;
+    xmlNodePtr curr;
     std::map<std::string, FloatSource*> sources;
     std::map<std::string, FloatSource*>::const_iterator it;
     std::string name;
     FloatSource *value;
     char *prop;
 
+    // Read the "source" elements to get the raw data.
+    curr = mesh_node->children;
     while (curr != NULL) {
         if (strcmp((char*)curr->name, "source") == 0) {
             prop = (char*)xmlGetProp(curr, BAD_CAST "id");
@@ -196,11 +214,8 @@ void loadMesh(xmlNodePtr mesh_node) {
         curr = curr->next;
     }
 
-    printf("map size (1) = %ld\n", sources.size());
-    for (it = sources.begin(); it != sources.end(); ++it) {
-        printf("(1) name = %s value (length) = %d\n", it->first.c_str(), it->second->length);
-    }
-
+    // The "vertices" element seems just to forward to the source
+    // element; update it in the hash.
     curr = mesh_node->children;
     while (curr != NULL) {
         if (strcmp((char*)curr->name, "vertices") == 0) {
@@ -214,8 +229,17 @@ void loadMesh(xmlNodePtr mesh_node) {
         curr = curr->next;
     }
 
+    // Read the polylist and assemble the data.
+    curr = mesh_node->children;
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "polylist") == 0) {
+            loadPolyList(curr, sources);
+        }
+        curr = curr->next;
+    }
+
+    // Clean up.
     for (it = sources.begin(); it != sources.end(); ++it) {
-        printf("(2) name = %s value (length) = %d\n", it->first.c_str(), it->second->length);
         delete it->second;
     }
 }
