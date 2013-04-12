@@ -118,7 +118,7 @@ FloatSource *loadSource(xmlNodePtr source_node) {
     FloatSource *rv = NULL;
     int num_floats, i;
     xmlNodePtr farray;
-    char *all_floats, *this_float, *next_float, *prop;
+    char *all_floats, *this_float, *next_float = NULL, *prop;
 
     // We're going to ignore the accessor element and assume that the data
     // is in blocks of 3 going like x, y, z.
@@ -130,9 +130,13 @@ FloatSource *loadSource(xmlNodePtr source_node) {
         farray = farray->next;
     }
 
+    if (farray == NULL) {
+        return NULL;
+    }
+
     prop = (char*)xmlGetProp(farray, BAD_CAST "count");
     num_floats = atoi(prop);
-    free(prop);
+    xmlFree(prop);
 
     rv = new FloatSource(num_floats);
 
@@ -144,7 +148,7 @@ FloatSource *loadSource(xmlNodePtr source_node) {
         ++i;
         this_float = strtok_r(NULL, " ", &next_float);
     } while (this_float != NULL);
-    free(all_floats);
+    xmlFree(all_floats);
 
     return rv;
 }
@@ -160,9 +164,9 @@ std::string loadVertices(xmlNodePtr vertices_node) {
             if (strcmp(prop, "POSITION") == 0) {
                 prop2 = (char*)xmlGetProp(curr, BAD_CAST "source");
                 rv = std::string(prop2);
-                free(prop2);
+                xmlFree(prop2);
             }
-            free(prop);
+            xmlFree(prop);
         }
         curr = curr->next;
     }
@@ -187,7 +191,7 @@ void loadMesh(xmlNodePtr mesh_node) {
         if (strcmp((char*)curr->name, "source") == 0) {
             prop = (char*)xmlGetProp(curr, BAD_CAST "id");
             sources[std::string(prop)] = loadSource(curr);
-            free(prop);
+            xmlFree(prop);
         }
         curr = curr->next;
     }
@@ -205,7 +209,7 @@ void loadMesh(xmlNodePtr mesh_node) {
             value = sources[name];
             sources[std::string(prop)] = value;
             sources.erase(name);
-            free(prop);
+            xmlFree(prop);
         }
         curr = curr->next;
     }
