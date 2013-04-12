@@ -1,3 +1,5 @@
+// -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +24,6 @@ const char* BasicShader::fragment_shader_src =
 
 BasicShader::BasicShader(void) {
     GLint status, errlen;
-    char *err;
 
     m_vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, vertex_shader_src);
     m_fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, fragment_shader_src);
@@ -33,6 +34,7 @@ BasicShader::BasicShader(void) {
     glLinkProgram(m_shader_program);
     glGetProgramiv(m_shader_program, GL_LINK_STATUS, &status);
     if (!status) {
+        char *err;
         glGetProgramiv(m_shader_program, GL_INFO_LOG_LENGTH, &errlen);
         err = (char*)malloc(errlen * sizeof(char));
         glGetProgramInfoLog(m_shader_program, errlen, NULL, err);
@@ -59,12 +61,12 @@ BasicShader::~BasicShader(void) {
 GLuint BasicShader::createAndCompileShader(GLenum shader_type, const char* shader_src) {
     GLuint shader = glCreateShader(shader_type);
     GLint errlen, status, src_length = strlen(shader_src);
-    char* err;
 
     glShaderSource(shader, 1, &shader_src, &src_length);
     glCompileShader(shader);
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (!status) {
+        char *err;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &errlen);
         err = (char*)malloc(errlen * sizeof(char));
         glGetShaderInfoLog(shader, errlen - 1, NULL, err);
