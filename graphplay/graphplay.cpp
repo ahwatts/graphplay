@@ -6,6 +6,7 @@
 
 #include "BasicShader.h"
 #include "DaeFile.h"
+#include "Mesh.h"
 #include "World.h"
 
 static BasicShader *g_shader = NULL;
@@ -22,7 +23,7 @@ int main(int argc, char **argv) {
 
     LIBXML_TEST_VERSION;
 
-    DaeFile *f = DaeFile::loadDaeFile("octohedron.dae");
+    Mesh *m = loadDaeFile("octohedron.dae");
 
     /*glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
@@ -45,7 +46,7 @@ int main(int argc, char **argv) {
     delete g_shader;
     delete g_world;*/
 
-    if (f) { delete f; }
+    if (m) { delete m; }
     xmlCleanupParser();
     xmlMemoryDump();
 

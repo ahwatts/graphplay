@@ -1,13 +1,21 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #ifndef _DAE_FILE_H_
 #define _DAE_FILE_H_
 
-class DaeFile
-{
-public:
-    DaeFile(void);
-    ~DaeFile(void);
+#include "Mesh.h"
 
-    static DaeFile* loadDaeFile(const char* filename);
+class FloatSource {
+public:
+    FloatSource();
+    FloatSource(int length);
+    FloatSource(const FloatSource &other);
+    ~FloatSource();
+
+    int length;
+    float *data;
 };
+
+Mesh* loadDaeFile(const char* filename);
 
 #endif

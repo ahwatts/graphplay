@@ -1,11 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <map>
-#include <string>
-#include <stdio.h>
 #include <string.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
@@ -17,74 +12,16 @@
 #define strtok_r strtok_s
 #endif
 
+// Internal methods:
 xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc);
-void loadGeometry(xmlNodePtr node);
+void tokenizeStringToFloatArray(float *dest, char *all_floats);
+void tokenizeStringToIntArray(int *dest, char *all_ints);
 
-DaeFile* DaeFile::loadDaeFile(const char* filename) {
-    xmlDocPtr doc = NULL;
-    xmlNodePtr node = NULL;
-    xmlXPathContextPtr xpath_ctxt = NULL;
-    xmlXPathObjectPtr xpath_result = NULL;
-
-    // Load up the XML document.
-    doc = xmlParseFile(filename);
-    if (doc == NULL) {
-        fprintf(stderr, "Failed to read XML file %s\n", filename);
-        exit(1);
-    }
-
-    // Create a context for querying it with XPath.
-    xpath_ctxt = createDaeFileXPathContext(doc);
-
-    // Do the XPath search.
-    xpath_result = xmlXPathEvalExpression(BAD_CAST "//dae:geometry", xpath_ctxt);
-
-    if (xpath_result && !xmlXPathNodeSetIsEmpty(xpath_result->nodesetval)) {
-        printf("Found %d nodes!\n", xmlXPathNodeSetGetLength(xpath_result->nodesetval));
-        for (int i = 0; i < xmlXPathNodeSetGetLength(xpath_result->nodesetval); ++i) {
-            node = xpath_result->nodesetval->nodeTab[i];
-            printf("found node: name = %s\n", node->name);
-            loadGeometry(node);
-        }
-    }
-
-    xmlXPathFreeObject(xpath_result);
-    xmlXPathFreeContext(xpath_ctxt);
-    xmlFreeDoc(doc);
-
-    return NULL;
-}
-
-DaeFile::DaeFile(void) { }
-
-DaeFile::~DaeFile(void) { }
-
-xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc) {
-    xmlXPathContextPtr xpath_ctxt = xmlXPathNewContext(doc);
-
-    // Make sure the context was created.
-    if (xpath_ctxt == NULL) {
-        fprintf(stderr, "Failed to create XPath context!\n");
-        exit(1);
-    }
-
-    // Register a prefix for the default namespace (which doesn't have one, at
-    // least in the document I have...) so that XPath can actually find the nodes.
-    xmlXPathRegisterNs(xpath_ctxt, BAD_CAST "dae", doc->xmlRootNode->ns->href);
-
-    return xpath_ctxt;
-}
-
-class FloatSource {
-public:
-    FloatSource();
-    FloatSource(int length);
-    FloatSource(const FloatSource &other);
-    ~FloatSource();
-
-    int length;
-    float *data;
-};
+Mesh* loadGeometry(xmlNodePtr geometry_node);
+Mesh* loadMesh(xmlNodePtr mesh_node);
+FloatSource *loadSource(xmlNodePtr source_node);
+std::string loadVertices(xmlNodePtr vertices_node);
+Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sources);
 
 FloatSource::FloatSource()
     : length(0),
@@ -109,28 +46,107 @@ FloatSource::~FloatSource() {
     }
 }
 
-void tokenizeStringToFloatArray(float *dest, char *all_floats) {
-    char *this_float = NULL, *next_float = NULL;
-    int i = 0;
+Mesh* loadDaeFile(const char* filename) {
+    xmlDocPtr doc = NULL;
+    xmlNodePtr node = NULL;
+    xmlXPathContextPtr xpath_ctxt = NULL;
+    xmlXPathObjectPtr xpath_result = NULL;
+    Mesh *rv = NULL;
 
-    this_float = strtok_r(all_floats, " ", &next_float);
-    do {
-        dest[i] = (float)atof(this_float);
-        ++i;
-        this_float = strtok_r(NULL, " ", &next_float);
-    } while (this_float != NULL);
+    // Load up the XML document.
+    doc = xmlParseFile(filename);
+    if (doc == NULL) {
+        fprintf(stderr, "Failed to read XML file %s\n", filename);
+        exit(1);
+    }
+
+    // Create a context for querying it with XPath.
+    xpath_ctxt = createDaeFileXPathContext(doc);
+
+    // Do the XPath search.
+    xpath_result = xmlXPathEvalExpression(BAD_CAST "//dae:geometry", xpath_ctxt);
+
+    if (xpath_result && !xmlXPathNodeSetIsEmpty(xpath_result->nodesetval)) {
+        for (int i = 0; i < xmlXPathNodeSetGetLength(xpath_result->nodesetval); ++i) {
+            if (rv) {
+                fprintf(stderr, "Cannot handle more than one mesh in a DAE file!\n");
+                exit(1);
+            }
+            node = xpath_result->nodesetval->nodeTab[i];
+            rv = loadGeometry(node);
+        }
+    }
+
+    xmlXPathFreeObject(xpath_result);
+    xmlXPathFreeContext(xpath_ctxt);
+    xmlFreeDoc(doc);
+
+    return rv;
 }
 
-void tokenizeStringToIntArray(int *dest, char *all_ints) {
-    char *this_int = NULL, *next_int = NULL;
-    int i = 0;
+Mesh* loadGeometry(xmlNodePtr geometry_node) {
+    xmlNodePtr curr = geometry_node->children;
 
-    this_int = strtok_r(all_ints, " ", &next_int);
-    do {
-        dest[i] = (int)atoi(this_int);
-        ++i;
-        this_int = strtok_r(NULL, " ", &next_int);
-    } while (this_int != NULL);
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "mesh") == 0) {
+            return loadMesh(curr);
+        }
+        curr = curr->next;
+    }
+
+    return NULL;
+}
+
+Mesh* loadMesh(xmlNodePtr mesh_node) {
+    xmlNodePtr curr;
+    std::map<std::string, FloatSource*> sources;
+    std::map<std::string, FloatSource*>::const_iterator it;
+    std::string name;
+    FloatSource *value;
+    char *prop;
+    Mesh *rv = NULL;
+
+    // Read the "source" elements to get the raw data.
+    curr = mesh_node->children;
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "source") == 0) {
+            prop = (char*)xmlGetProp(curr, BAD_CAST "id");
+            sources[std::string(prop)] = loadSource(curr);
+            xmlFree(prop);
+        }
+        curr = curr->next;
+    }
+
+    // The "vertices" element seems just to forward to the source
+    // element; update it in the hash.
+    curr = mesh_node->children;
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "vertices") == 0) {
+            name = loadVertices(curr);
+            prop = (char*)xmlGetProp(curr, BAD_CAST "id");
+            value = sources[name];
+            sources[std::string(prop)] = value;
+            sources.erase(name);
+            xmlFree(prop);
+        }
+        curr = curr->next;
+    }
+
+    // Read the polylist and assemble the data.
+    curr = mesh_node->children;
+    while (curr != NULL) {
+        if (strcmp((char*)curr->name, "polylist") == 0) {
+            rv = loadPolyList(curr, sources);
+        }
+        curr = curr->next;
+    }
+
+    // Clean up.
+    for (it = sources.begin(); it != sources.end(); ++it) {
+        delete it->second;
+    }
+
+    return rv;
 }
 
 FloatSource *loadSource(xmlNodePtr source_node) {
@@ -190,31 +206,38 @@ std::string loadVertices(xmlNodePtr vertices_node) {
     return rv;
 }
 
-FloatSource *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sources) {
+Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sources) {
     xmlNodePtr curr;
-    char *prop, *prop2, *vcounts_str, *ps_str;
-    int num_polys, num_verts, attrs_per_vert, vals_per_attr = 3, *vcounts, *ps;
-    std::map<int, std::string> inputs;
+    char *prop, *vcounts_str, *ps_str;
+    int num_polys, num_verts, attrs_per_vert, *vcounts, *ps;
+    std::map<int, std::string> inputs, attributes;
     std::map<int, std::string>::const_iterator it;
-    FloatSource *rv;
+    Mesh *rv;
 
     // How many polys are there?
     prop = (char*)xmlGetProp(pl_node, BAD_CAST "count");
     num_polys = atoi(prop);
     xmlFree(prop);
 
-    printf("There are %d polygons.\n", num_polys);
+    // Initialize our return value.
+    rv = new Mesh();
+    rv->setNumTris(num_polys);
 
     // Figure out which index is which.
     curr = pl_node->children;
     while (curr != NULL) {
         if (strcmp((char*)curr->name, "input") == 0) {
-            prop = (char*)xmlGetProp(curr, BAD_CAST "source");
-            prop2 = (char*)xmlGetProp(curr, BAD_CAST "offset");
-            inputs[atoi(prop2)] = std::string(prop);
-            inputs[atoi(prop2)].replace(0, 1, "");
-            xmlFree(prop);
-            xmlFree(prop2);
+            char *source_str = (char*)xmlGetProp(curr, BAD_CAST "source");
+            char *offset_str = (char*)xmlGetProp(curr, BAD_CAST "offset");
+            char *semantic_str = (char*)xmlGetProp(curr, BAD_CAST "semantic");
+            int offset = atoi(offset_str);
+            inputs[offset] = std::string(source_str);
+            inputs[offset].replace(0, 1, "");
+            attributes[offset] = std::string(semantic_str);
+            rv->addAttribute(attributes[offset], 3);
+            xmlFree(source_str);
+            xmlFree(offset_str);
+            xmlFree(semantic_str);
         } else if (strcmp((char*)curr->name, "vcount") == 0) {
             vcounts_str = (char*)xmlNodeListGetString(curr->doc, curr->children, 1);
         } else if (strcmp((char*)curr->name, "p") == 0) {
@@ -228,8 +251,7 @@ FloatSource *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*
         return NULL;
     }
 
-    attrs_per_vert = inputs.size();
-    vals_per_attr = 3;
+    attrs_per_vert = rv->getAttrsPerVert();
 
     // Extract the vertex counts; count all the vertices.
     vcounts = new int[num_polys];
@@ -239,35 +261,30 @@ FloatSource *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*
         num_verts += vcounts[i];
     }
 
+    if (num_verts != rv->getNumVerts()) {
+        fprintf(stderr, "Incorrect number of vertices: expected %d, got %d, bailing!\n",
+                rv->getNumVerts(), num_verts);
+        exit(1);
+    }
+
     // Extract the source indexes.
     ps = new int[num_verts*attrs_per_vert];
     tokenizeStringToIntArray(ps, ps_str);
-
-    // Initialize our return value.
-    rv = new FloatSource(num_verts*attrs_per_vert*vals_per_attr);
 
     // Copy the data from the sources into the return value.
     for (int i = 0; i < num_verts; ++i) {
         for (it = inputs.begin(); it != inputs.end(); ++it) {
             const int &p_offset = it->first;
             const std::string &source_name = it->second;
+            const std::string &attr_name = attributes[it->first];
 
             int source_index = ps[i*attrs_per_vert + p_offset];
-            int dest_index = i*attrs_per_vert*vals_per_attr + p_offset*vals_per_attr;
-            FloatSource *source = sources[source_name];
+            FloatSource *fsource = sources[source_name];
+            float *source = fsource->data + source_index;
 
-            rv->data[dest_index+0] = source->data[source_index+0];
-            rv->data[dest_index+1] = source->data[source_index+1];
-            rv->data[dest_index+2] = source->data[source_index+2];
+            rv->setVertex(i, attr_name, source);
         }
     }
-
-    /* for (int i = 0; i < num_verts; ++i) {
-        int j = i*attrs_per_vert*vals_per_attr;
-        printf("vertex[%2d] = (%6.3f, %6.3f, %6.3f) (%6.3f, %6.3f, %6.3f)\n", i,
-               rv->data[j+0], rv->data[j+1], rv->data[j+2],
-               rv->data[j+3], rv->data[j+4], rv->data[j+5]);
-       } */
 
     // Clean up.
     delete rv;
@@ -276,65 +293,45 @@ FloatSource *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*
     xmlFree(vcounts_str);
     xmlFree(ps_str);
 
-    return NULL;
+    return rv;
 }
 
-void loadMesh(xmlNodePtr mesh_node) {
-    xmlNodePtr curr;
-    std::map<std::string, FloatSource*> sources;
-    std::map<std::string, FloatSource*>::const_iterator it;
-    std::string name;
-    FloatSource *value;
-    char *prop;
+xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc) {
+    xmlXPathContextPtr xpath_ctxt = xmlXPathNewContext(doc);
 
-    // Read the "source" elements to get the raw data.
-    curr = mesh_node->children;
-    while (curr != NULL) {
-        if (strcmp((char*)curr->name, "source") == 0) {
-            prop = (char*)xmlGetProp(curr, BAD_CAST "id");
-            sources[std::string(prop)] = loadSource(curr);
-            xmlFree(prop);
-        }
-        curr = curr->next;
+    // Make sure the context was created.
+    if (xpath_ctxt == NULL) {
+        fprintf(stderr, "Failed to create XPath context!\n");
+        exit(1);
     }
 
-    // The "vertices" element seems just to forward to the source
-    // element; update it in the hash.
-    curr = mesh_node->children;
-    while (curr != NULL) {
-        if (strcmp((char*)curr->name, "vertices") == 0) {
-            name = loadVertices(curr);
-            prop = (char*)xmlGetProp(curr, BAD_CAST "id");
-            value = sources[name];
-            sources[std::string(prop)] = value;
-            sources.erase(name);
-            xmlFree(prop);
-        }
-        curr = curr->next;
-    }
+    // Register a prefix for the default namespace (which doesn't have one, at
+    // least in the document I have...) so that XPath can actually find the nodes.
+    xmlXPathRegisterNs(xpath_ctxt, BAD_CAST "dae", doc->xmlRootNode->ns->href);
 
-    // Read the polylist and assemble the data.
-    curr = mesh_node->children;
-    while (curr != NULL) {
-        if (strcmp((char*)curr->name, "polylist") == 0) {
-            loadPolyList(curr, sources);
-        }
-        curr = curr->next;
-    }
-
-    // Clean up.
-    for (it = sources.begin(); it != sources.end(); ++it) {
-        delete it->second;
-    }
+    return xpath_ctxt;
 }
 
-void loadGeometry(xmlNodePtr geometry_node) {
-    xmlNodePtr curr = geometry_node->children;
+void tokenizeStringToFloatArray(float *dest, char *all_floats) {
+    char *this_float = NULL, *next_float = NULL;
+    int i = 0;
 
-    while (curr != NULL) {
-        if (strcmp((char*)curr->name, "mesh") == 0) {
-            return loadMesh(curr);
-        }
-        curr = curr->next;
-    }
+    this_float = strtok_r(all_floats, " ", &next_float);
+    do {
+        dest[i] = (float)atof(this_float);
+        ++i;
+        this_float = strtok_r(NULL, " ", &next_float);
+    } while (this_float != NULL);
+}
+
+void tokenizeStringToIntArray(int *dest, char *all_ints) {
+    char *this_int = NULL, *next_int = NULL;
+    int i = 0;
+
+    this_int = strtok_r(all_ints, " ", &next_int);
+    do {
+        dest[i] = (int)atoi(this_int);
+        ++i;
+        this_int = strtok_r(NULL, " ", &next_int);
+    } while (this_int != NULL);
 }
