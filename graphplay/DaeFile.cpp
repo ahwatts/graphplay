@@ -270,12 +270,13 @@ FloatSource *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*
        } */
 
     // Clean up.
+    delete rv;
     delete [] ps;
     delete [] vcounts;
     xmlFree(vcounts_str);
     xmlFree(ps_str);
 
-    return rv;
+    return NULL;
 }
 
 void loadMesh(xmlNodePtr mesh_node) {
