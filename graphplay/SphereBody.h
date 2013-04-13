@@ -13,12 +13,13 @@ public:
     SphereBody(GLuint shader);
     ~SphereBody();
 
+    void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, int flags);
+
+private:
     GLuint m_shader;
     GLuint m_vertex_buffer;
     GLuint m_color_buffer;
-    std::vector<AttrInfo> m_attr_info;
-
-    void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, int flags);
+    Mesh *m_mesh;
 };
 
 #endif

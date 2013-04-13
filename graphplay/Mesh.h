@@ -15,6 +15,8 @@ struct AttrInfo
     int width;
 };
 
+bool sortAttrInfosByOffset(AttrInfo &ai1, AttrInfo &ai2);
+
 class Mesh
 {
 public:
@@ -36,18 +38,19 @@ public:
     inline int getAttrsPerVert() const { return m_attrs_per_vert; }
     inline int getValsPerVert() const { return m_vals_per_vert; }
 
-    inline float* getSoup() const { return m_soup; }
+    inline const float* getSoup() const { return m_soup; }
     inline int getSoupSizeInVals() const { return m_num_verts*m_vals_per_vert; }
     inline int getSoupSizeInBytes() const { return getSoupSizeInVals()*sizeof(float); }
 
-    void getAttrInfo(std::vector<AttrInfo> &out) const;
+    const AttrInfo *getAttrInfo(const std::string &attr_name) const;
+    void getSortedAttrInfos(std::vector<AttrInfo> &out) const;
 
     void dump();
 
 protected:
     int m_num_tris, m_num_verts;
     int m_verts_per_tri, m_attrs_per_vert, m_vals_per_vert;
-    std::map<const std::string, int> m_attr_offsets, m_attr_widths;
+    std::map<const std::string, AttrInfo> m_attr_infos;
     float *m_soup;
 };
 
