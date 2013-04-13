@@ -287,7 +287,6 @@ Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sour
     }
 
     // Clean up.
-    delete rv;
     delete [] ps;
     delete [] vcounts;
     xmlFree(vcounts_str);
