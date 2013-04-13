@@ -32,7 +32,6 @@ void World::update(float dt)
 
 void World::render()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, m_vp_width, m_vp_height);
 
     m_perspective = glm::perspective<float>(
@@ -45,5 +44,7 @@ void World::render()
         glm::vec3(0, 0,  0),
         glm::vec3(0, 1,  0));
 
-    glutSwapBuffers();
+    for (unsigned int i = 0; i < m_bodies.size(); ++i) {
+        m_bodies[i]->render(m_perspective, m_model_view, 0);
+    }
 }

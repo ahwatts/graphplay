@@ -15,9 +15,14 @@
 BasicShader *g_shader = NULL;
 World *g_world = NULL;
 
+void update(int dt) {
+    glutPostRedisplay();
+    glutTimerFunc(20, &update, 20);
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(g_shader->getProgram());
+    g_world->render();
     glutSwapBuffers();
 }
 
@@ -38,10 +43,13 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
+    glEnable(GL_DEPTH_TEST);
+
     g_shader = new BasicShader();
     g_world = new World(800, 600);
 
     glutDisplayFunc(&display);
+    glutTimerFunc(20, &update, 20);
     glutMainLoop();
 
     delete g_shader;

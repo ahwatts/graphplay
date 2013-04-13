@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "DaeFile.h"
 #include "Mesh.h"
 #include "SphereBody.h"
@@ -63,8 +64,30 @@ void SphereBody::render(const glm::mat4x4 &wld_projection, const glm::mat4x4 &wl
     glm::mat4x4 model_view = glm::translate(wld_model_view, mw_pos);
     model_view = glm::rotate(model_view, m_ang_pos, mw_ang_vel_dir);
 
+    AttrInfo *pos_info = NULL;
+    for (unsigned int i = 0; i < m_attr_info.size(); ++i) {
+        if (m_attr_info[i].name == "VERTEX") {
+            pos_info = &m_attr_info[i];
+        }
+    }
+
     glUseProgram(m_shader);
 
+    GLuint position_loc = glGetAttribLocation(m_shader, "aPosition");
+    glEnableVertexAttribArray(position_loc);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
+    glVertexAttribPointer(position_loc, pos_info->width, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
 
+    GLuint color_loc = glGetAttribLocation(m_shader, "aColor");
+    glEnableVertexAttribArray(color_loc);
+    glBindBuffer(GL_ARRAY_BUFFER, m_color_buffer);
+    glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
+
+    GLuint proj_loc = glGetAttribLocation(m_shader, "uProjection");
+    glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(wld_projection));
+
+    GLuint mv_loc = glGetAttribLocation(m_shader, "uModelView");
+    glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
+
+    glDrawArrays(GL_TRIANGLES, 0, 24);
 }
