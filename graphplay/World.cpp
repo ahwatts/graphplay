@@ -11,18 +11,27 @@ World::World(unsigned int vp_width, unsigned int vp_height)
     : m_perspective(),
       m_model_view(),
       m_vp_width(vp_width),
-      m_vp_height(vp_height)
+      m_vp_height(vp_height),
+      m_bodies()
 {
-    SphereBody b(g_shader->getProgram());
+    SphereBody *sphere = new SphereBody(g_shader->getProgram());
+    m_bodies.push_back(sphere);
 }
 
-World::~World(void) { }
+World::~World(void)
+{
+    for (unsigned int i = 0; i < m_bodies.size(); ++i) {
+        delete m_bodies[i];
+    }
+}
 
-void World::update(float dt) {
+void World::update(float dt)
+{
     // nothing to do here...
 }
 
-void World::render() {
+void World::render()
+{
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, m_vp_width, m_vp_height);
 

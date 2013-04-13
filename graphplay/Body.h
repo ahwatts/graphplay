@@ -22,7 +22,7 @@ public:
     float m_ang_pos, m_ang_vel;
     glm::vec3 mw_ang_vel_dir;
 
-    virtual void render(int flags) = 0;
+    virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, int flags) = 0;
 };
 
 #endif

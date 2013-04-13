@@ -1,7 +1,9 @@
 #ifndef _WORLD_H_
 #define _WORLD_H_
 
+#include <vector>
 #include <glm/glm.hpp>
+#include "Body.h"
 
 class World
 {
@@ -16,6 +18,7 @@ private:
     glm::mat4x4 m_perspective;
     glm::mat4x4 m_model_view;
     unsigned int m_vp_width, m_vp_height;
+    std::vector<Body*> m_bodies;
 };
 
 #endif

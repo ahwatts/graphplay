@@ -22,3 +22,5 @@
 /graphplay/Debug/*.unsuccessfulbuild
 
 /Debug - Console/graphplay.exe
+
+*.unsuccessfulbuild
