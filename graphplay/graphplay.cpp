@@ -1,3 +1,5 @@
+// -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -46,7 +48,10 @@ int main(int argc, char **argv) {
     delete g_shader;
     delete g_world;*/
 
-    if (m) { delete m; }
+    if (m) {
+        m->dump();
+        delete m;
+    }
     xmlCleanupParser();
     xmlMemoryDump();
 

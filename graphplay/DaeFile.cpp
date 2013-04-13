@@ -271,6 +271,9 @@ Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sour
     ps = new int[num_verts*attrs_per_vert];
     tokenizeStringToIntArray(ps, ps_str);
 
+    // Initialize the vertex soup.
+    rv->initSoup();
+
     // Copy the data from the sources into the return value.
     for (int i = 0; i < num_verts; ++i) {
         for (it = inputs.begin(); it != inputs.end(); ++it) {

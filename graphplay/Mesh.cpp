@@ -1,5 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <stdio.h>
 #include <string.h>
 
 #include "Mesh.h"
@@ -74,5 +75,42 @@ void Mesh::setFullVertex(int vindex, const float *data)
         for (int i = 0; i < m_vals_per_vert; ++i) {
             m_soup[sindex+i] = data[i];
         }
+    }
+}
+
+void Mesh::dump()
+{
+    std::map<std::string, int>::const_iterator it;
+
+    printf("Mesh: %p\n", this);
+    printf("  triangles: %d vertices: %d\n", m_num_tris, m_num_verts);
+    printf("  vertices per triangle: %d\n", m_verts_per_tri);
+    printf("  attributes per vertex: %d\n", m_attrs_per_vert);
+    printf("  values per vertex: %d\n", m_vals_per_vert);
+    printf("  soup size: %d floats, %'lu bytes\n",
+           m_vals_per_vert*m_num_verts,
+           m_vals_per_vert*m_num_verts*sizeof(float));
+
+    for (it = m_attr_offsets.begin(); it != m_attr_offsets.end(); ++it) {
+        const std::string &attr_name = it->first;
+        const int &offset = it->second, &width = m_attr_widths[attr_name];
+        printf("  attribute: %s width = %d offset = %d\n", attr_name.c_str(), width, offset);
+    }
+
+    for (int i = 0; i < m_num_verts; ++i) {
+        printf("Vertex %3d:", i);
+        for (it = m_attr_offsets.begin(); it != m_attr_offsets.end(); ++it) {
+            const std::string &attr_name = it->first;
+            const int &offset = it->second, &width = m_attr_widths[attr_name];
+            printf(" %s: (", attr_name.c_str());
+            for (int j = 0; j < width; ++j) {
+                printf("%6.3f", m_soup[m_vals_per_vert*i + offset + j]);
+                if (j != width - 1) {
+                    printf(", ");
+                }
+            }
+            printf(")");
+        }
+        printf("\n");
     }
 }
