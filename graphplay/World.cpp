@@ -4,13 +4,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/constants.hpp>
 #include "World.h"
+#include "SphereBody.h"
+#include "graphplay.h"
 
 World::World(unsigned int vp_width, unsigned int vp_height)
     : m_perspective(),
       m_model_view(),
       m_vp_width(vp_width),
       m_vp_height(vp_height)
-{ }
+{
+    SphereBody b(g_shader->getProgram());
+}
 
 World::~World(void) { }
 

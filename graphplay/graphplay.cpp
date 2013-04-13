@@ -10,9 +10,10 @@
 #include "DaeFile.h"
 #include "Mesh.h"
 #include "World.h"
+#include "graphplay.h"
 
-static BasicShader *g_shader = NULL;
-// static World *g_world = NULL;
+BasicShader *g_shader = NULL;
+World *g_world = NULL;
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -21,13 +22,11 @@ void display() {
 }
 
 int main(int argc, char **argv) {
-    //GLenum glew_err;
+    GLenum glew_err;
 
     LIBXML_TEST_VERSION;
 
-    Mesh *m = loadDaeFile("octohedron.dae");
-
-    /*glutInit(&argc, argv);
+    glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
@@ -46,12 +45,8 @@ int main(int argc, char **argv) {
     glutMainLoop();
 
     delete g_shader;
-    delete g_world;*/
+    delete g_world;
 
-    if (m) {
-        m->dump();
-        delete m;
-    }
     xmlCleanupParser();
     xmlMemoryDump();
 

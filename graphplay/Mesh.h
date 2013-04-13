@@ -5,6 +5,15 @@
 
 #include <map>
 #include <string>
+#include <vector>
+#include "Body.h"
+
+struct AttrInfo
+{
+    std::string name;
+    int offset;
+    int width;
+};
 
 class Mesh
 {
@@ -27,12 +36,16 @@ public:
     inline int getAttrsPerVert() const { return m_attrs_per_vert; }
     inline int getValsPerVert() const { return m_vals_per_vert; }
 
+    void getAttrInfo(std::vector<AttrInfo> &out) const;
+
     void dump();
+
+    friend class Body;
 
 private:
     int m_num_tris, m_num_verts;
     int m_verts_per_tri, m_attrs_per_vert, m_vals_per_vert;
-    std::map<std::string, int> m_attr_offsets, m_attr_widths;
+    std::map<const std::string, int> m_attr_offsets, m_attr_widths;
     float *m_soup;
 };
 

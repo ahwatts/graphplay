@@ -111,6 +111,7 @@
     <ClInclude Include="BasicShader.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="DaeFile.h" />
+    <ClInclude Include="graphplay.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="SphereBody.h" />
     <ClInclude Include="World.h" />

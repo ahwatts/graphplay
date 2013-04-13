@@ -1,5 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <algorithm>
 #include <stdio.h>
 #include <string.h>
 
@@ -113,4 +114,24 @@ void Mesh::dump()
         }
         printf("\n");
     }
+}
+
+bool sortAttrInfos(AttrInfo &ai1, AttrInfo &ai2)
+{
+    return ai1.offset < ai2.offset;
+}
+
+void Mesh::getAttrInfo(std::vector<AttrInfo> &out) const
+{
+    out.clear();
+
+    for (std::map<std::string, int>::const_iterator it = m_attr_offsets.begin(); it != m_attr_offsets.end(); ++it) {
+        AttrInfo a;
+        a.name = it->first;
+        a.offset = it->second;
+        a.width = m_attr_widths.at(it->first);
+        out.push_back(a);
+    }
+
+    std::sort(out.begin(), out.end(), sortAttrInfos);
 }
