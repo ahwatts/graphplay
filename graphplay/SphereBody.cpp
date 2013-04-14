@@ -1,9 +1,10 @@
 #include <GL/glew.h>
+#include "BasicShader.h"
 #include "DaeFile.h"
 #include "Mesh.h"
 #include "SphereBody.h"
 
-SphereBody::SphereBody(GLuint shader)
+SphereBody::SphereBody(BasicShader &shader)
     : m_shader(shader),
       m_vertex_buffer(0),
       m_color_buffer(0),
@@ -62,24 +63,18 @@ void SphereBody::render(const glm::mat4x4 &wld_projection, const glm::mat4x4 &wl
 
     const AttrInfo *pos_info = m_mesh->getAttrInfo("VERTEX");
 
-    glUseProgram(m_shader);
+    glUseProgram(m_shader.getProgram());
 
-    GLuint position_loc = glGetAttribLocation(m_shader, "aPosition");
     setAttribArrayf(
-        position_loc,
+        m_shader.getPositionLocation(),
         m_vertex_buffer,
         pos_info->width,
         m_mesh->getValsPerVert()*sizeof(float),
         pos_info->offset*sizeof(float));
 
-    GLuint color_loc = glGetAttribLocation(m_shader, "aColor");
-    setAttribArrayf(color_loc, m_color_buffer, 4, 0, 0);
-
-    GLuint proj_loc = glGetUniformLocation(m_shader, "uProjection");
-    setUniformMatrix4f(proj_loc, wld_projection);
-
-    GLuint mv_loc = glGetUniformLocation(m_shader, "uModelView");
-    setUniformMatrix4f(mv_loc, model_view);
+    setAttribArrayf(m_shader.getColorLocation(), m_color_buffer, 4, 0, 0);
+    setUniformMatrix4f(m_shader.getProjectionLocation(), wld_projection);
+    setUniformMatrix4f(m_shader.getModelViewLocation(), model_view);
 
     glDrawArrays(GL_TRIANGLES, 0, m_mesh->getNumVerts());
 }

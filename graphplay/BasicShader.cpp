@@ -42,6 +42,11 @@ BasicShader::BasicShader(void) {
         free(err);
         exit(1);
     }
+
+    m_position_loc = glGetAttribLocation(m_shader_program, "aPosition");
+    m_color_loc = glGetAttribLocation(m_shader_program, "aColor");
+    m_projection_loc = glGetUniformLocation(m_shader_program, "uProjection");
+    m_model_view_loc = glGetUniformLocation(m_shader_program, "uModelView");
 }
 
 BasicShader::~BasicShader(void) {
