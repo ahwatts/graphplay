@@ -149,7 +149,8 @@ Mesh* loadMesh(xmlNodePtr mesh_node) {
     return rv;
 }
 
-FloatSource *loadSource(xmlNodePtr source_node) {
+FloatSource *loadSource(xmlNodePtr source_node)
+{
     FloatSource *rv = NULL;
     int num_floats;
     xmlNodePtr farray;
@@ -206,7 +207,8 @@ std::string loadVertices(xmlNodePtr vertices_node) {
     return rv;
 }
 
-Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sources) {
+Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sources)
+{
     xmlNodePtr curr;
     char *prop, *vcounts_str, *ps_str;
     int num_polys, num_verts, attrs_per_vert, *vcounts, *ps;
@@ -283,7 +285,7 @@ Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sour
 
             int source_index = ps[i*attrs_per_vert + p_offset];
             FloatSource *fsource = sources[source_name];
-            float *source = fsource->data + source_index;
+            float *source = fsource->data + source_index*3;
 
             rv->setVertex(i, attr_name, source);
         }

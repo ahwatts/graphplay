@@ -35,14 +35,14 @@ void World::render()
     glViewport(0, 0, m_vp_width, m_vp_height);
 
     m_perspective = glm::perspective<float>(
-        glm::quarter_pi<float>(),
+        45,
         (float)m_vp_width / (float)m_vp_height, 
-        -1, 1000);
+        0.1f, 100);
 
     m_model_view = glm::lookAt<float>(
-        glm::vec3(0, 0, 10),
-        glm::vec3(0, 0,  0),
-        glm::vec3(0, 1,  0));
+        glm::vec3(  0,  0,  5),
+        glm::vec3(  0,  0,  0),
+        glm::vec3(  0,  1,  0));
 
     for (unsigned int i = 0; i < m_bodies.size(); ++i) {
         m_bodies[i]->render(m_perspective, m_model_view, 0);

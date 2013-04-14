@@ -17,7 +17,6 @@ SphereBody::SphereBody(GLuint shader)
     const float *vsoup;
 
     m_mesh = loadDaeFile("octohedron.dae");
-    m_mesh->dump();
     pos_info = m_mesh->getAttrInfo("VERTEX");
 
     glGenBuffers(2, bufs);
@@ -86,5 +85,5 @@ void SphereBody::render(const glm::mat4x4 &wld_projection, const glm::mat4x4 &wl
     GLuint mv_loc = glGetUniformLocation(m_shader, "uModelView");
     glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
 
-    glDrawArrays(GL_TRIANGLES, 0, 24);
+    glDrawArrays(GL_TRIANGLES, 0, m_mesh->getNumVerts());
 }
