@@ -1,4 +1,6 @@
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "BasicShader.h"
 #include "DaeFile.h"
 #include "Mesh.h"
@@ -6,27 +8,16 @@
 
 SphereBody::SphereBody(BasicShader &shader)
     : m_shader(shader),
-      m_vertex_buffer(0),
       m_color_buffer(0),
       m_mesh()
 {
-    GLuint bufs[2];
     const AttrInfo *pos_info;
     float *color_buffer;
     const float *vsoup;
 
     m_mesh = loadDaeFile("octohedron.dae");
+    m_mesh->initSoupGLBuffer();
     pos_info = m_mesh->getAttrInfo("VERTEX");
-
-    glGenBuffers(2, bufs);
-    m_vertex_buffer = bufs[0];
-    m_color_buffer = bufs[1];
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER,
-        m_mesh->getSoupSizeInBytes(),
-        m_mesh->getSoup(),
-        GL_STATIC_DRAW);
 
     color_buffer = new float[m_mesh->getNumVerts()*4];
     vsoup = m_mesh->getSoup();
@@ -41,6 +32,7 @@ SphereBody::SphereBody(BasicShader &shader)
         color_buffer[cbuf_offset+3] = 1.0f;
     }
 
+    glGenBuffers(1, &m_color_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, m_color_buffer);
     glBufferData(GL_ARRAY_BUFFER,
         m_mesh->getNumVerts()*4*sizeof(float),
@@ -55,26 +47,27 @@ SphereBody::~SphereBody(void)
     if (m_mesh) {
         delete m_mesh;
     }
+
+    if (glIsBuffer(m_color_buffer)) {
+        glDeleteBuffers(1, &m_color_buffer);
+    }
 }
 
-void SphereBody::render(const glm::mat4x4 &wld_projection, const glm::mat4x4 &wld_model_view, int flags)
+void SphereBody::render(const glm::mat4 &wld_projection, const glm::mat4 &wld_model_view, int flags)
 {
-    glm::mat4x4 model_view = baseModelView(wld_model_view);
-
-    const AttrInfo *pos_info = m_mesh->getAttrInfo("VERTEX");
+    glm::mat4 model_view = baseModelView(wld_model_view);
 
     glUseProgram(m_shader.getProgram());
 
-    setAttribArrayf(
-        m_shader.getPositionLocation(),
-        m_vertex_buffer,
-        pos_info->width,
-        m_mesh->getValsPerVert()*sizeof(float),
-        pos_info->offset*sizeof(float));
+    m_mesh->setVertexAttribPointer(m_shader.getPositionLocation(), "VERTEX");
+    
+    GLuint color_loc = m_shader.getColorLocation();
+    glEnableVertexAttribArray(color_loc);
+    glBindBuffer(GL_ARRAY_BUFFER, m_color_buffer);
+    glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-    setAttribArrayf(m_shader.getColorLocation(), m_color_buffer, 4, 0, 0);
-    setUniformMatrix4f(m_shader.getProjectionLocation(), wld_projection);
-    setUniformMatrix4f(m_shader.getModelViewLocation(), model_view);
+    glUniformMatrix4fv(m_shader.getProjectionLocation(), 1, GL_FALSE, glm::value_ptr(wld_projection));
+    glUniformMatrix4fv(m_shader.getModelViewLocation(), 1, GL_FALSE, glm::value_ptr(model_view));
 
     glDrawArrays(GL_TRIANGLES, 0, m_mesh->getNumVerts());
 }

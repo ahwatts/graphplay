@@ -28,8 +28,6 @@ public:
 
 protected:
     glm::mat4 baseModelView(const glm::mat4 &wld_model_view);
-    void setAttribArrayf(GLuint loc, GLuint buffer, int width_floats, int stride_bytes, int offset_bytes);
-    void setUniformMatrix4f(GLuint loc, const glm::mat4 &mat);
 };
 
 #endif

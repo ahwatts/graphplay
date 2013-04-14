@@ -14,11 +14,10 @@ public:
     SphereBody(BasicShader &shader);
     ~SphereBody();
 
-    void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, int flags);
+    void render(const glm::mat4 &projection, const glm::mat4 &model_view, int flags);
 
 private:
     BasicShader &m_shader;
-    GLuint m_vertex_buffer;
     GLuint m_color_buffer;
     Mesh *m_mesh;
 };

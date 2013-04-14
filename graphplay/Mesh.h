@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Body.h"
+#include <GL/glew.h>
 
 struct AttrInfo
 {
@@ -26,6 +26,7 @@ public:
 
     void addAttribute(std::string &attr_name, int num_vals);
     void initSoup();
+    void initSoupGLBuffer();
 
     void setVertex(int vindex, const std::string &attr_name, const float *data);
     void setFullVertex(int vindex, const float *data);
@@ -39,11 +40,14 @@ public:
     inline int getValsPerVert() const { return m_vals_per_vert; }
 
     inline const float* getSoup() const { return m_soup; }
+    inline GLuint getSoupGLBuffer() const { return m_soup_buffer; }
     inline int getSoupSizeInVals() const { return m_num_verts*m_vals_per_vert; }
     inline int getSoupSizeInBytes() const { return getSoupSizeInVals()*sizeof(float); }
 
     const AttrInfo *getAttrInfo(const std::string &attr_name) const;
     void getSortedAttrInfos(std::vector<AttrInfo> &out) const;
+
+    void setVertexAttribPointer(GLuint location, const std::string &attr_name);
 
     void dump();
 
@@ -52,6 +56,7 @@ protected:
     int m_verts_per_tri, m_attrs_per_vert, m_vals_per_vert;
     std::map<const std::string, AttrInfo> m_attr_infos;
     float *m_soup;
+    GLuint m_soup_buffer;
 };
 
 #endif

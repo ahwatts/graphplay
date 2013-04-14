@@ -3,8 +3,9 @@
 #include <algorithm>
 #include <stdio.h>
 #include <string.h>
-
+#include <GL/glew.h>
 #include "Mesh.h"
+#include "graphplay.h"
 
 Mesh::Mesh()
   : m_num_tris(0),
@@ -13,7 +14,8 @@ Mesh::Mesh()
     m_attrs_per_vert(0),
     m_vals_per_vert(0),
     m_attr_infos(),
-    m_soup(0)
+    m_soup(0),
+    m_soup_buffer(0)
 { }
 
 Mesh::Mesh(const Mesh &other)
@@ -23,11 +25,16 @@ Mesh::Mesh(const Mesh &other)
     m_attrs_per_vert(other.m_attrs_per_vert),
     m_vals_per_vert(other.m_vals_per_vert),
     m_attr_infos(other.m_attr_infos),
-    m_soup(0)
+    m_soup(0),
+    m_soup_buffer(0)
 {
     if (other.m_soup) {
         m_soup = new float[other.getSoupSizeInVals()];
         memcpy(m_soup, other.m_soup, other.getSoupSizeInBytes());
+
+        if (glIsBuffer(other.m_soup_buffer)) {
+            initSoupGLBuffer();
+        }
     }
 }
 
@@ -35,6 +42,10 @@ Mesh::~Mesh()
 {
     if (m_soup) {
         delete [] m_soup;
+    }
+
+    if (glIsBuffer(m_soup_buffer)) {
+        glDeleteBuffers(1, &m_soup_buffer);
     }
 }
 
@@ -46,6 +57,17 @@ void Mesh::initSoup()
 
     int soup_size = m_num_verts*m_vals_per_vert;
     m_soup = new float[soup_size*sizeof(float)];
+}
+
+void Mesh::initSoupGLBuffer()
+{
+    if (glIsBuffer(m_soup_buffer)) {
+        glDeleteBuffers(1, &m_soup_buffer);
+    }
+
+    glGenBuffers(1, &m_soup_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_soup_buffer);
+    glBufferData(GL_ARRAY_BUFFER, getSoupSizeInBytes(), m_soup, GL_STATIC_DRAW);
 }
 
 void Mesh::addAttribute(std::string &name, int num_vals)
@@ -138,4 +160,16 @@ void Mesh::getSortedAttrInfos(std::vector<AttrInfo> &out) const
         out.push_back(it->second);
     }
     std::sort(out.begin(), out.end(), sortAttrInfosByOffset);
+}
+
+void Mesh::setVertexAttribPointer(GLuint loc, const std::string &attr_name)
+{
+    const AttrInfo *attr_info = getAttrInfo(attr_name);
+    int offset_bytes = attr_info->offset*sizeof(float);
+
+    glEnableVertexAttribArray(loc);
+    glBindBuffer(GL_ARRAY_BUFFER, m_soup_buffer);
+    glVertexAttribPointer(loc, attr_info->width, GL_FLOAT, GL_FALSE,
+        m_vals_per_vert*sizeof(float),
+        BUFFER_OFFSET_BYTES(offset_bytes));
 }
