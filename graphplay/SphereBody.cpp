@@ -1,5 +1,4 @@
 #include <GL/glew.h>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "DaeFile.h"
 #include "Mesh.h"
@@ -60,8 +59,7 @@ SphereBody::~SphereBody(void)
 
 void SphereBody::render(const glm::mat4x4 &wld_projection, const glm::mat4x4 &wld_model_view, int flags)
 {
-    glm::mat4x4 model_view = glm::translate(wld_model_view, mw_pos);
-    model_view = glm::rotate(model_view, m_ang_pos, mw_ang_vel_dir);
+    glm::mat4x4 model_view = baseModelView(wld_model_view);
 
     const AttrInfo *pos_info = m_mesh->getAttrInfo("VERTEX");
 
