@@ -5,3 +5,6 @@
 /graphplay/Debug
 /graphplay/Debug - Console
 /graphplay/Release
+graphplay.sdf
+
+*.suo
