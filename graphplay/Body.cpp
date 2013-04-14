@@ -1,5 +1,8 @@
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Body.h"
+#include "graphplay.h"
 
 Body::Body()
     : mw_pos(),
@@ -32,4 +35,17 @@ glm::mat4 Body::baseModelView(const glm::mat4 &wld_model_view)
     return glm::rotate(
         glm::translate(wld_model_view, mw_pos),
         m_ang_pos, mw_ang_vel_dir);
+}
+
+void Body::setAttribArrayf(GLuint loc, GLuint buffer, int width_floats, int stride_bytes, int offset_bytes)
+{
+    glEnableVertexAttribArray(loc);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glVertexAttribPointer(loc, width_floats, GL_FLOAT, GL_FALSE,
+        stride_bytes, BUFFER_OFFSET_BYTES(offset_bytes));
+}
+
+void Body::setUniformMatrix4f(GLuint loc, const glm::mat4 &mat)
+{
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
 }

@@ -1,6 +1,8 @@
 #ifndef _GRAPHPLAY_H_
 #define _GRAPHPLAY_H_
 
+#define BUFFER_OFFSET_BYTES(n) ((GLvoid *)n)
+
 #include "BasicShader.h"
 #include "World.h"
 
