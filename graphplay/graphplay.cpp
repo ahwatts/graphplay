@@ -15,26 +15,20 @@
 BasicShader *g_shader = NULL;
 World *g_world = NULL;
 
-void update(int dt) {
-    g_world->update((float)dt / 1000.0f);
-    glutPostRedisplay();
-    glutTimerFunc(20, &update, 20);
-}
+void display();
+void reshape(int new_width, int new_height);
+void update(int dt);
 
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    g_world->render();
-    glutSwapBuffers();
-}
-
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     GLenum glew_err;
+    int width = 800, height = 600;
 
     LIBXML_TEST_VERSION;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(width, height);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
     glutCreateWindow("graphplay");
 
@@ -45,19 +39,40 @@ int main(int argc, char **argv) {
     }
 
     glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, width, height);
 
     g_shader = new BasicShader();
-    g_world = new World(800, 600);
+    g_world = new World(width, height);
 
-    glutDisplayFunc(&display);
-    glutTimerFunc(20, &update, 20);
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutTimerFunc(20, update, 20);
     glutMainLoop();
 
     delete g_shader;
     delete g_world;
-
     xmlCleanupParser();
     xmlMemoryDump();
 
     return 0;
+}
+
+void update(int dt)
+{
+    g_world->update((float)dt / 1000.0f);
+    glutPostRedisplay();
+    glutTimerFunc(20, &update, 20);
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    g_world->render();
+    glutSwapBuffers();
+}
+
+void reshape(int new_width, int new_height)
+{
+    glViewport(0, 0, new_width, new_height);
+    g_world->setViewport(new_width, new_height);
 }

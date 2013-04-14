@@ -11,6 +11,7 @@ public:
     World(unsigned int vp_width, unsigned int vp_height);
     ~World();
 
+    void setViewport(unsigned int new_width, unsigned int new_height);
     void update(float dt);
     void render();
 

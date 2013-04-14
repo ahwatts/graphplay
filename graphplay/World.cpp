@@ -27,6 +27,12 @@ World::~World(void)
     }
 }
 
+void World::setViewport(unsigned int width, unsigned int height)
+{
+    m_vp_width = width;
+    m_vp_height = height;
+}
+
 void World::update(float dt)
 {
     for (unsigned int i = 0; i < m_bodies.size(); ++i) {
@@ -36,8 +42,6 @@ void World::update(float dt)
 
 void World::render()
 {
-    glViewport(0, 0, m_vp_width, m_vp_height);
-
     m_perspective = glm::perspective<float>(
         45,
         (float)m_vp_width / (float)m_vp_height, 
