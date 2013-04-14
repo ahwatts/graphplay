@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Body.h"
@@ -14,6 +15,11 @@ Body::Body()
 
 Body::~Body(void)
 { }
+
+void Body::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, int flags)
+{
+    // Nothing to do here...
+}
 
 void Body::update(float dt)
 {

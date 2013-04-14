@@ -15,7 +15,7 @@ struct AttrInfo
     int width;
 };
 
-bool sortAttrInfosByOffset(AttrInfo &ai1, AttrInfo &ai2);
+bool sortAttrInfosByOffset(const AttrInfo &ai1, const AttrInfo &ai2);
 
 class Mesh
 {

@@ -1,3 +1,5 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #ifndef _BASIC_SHADER_H_
 #define _BASIC_SHADER_H_
 

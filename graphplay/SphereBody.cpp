@@ -1,3 +1,5 @@
+// -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

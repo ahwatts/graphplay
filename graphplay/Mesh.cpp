@@ -140,7 +140,7 @@ void Mesh::dump()
     }
 }
 
-bool sortAttrInfosByOffset(AttrInfo &ai1, AttrInfo &ai2)
+bool sortAttrInfosByOffset(const AttrInfo &ai1, const AttrInfo &ai2)
 {
     return ai1.offset < ai2.offset;
 }

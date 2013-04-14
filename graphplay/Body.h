@@ -1,3 +1,5 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #ifndef _BODY_H_
 #define _BODY_H_
 

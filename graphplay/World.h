@@ -1,3 +1,5 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #ifndef _WORLD_H_
 #define _WORLD_H_
 

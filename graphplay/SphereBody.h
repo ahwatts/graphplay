@@ -1,3 +1,5 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #ifndef _SPHERE_BODY_H_
 #define _SPHERE_BODY_H_
 
