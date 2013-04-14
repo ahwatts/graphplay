@@ -16,13 +16,14 @@ BasicShader *g_shader = NULL;
 World *g_world = NULL;
 
 void display();
+void keypress(unsigned char key, int x, int y);
 void reshape(int new_width, int new_height);
 void update(int dt);
 
 int main(int argc, char **argv)
 {
     GLenum glew_err;
-    int width = 800, height = 600;
+    int width = 800, height = 600, dt_msec = 20;
 
     LIBXML_TEST_VERSION;
 
@@ -45,8 +46,9 @@ int main(int argc, char **argv)
     g_world = new World(width, height);
 
     glutDisplayFunc(display);
+    glutKeyboardFunc(keypress);
     glutReshapeFunc(reshape);
-    glutTimerFunc(20, update, 20);
+    glutTimerFunc(dt_msec, update, dt_msec);
     glutMainLoop();
 
     delete g_shader;
@@ -75,4 +77,15 @@ void reshape(int new_width, int new_height)
 {
     glViewport(0, 0, new_width, new_height);
     g_world->setViewport(new_width, new_height);
+}
+
+void keypress(unsigned char key, int x, int y)
+{
+    switch (key) {
+    case 27: // escape key.
+        glutLeaveMainLoop();
+        break;
+    // default:
+    //     printf("Key %u was pressed at (%d, %d)\n", key, x, y);
+    }
 }
