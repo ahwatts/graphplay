@@ -116,7 +116,27 @@
     <ClInclude Include="SphereBody.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
+  <ItemGroup>
+    <GraphplayExtraSources Include="$(SolutionDir)freeglut.dll" />
+    <GraphplayExtraSources Include="$(SolutionDir)glew32.dll" />
+    <GraphplayExtraSources Include="$(SolutionDir)iconv.dll" />
+    <GraphplayExtraSources Include="$(SolutionDir)libxml2.dll" />
+    <GraphplayExtraSources Include="$(SolutionDir)octohedron.dae" />
+  </ItemGroup>
+  <ItemGroup>
+    <GraphplayExtraOutputs Include="$(OutDir)freeglut.dll" />
+    <GraphplayExtraOutputs Include="$(OutDir)glew32.dll" />
+    <GraphplayExtraOutputs Include="$(OutDir)iconv.dll" />
+    <GraphplayExtraOutputs Include="$(OutDir)libxml2.dll" />
+    <GraphplayExtraOutputs Include="$(OutDir)octohedron.dae" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="AfterClean">
+    <Delete Files="@(GraphplayExtraOutputs)" ContinueOnError="true" />
+  </Target>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(GraphplayExtraSources)" DestinationFolder="$(OutDir)" />
+  </Target>
 </Project>

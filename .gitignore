@@ -1,26 +1,7 @@
-*.sdf
-*.suo
-*.log
-*.user
+/Debug
+/Debug - Console
+/Release
 
-/Debug/graphplay.exe
-
-*.ilk
-*.pdb
-*.opensdf
-*.obj
-*.tlog
-*.lastbuildstate
-*.idb
-/Release/graphplay.exe
-
-*.o
-*.d
-*.d.*
-/graphplay/graphplay
-
-/graphplay/Debug/*.unsuccessfulbuild
-
-/Debug - Console/graphplay.exe
-
-*.unsuccessfulbuild
+/graphplay/Debug
+/graphplay/Debug - Console
+/graphplay/Release
