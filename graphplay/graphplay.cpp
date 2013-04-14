@@ -16,6 +16,7 @@ BasicShader *g_shader = NULL;
 World *g_world = NULL;
 
 void update(int dt) {
+    g_world->update((float)dt / 1000.0f);
     glutPostRedisplay();
     glutTimerFunc(20, &update, 20);
 }

@@ -15,6 +15,8 @@ World::World(unsigned int vp_width, unsigned int vp_height)
       m_bodies()
 {
     SphereBody *sphere = new SphereBody(g_shader->getProgram());
+    sphere->m_ang_vel = 20.0f;
+    sphere->mw_pos = glm::vec3(1, 0, 0);
     m_bodies.push_back(sphere);
 }
 
@@ -27,7 +29,9 @@ World::~World(void)
 
 void World::update(float dt)
 {
-    // nothing to do here...
+    for (unsigned int i = 0; i < m_bodies.size(); ++i) {
+        m_bodies[i]->update(dt);
+    }
 }
 
 void World::render()

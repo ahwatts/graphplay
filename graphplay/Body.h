@@ -23,6 +23,7 @@ public:
     glm::vec3 mw_ang_vel_dir;
 
     virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, int flags) = 0;
+    void update(float dt);
 };
 
 #endif

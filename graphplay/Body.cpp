@@ -11,3 +11,12 @@ Body::Body()
 
 Body::~Body(void)
 { }
+
+void Body::update(float dt)
+{
+    mw_pos = mw_pos + (m_vel_mag*mw_vel_dir*dt);
+    m_ang_pos = m_ang_pos + m_ang_vel*dt;
+    if (m_ang_pos > 360.0f) {
+        m_ang_pos = m_ang_pos - 360.0f;
+    }
+}
