@@ -9,3 +9,6 @@
 *.sdf
 *.suo
 *.opensdf
+*.d
+*.o
+/graphplay/graphplay
