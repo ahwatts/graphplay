@@ -22,7 +22,8 @@ const char* BasicShader::fragment_shader_src =
     "    gl_FragColor = vColor;"
     "}";
 
-BasicShader::BasicShader(void) {
+BasicShader::BasicShader(void)
+{
     GLint status, errlen;
 
     m_vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, vertex_shader_src);
@@ -49,7 +50,8 @@ BasicShader::BasicShader(void) {
     m_model_view_loc = glGetUniformLocation(m_shader_program, "uModelView");
 }
 
-BasicShader::~BasicShader(void) {
+BasicShader::~BasicShader(void)
+{
     if (glIsShader(m_vertex_shader) == GL_TRUE) {
         glDeleteShader(m_vertex_shader);
     }
@@ -63,7 +65,8 @@ BasicShader::~BasicShader(void) {
     }
 }
 
-GLuint BasicShader::createAndCompileShader(GLenum shader_type, const char* shader_src) {
+GLuint BasicShader::createAndCompileShader(GLenum shader_type, const char* shader_src)
+{
     GLuint shader = glCreateShader(shader_type);
     GLint errlen, status, src_length = strlen(shader_src);
 

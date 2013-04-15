@@ -40,13 +40,15 @@ FloatSource::FloatSource(const FloatSource &other)
     memcpy(data, other.data, length*sizeof(float));
 }
 
-FloatSource::~FloatSource() {
+FloatSource::~FloatSource()
+{
     if (data) {
         delete [] data;
     }
 }
 
-Mesh* loadDaeFile(const char* filename) {
+Mesh* loadDaeFile(const char* filename)
+{
     xmlDocPtr doc = NULL;
     xmlNodePtr node = NULL;
     xmlXPathContextPtr xpath_ctxt = NULL;
@@ -84,7 +86,8 @@ Mesh* loadDaeFile(const char* filename) {
     return rv;
 }
 
-Mesh* loadGeometry(xmlNodePtr geometry_node) {
+Mesh* loadGeometry(xmlNodePtr geometry_node)
+{
     xmlNodePtr curr = geometry_node->children;
 
     while (curr != NULL) {
@@ -97,7 +100,8 @@ Mesh* loadGeometry(xmlNodePtr geometry_node) {
     return NULL;
 }
 
-Mesh* loadMesh(xmlNodePtr mesh_node) {
+Mesh* loadMesh(xmlNodePtr mesh_node)
+{
     xmlNodePtr curr;
     std::map<std::string, FloatSource*> sources;
     std::map<std::string, FloatSource*>::const_iterator it;
@@ -181,7 +185,8 @@ FloatSource *loadSource(xmlNodePtr source_node)
     return rv;
 }
 
-std::string loadVertices(xmlNodePtr vertices_node) {
+std::string loadVertices(xmlNodePtr vertices_node)
+{
     xmlNodePtr curr = vertices_node->children;
     char *prop, *prop2;
     std::string rv;
@@ -300,7 +305,8 @@ Mesh *loadPolyList(xmlNodePtr pl_node, std::map<std::string, FloatSource*> &sour
     return rv;
 }
 
-xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc) {
+xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc)
+{
     xmlXPathContextPtr xpath_ctxt = xmlXPathNewContext(doc);
 
     // Make sure the context was created.
@@ -316,7 +322,8 @@ xmlXPathContextPtr createDaeFileXPathContext(xmlDocPtr doc) {
     return xpath_ctxt;
 }
 
-void tokenizeStringToFloatArray(float *dest, char *all_floats) {
+void tokenizeStringToFloatArray(float *dest, char *all_floats)
+{
     char *this_float = NULL, *next_float = NULL;
     int i = 0;
 
@@ -328,7 +335,8 @@ void tokenizeStringToFloatArray(float *dest, char *all_floats) {
     } while (this_float != NULL);
 }
 
-void tokenizeStringToIntArray(int *dest, char *all_ints) {
+void tokenizeStringToIntArray(int *dest, char *all_ints)
+{
     char *this_int = NULL, *next_int = NULL;
     int i = 0;
 
