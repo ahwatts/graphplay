@@ -165,7 +165,7 @@ void Mesh::getSortedAttrInfos(std::vector<AttrInfo> &out) const
 void Mesh::setVertexAttribPointer(GLuint loc, const std::string &attr_name)
 {
     const AttrInfo *attr_info = getAttrInfo(attr_name);
-    int offset_bytes = attr_info->offset*sizeof(float);
+    long offset_bytes = attr_info->offset*sizeof(float);
 
     glEnableVertexAttribArray(loc);
     glBindBuffer(GL_ARRAY_BUFFER, m_soup_buffer);

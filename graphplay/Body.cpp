@@ -16,11 +16,6 @@ Body::Body()
 Body::~Body(void)
 { }
 
-void Body::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, int flags)
-{
-    // Nothing to do here...
-}
-
 void Body::update(float dt)
 {
     mw_pos = mw_pos + (m_vel_mag*mw_vel_dir*dt);

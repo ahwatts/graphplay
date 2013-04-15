@@ -10,7 +10,7 @@ class Body
 {
 public:
     Body();
-    ~Body();
+    virtual ~Body();
 
     // The position of the object in "world" coordinates.
     glm::vec3 mw_pos;
