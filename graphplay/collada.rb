@@ -15,7 +15,7 @@ end
 
 module Collada
   class Geometry
-    attr_reader :id, :name, :sources, :vertices, :primitives
+    attr_reader :id, :name
 
     def self.from_node(node)
       child = node.xpath("*").first
@@ -26,14 +26,94 @@ module Collada
     def initialize(node)
       @id = node["id"]
       @name = node["name"]
-      @sources = node.xpath("xmlns:mesh/xmlns:source").map { |n| Source.new(n) }
-      @vertices = Vertices.new(node.xpath("xmlns:mesh/xmlns:vertices").first)
+      @objects_by_id = {}
+    end
+
+    def resolve_input_to_sources(input)
+      if input.respond_to?(:source)
+        source = @objects_by_id[input.source.gsub(/^#/, "")]
+        semantic = input.semantic
+
+        if source.respond_to?(:data)
+          { semantic => source }
+        elsif source.respond_to?(:inputs)
+          {}.tap do |rv|
+            source.inputs.each do |si|
+              sub_sources = resolve_input_to_sources(si)
+              sub_sources.each do |sub_sem, ss|
+                rv["#{semantic}_#{sub_sem}"] = ss
+              end
+            end
+          end
+        end
+      end
     end
   end
 
   class MeshGeometry < Geometry
+    attr_reader :sources, :vertices, :primitives
+
     def initialize(node)
       super(node)
+      mesh_node = node.xpath("xmlns:mesh")
+
+      @sources = mesh_node.xpath("xmlns:source").map do |n|
+        Source.new(n).tap { |s| @objects_by_id[s.id] = s }
+      end
+
+      @vertices = Vertices.new(mesh_node.xpath("xmlns:vertices").first)
+      @objects_by_id[@vertices.id] = @vertices
+
+      @primitives = []
+      mesh_node.children.each do |child_node|
+        next if child_node.text? || %w{ source vertices }.include?(child_node.name)
+        primitive_klass = Collada.const_get("#{camelize(child_node.name)}Primitive")
+        @primitives << primitive_klass.new(child_node)
+      end
+    end
+
+    def print_structure
+      @primitives.each do |p|
+        if !p.vcount.all? { |v| v == 3 }
+          raise "Don't know what to do with non-triangles!"
+        end
+
+        puts "Number of primitives: #{p.count}"
+        puts "Vertices per primitive: 3"
+        puts
+
+        p.inputs.sort { |i1, i2| i1.offset <=> i2.offset }.each do |input|
+          sources = resolve_input_to_sources(input)
+          if sources.size > 1
+            raise "Not sure how to handle more than 1 source!"
+          else
+            semantic, source = *sources.first
+            puts "Attribute offset: #{input.offset}"
+            puts "Attribute: #{semantic}"
+            puts "Data: (count #{source.data.size})"
+            source.data.each_with_index do |d, i|
+              puts "%4d: %p" % [ i, d.to_a ]
+            end
+            puts
+          end
+        end
+
+        puts "Element indices: #{p.elements.inspect}"
+      end
+    end
+  end
+
+  class XyzData
+    attr_accessor :x, :y, :z
+
+    def initialize(vals)
+      self.x = vals["X"]
+      self.y = vals["Y"]
+      self.z = vals["Z"]
+    end
+    
+    def to_a
+      [ x, y, z ]
     end
   end
 
@@ -55,6 +135,12 @@ module Collada
                        else nil
                        end
 
+      data_klass = nil
+      accessor_names = accessor.params.map { |p| p[:name] }.compact
+      if accessor_names.size == 3 && %w{ X Y Z }.all? { |n| accessor_names.include?(n) }
+        data_klass = XyzData
+      end
+
       data_array = array_node.text.split(" ").map { |v| v.send(convert_method) }
 
       index = accessor.offset
@@ -66,7 +152,7 @@ module Collada
             v[p[:name]] = vals[i]
           end
         end
-        @data << v
+        @data << data_klass.new(v)
         index += accessor.stride
       end
     end
@@ -93,13 +179,12 @@ module Collada
       @inputs = node.xpath("xmlns:input")
 
       @inputs = @inputs.map do |n|
-        usi = UnSharedInput.new(n)
-        { usi.semantic => usi.source }
-      end.reduce(:merge)
+        SharedInput.new(n)
+      end
     end
   end
 
-  class PolyList
+  class PolylistPrimitive
     attr_reader :name, :count, :inputs, :vcount, :elements
 
     def initialize(node)
@@ -107,6 +192,7 @@ module Collada
       @count = node["count"].to_i
       @inputs = node.xpath("xmlns:input").map { |n| SharedInput.new(n) }
       @vcount = node.xpath("xmlns:vcount").text.split(" ").map(&:to_i)
+      @elements = node.xpath("xmlns:p").text.split(" ").map(&:to_i)
     end
   end
 
@@ -133,21 +219,6 @@ end
 
 doc = Nokogiri::XML(ARGF)
 geometries = doc.xpath("//xmlns:geometry").map { |n| Collada::Geometry.from_node(n) }
-pp geometries
-
-# def polylist(node)
-#   rv = { name: node["name"], count: node["count"].to_i }
-#   rv[:inputs] = node.xpath("xmlns:input").map { |n| input_shared(n) }
-#   rv[:vcount] = node.xpath("xmlns:vcount").text.split(" ").map(&:to_i)
-#   rv[:elements] = node.xpath("xmlns:p").text.split(" ").map(&:to_i)
-#   rv
-# end
-
-# def input_shared(node)
-#   { semantic: node["semantic"], source: node["source"],
-#     set: node["set"].to_i, offset: node["offset"].to_i }
-# end
-
-# def setup_buffers(geometry)
-  
-# end
+geometries.each do |g|
+  g.print_structure
+end
