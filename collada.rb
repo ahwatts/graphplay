@@ -4,6 +4,7 @@
 require 'rubygems'
 require 'nokogiri'
 require 'pp'
+require 'pathname'
 
 def camelize(string)
   string.split("_").map { |s| s.capitalize }.join  
@@ -47,6 +48,10 @@ module Collada
           end
         end
       end
+    end
+
+    def print_structure
+      raise "Not implemented!"
     end
   end
 
@@ -100,6 +105,50 @@ module Collada
 
         puts "Element indices: #{p.elements.inspect}"
       end
+    end
+
+    def packed_string
+      contents = [ "AHWGMESH", @primitives.size ]
+      format = "A8L"
+      
+      @primitives.each do |p|
+        contents += [ p.count, 3, p.inputs.size ]
+        format << "LLL"
+
+        p.inputs.sort { |i1, i2| i1.offset <=> i2.offset }.each do |input|
+          sources = resolve_input_to_sources(input)
+          if sources.size > 1
+            raise "Not sure how to handle more than 1 source!"
+          else
+            semantic, source = *sources.first
+            sem_length = semantic.bytesize
+            sem_length = (sem_length.to_f / 4.0).ceil * 4
+            contents << sem_length
+            contents << semantic
+            format << "LA#{sem_length}"
+
+            contents << input.offset
+            format << "L"
+
+            contents << source.data.size
+            format << "L"
+
+            contents << source.data.first.to_a.size
+            format << "L"
+
+            contents += source.data.map(&:to_a).flatten
+            format << "F#{source.data.size*source.data.first.to_a.size}"
+          end
+        end
+
+        contents << p.elements.size
+        format << "L"
+
+        contents += p.elements
+        format << "L#{p.elements.size}"
+      end
+      
+      contents.pack(format)
     end
   end
 
@@ -221,4 +270,5 @@ doc = Nokogiri::XML(ARGF)
 geometries = doc.xpath("//xmlns:geometry").map { |n| Collada::Geometry.from_node(n) }
 geometries.each do |g|
   g.print_structure
+  File.open("#{g.name}.mesh", "wb") { |f| f.write(g.packed_string) }
 end
