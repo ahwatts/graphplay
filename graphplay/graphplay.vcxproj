@@ -140,6 +140,10 @@
     <GraphplayExtraOutputs Include="$(OutDir)octohedron.dae" />
     <GraphplayExtraOutputs Include="$(OutDir)chair.dae" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\chair.dae" />
+    <None Include="..\octohedron.dae" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
