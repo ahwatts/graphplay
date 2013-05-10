@@ -1,28 +1,31 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <stdio.h>
+/*#include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <libxml/xmlversion.h>
 #include <libxml/parser.h>
 
 #include "BasicShader.h"
+#include "Collada.h"
 #include "DaeFile.h"
 #include "Mesh.h"
 #include "World.h"
-#include "graphplay.h"
+#include "graphplay.h"*/
 
-BasicShader *g_shader = NULL;
+#include "Collada.h"
+
+/*BasicShader *g_shader = NULL;
 World *g_world = NULL;
 
 void display();
 void keypress(unsigned char key, int x, int y);
 void reshape(int new_width, int new_height);
-void update(int dt);
+void update(int dt);*/
 
 int main(int argc, char **argv)
 {
-    GLenum glew_err;
+    /*GLenum glew_err;
     int width = 800, height = 600, dt_msec = 20;
 
     LIBXML_TEST_VERSION;
@@ -54,12 +57,15 @@ int main(int argc, char **argv)
     delete g_shader;
     delete g_world;
     xmlCleanupParser();
-    xmlMemoryDump();
+    xmlMemoryDump();*/
+
+    std::vector<collada::Geometry> geos;
+    collada::loadGeometriesFromFile(geos, "chair.dae");
 
     return 0;
 }
 
-void update(int dt)
+/*void update(int dt)
 {
     g_world->update((float)dt / 1000.0f);
     glutPostRedisplay();
@@ -88,4 +94,4 @@ void keypress(unsigned char key, int x, int y)
     // default:
     //     printf("Key %u was pressed at (%d, %d)\n", key, x, y);
     }
-}
+}*/

@@ -101,19 +101,27 @@
   <ItemGroup>
     <ClCompile Include="BasicShader.cpp" />
     <ClCompile Include="Body.cpp" />
+    <ClCompile Include="Collada.cpp" />
     <ClCompile Include="DaeFile.cpp" />
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="graphplay.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="SphereBody.cpp" />
+    <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicShader.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="DaeFile.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="graphplay.h" />
+    <ClInclude Include="Collada.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="SphereBody.h" />
+    <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +130,7 @@
     <GraphplayExtraSources Include="$(SolutionDir)iconv.dll" />
     <GraphplayExtraSources Include="$(SolutionDir)libxml2.dll" />
     <GraphplayExtraSources Include="$(SolutionDir)octohedron.dae" />
+    <GraphplayExtraSources Include="$(SolutionDir)chair.dae" />
   </ItemGroup>
   <ItemGroup>
     <GraphplayExtraOutputs Include="$(OutDir)freeglut.dll" />
@@ -129,6 +138,7 @@
     <GraphplayExtraOutputs Include="$(OutDir)iconv.dll" />
     <GraphplayExtraOutputs Include="$(OutDir)libxml2.dll" />
     <GraphplayExtraOutputs Include="$(OutDir)octohedron.dae" />
+    <GraphplayExtraOutputs Include="$(OutDir)chair.dae" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

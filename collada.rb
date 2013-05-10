@@ -21,6 +21,9 @@ module Collada
     def self.from_node(node)
       child = node.xpath("*").first
       klass = Collada.const_get("#{camelize(child.name)}Geometry")
+      if klass.nil?
+        raise "Could not find class for #{child.name}"
+      end
       klass.new(node)
     end
 
@@ -166,6 +169,33 @@ module Collada
     end
   end
 
+  class StData
+    attr_accessor :s, :t
+
+    def initialize(vals)
+      self.s = vals["S"]
+      self.t = vals["T"]
+    end
+    
+    def to_a
+      [ s, t ]
+    end
+  end
+
+  class RgbData
+    attr_accessor :r, :g, :b
+
+    def initialize(vals)
+      self.r = vals["R"]
+      self.g = vals["G"]
+      self.b = vals["B"]
+    end
+    
+    def to_a
+      [ r, g, b ]
+    end
+  end
+
   class Source
     attr_reader :id, :name, :data
 
@@ -188,7 +218,13 @@ module Collada
       accessor_names = accessor.params.map { |p| p[:name] }.compact
       if accessor_names.size == 3 && %w{ X Y Z }.all? { |n| accessor_names.include?(n) }
         data_klass = XyzData
+      elsif accessor_names.size == 2 && %w{ S T }.all? { |n| accessor_names.include?(n) }
+        data_klass = StData
+      elsif accessor_names.size == 3 && %w{ R G B }.all? { |n| accessor_names.include?(n) }
+        data_klass = RgbData
       end
+
+      raise "Could not find data class for accessor #{accessor_names.inspect}" if data_klass.nil?
 
       data_array = array_node.text.split(" ").map { |v| v.send(convert_method) }
 

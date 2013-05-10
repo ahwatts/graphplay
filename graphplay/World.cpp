@@ -16,10 +16,10 @@ World::World(unsigned int vp_width, unsigned int vp_height)
       m_vp_height(vp_height),
       m_bodies()
 {
-    SphereBody *sphere = new SphereBody(*g_shader);
+    /*SphereBody *sphere = new SphereBody(*g_shader);
     sphere->m_ang_vel = 20.0f;
     sphere->mw_pos = glm::vec3(1, 0, 0);
-    m_bodies.push_back(sphere);
+    m_bodies.push_back(sphere);*/
 }
 
 World::~World(void)
