@@ -5,6 +5,7 @@ namespace collada {
     using namespace tinyxml2;
 
     Geometry* loadGeometry(const XMLElement &elem);
+    MeshGeometry* loadMeshGeometry(const XMLElement &elem);
 
     Geometry::Geometry()
     { }
@@ -48,9 +49,30 @@ namespace collada {
         }
     }
 
-Geometry* loadGeometry(const XMLElement &elem) {
-    printf("Parsing geometry name = %s id = %s\n", elem.Attribute("name"), elem.Attribute("id"));
-    return NULL;
-}
+    Geometry* loadGeometry(const XMLElement &geo_elem) {
+        const XMLElement *elem;
+        Geometry *rv;
 
+        printf("Parsing geometry name = %s id = %s\n", geo_elem.Attribute("name"), geo_elem.Attribute("id"));
+
+        elem = geo_elem.FirstChildElement();
+
+        if (elem) {
+            if (strcmp(elem->Name(), "mesh") == 0) {
+                rv = loadMeshGeometry(*elem);
+            } else {
+                fprintf(stderr, "Don't know how to handle a geometry chid of type %s!\n", elem->Name());
+                exit(1);
+            }
+        } else {
+            fprintf(stderr, "Geometry node has no children!\n");
+            exit(1);
+        }
+
+        return rv;
+    }
+
+    MeshGeometry* loadMeshGeometry(const XMLElement &mesh_elem) {
+        return NULL;
+    }
 };
