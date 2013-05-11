@@ -20,6 +20,46 @@ namespace collada {
     MeshGeometry::~MeshGeometry()
     { }
 
+    Accessor::Accessor()
+        : count(0),
+          offset(0),
+          stride(0)
+    { }
+
+    Accessor::~Accessor()
+    { }
+
+    XYZAccessor::XYZAccessor()
+        : Accessor(),
+          src(NULL),
+          x_offset(0),
+          y_offset(1),
+          z_offset(2)
+    { }
+
+    XYZAccessor::~XYZAccessor()
+    { }
+
+    float XYZAccessor::getX(unsigned int pass) {
+        return src->float_array[offset + pass*stride + x_offset];
+    }
+
+    float XYZAccessor::getY(unsigned int pass) {
+        return src->float_array[offset + pass*stride + y_offset];
+    }
+
+    float XYZAccessor::getZ(unsigned int pass) {
+        return src->float_array[offset + pass*stride + z_offset];
+    }
+
+    Source::Source()
+        : accessor(XYZAccessor()),
+          float_array()
+    { }
+
+    Source::~Source()
+    { }
+
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename) {
         XMLDocument doc;
         XMLElement *elem;
@@ -73,6 +113,10 @@ namespace collada {
     }
 
     MeshGeometry* loadMeshGeometry(const XMLElement &mesh_elem) {
+        const XMLElement *elem;
+
+        elem = mesh_elem.FirstChildElement("source");
+
         return NULL;
     }
 };
