@@ -1,3 +1,5 @@
+// -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #include "Collada.h"
 #include "tinyxml2.h"
 
@@ -6,6 +8,7 @@ namespace collada {
 
     Geometry* loadGeometry(const XMLElement &elem);
     MeshGeometry* loadMeshGeometry(const XMLElement &elem);
+    Source* loadSource(const XMLElement &elem);
 
     Geometry::Geometry()
     { }
@@ -29,9 +32,9 @@ namespace collada {
     Accessor::~Accessor()
     { }
 
-    XYZAccessor::XYZAccessor()
+    XYZAccessor::XYZAccessor(const Source &s)
         : Accessor(),
-          src(NULL),
+          src(s),
           x_offset(0),
           y_offset(1),
           z_offset(2)
@@ -40,20 +43,20 @@ namespace collada {
     XYZAccessor::~XYZAccessor()
     { }
 
-    float XYZAccessor::getX(unsigned int pass) {
-        return src->float_array[offset + pass*stride + x_offset];
+    float XYZAccessor::getX(unsigned int pass) const {
+        return src.float_array[offset + pass*stride + x_offset];
     }
 
-    float XYZAccessor::getY(unsigned int pass) {
-        return src->float_array[offset + pass*stride + y_offset];
+    float XYZAccessor::getY(unsigned int pass) const {
+        return src.float_array[offset + pass*stride + y_offset];
     }
 
-    float XYZAccessor::getZ(unsigned int pass) {
-        return src->float_array[offset + pass*stride + z_offset];
+    float XYZAccessor::getZ(unsigned int pass) const {
+        return src.float_array[offset + pass*stride + z_offset];
     }
 
     Source::Source()
-        : accessor(XYZAccessor()),
+        : accessor(XYZAccessor(*this)),
           float_array()
     { }
 

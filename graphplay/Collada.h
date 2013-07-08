@@ -1,3 +1,5 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #ifndef _COLLADA_H_
 #define _COLLADA_H_
 
@@ -31,14 +33,14 @@ namespace collada {
 
     class XYZAccessor : public Accessor {
     public:
-        XYZAccessor();
+        XYZAccessor(const Source &s);
         virtual ~XYZAccessor();
 
-        float getX(unsigned int pass);
-        float getY(unsigned int pass);
-        float getZ(unsigned int pass);
+        float getX(unsigned int pass) const;
+        float getY(unsigned int pass) const;
+        float getZ(unsigned int pass) const;
 
-        Source *src;
+        const Source &src;
         unsigned int x_offset, y_offset, z_offset;
     };
 
