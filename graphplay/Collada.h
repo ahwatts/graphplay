@@ -6,6 +6,14 @@
 #include <vector>
 
 namespace collada {
+    class Geometry;
+    class MeshGeometry;
+    class Source;
+    class Accessor;
+    class XYZAccessor;
+
+    // The main factory method to create these objects.
+    void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename);
 
     // Geometries and geometry types. Only Mesh geometries are supported.
     class Geometry {
@@ -18,11 +26,11 @@ namespace collada {
     public:
         MeshGeometry();
         virtual ~MeshGeometry();
+
+        std::vector<Source*> sources;
     };
 
     // Accessors for accessing Sources. Only XYZ in Floats is supported.
-    class Source;
-
     class Accessor {
     public:
         Accessor();
@@ -44,6 +52,7 @@ namespace collada {
         unsigned int x_offset, y_offset, z_offset;
     };
 
+    // Sources.
     class Source {
     public:
         Source();
@@ -52,8 +61,6 @@ namespace collada {
         Accessor accessor;
         std::vector<float> float_array;
     };
-    
-    void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename);
 };
 
 #endif

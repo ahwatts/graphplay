@@ -6,9 +6,9 @@
 namespace collada {
     using namespace tinyxml2;
 
-    Geometry* loadGeometry(const XMLElement &elem);
-    MeshGeometry* loadMeshGeometry(const XMLElement &elem);
-    Source* loadSource(const XMLElement &elem);
+    Geometry *loadGeometry(const XMLElement &elem);
+    MeshGeometry *loadMeshGeometry(const XMLElement &elem);
+    Source *loadSource(const XMLElement &elem);
 
     // Class Geometry
     Geometry::Geometry() { }
@@ -16,7 +16,11 @@ namespace collada {
 
     // Class MeshGeometry
     MeshGeometry::MeshGeometry() : Geometry() { }
-    MeshGeometry::~MeshGeometry() { }
+    MeshGeometry::~MeshGeometry() {
+        for (unsigned int i = 0; i < sources.size(); ++i) {
+            delete sources[i];
+        }
+    }
 
     // Class Accessor
     Accessor::Accessor() : count(0), offset(0), stride(0) { }
@@ -28,8 +32,7 @@ namespace collada {
           src(s),
           x_offset(0),
           y_offset(1),
-          z_offset(2)
-    { }
+          z_offset(2) { }
 
     XYZAccessor::~XYZAccessor() { }
 
@@ -78,7 +81,7 @@ namespace collada {
         }
     }
 
-    Geometry* loadGeometry(const XMLElement &geo_elem) {
+    Geometry *loadGeometry(const XMLElement &geo_elem) {
         const XMLElement *elem;
         Geometry *rv;
 
@@ -90,7 +93,7 @@ namespace collada {
             if (strcmp(elem->Name(), "mesh") == 0) {
                 rv = loadMeshGeometry(*elem);
             } else {
-                fprintf(stderr, "Don't know how to handle a geometry chid of type %s!\n", elem->Name());
+                fprintf(stderr, "Don't know how to handle a geometry child of type %s!\n", elem->Name());
                 exit(1);
             }
         } else {
@@ -101,11 +104,25 @@ namespace collada {
         return rv;
     }
 
-    MeshGeometry* loadMeshGeometry(const XMLElement &mesh_elem) {
+    MeshGeometry *loadMeshGeometry(const XMLElement &mesh_elem) {
         const XMLElement *elem;
+        Source *src = NULL;
+        MeshGeometry *rv = new MeshGeometry();
 
         elem = mesh_elem.FirstChildElement("source");
+        if (elem) {
+            src = loadSource(*elem);
+            if (src) { rv->sources.push_back(src); }
+        } else {
+            fprintf(stderr, "Mesh node has no sources!\n");
+            exit(1);
+        }
 
+        return NULL;
+    }
+
+    Source *loadSource(const XMLElement &source_elem) {
+        printf("Parsing source id = %s\n", source_elem.Attribute("id"));
         return NULL;
     }
 };
