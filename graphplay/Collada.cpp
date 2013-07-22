@@ -10,28 +10,19 @@ namespace collada {
     MeshGeometry* loadMeshGeometry(const XMLElement &elem);
     Source* loadSource(const XMLElement &elem);
 
-    Geometry::Geometry()
-    { }
+    // Class Geometry
+    Geometry::Geometry() { }
+    Geometry::~Geometry() { }
 
-    Geometry::~Geometry()
-    { }
+    // Class MeshGeometry
+    MeshGeometry::MeshGeometry() : Geometry() { }
+    MeshGeometry::~MeshGeometry() { }
 
-    MeshGeometry::MeshGeometry()
-        : Geometry()
-    { }
+    // Class Accessor
+    Accessor::Accessor() : count(0), offset(0), stride(0) { }
+    Accessor::~Accessor() { }
 
-    MeshGeometry::~MeshGeometry()
-    { }
-
-    Accessor::Accessor()
-        : count(0),
-          offset(0),
-          stride(0)
-    { }
-
-    Accessor::~Accessor()
-    { }
-
+    // Class XYZAccessor
     XYZAccessor::XYZAccessor(const Source &s)
         : Accessor(),
           src(s),
@@ -40,8 +31,7 @@ namespace collada {
           z_offset(2)
     { }
 
-    XYZAccessor::~XYZAccessor()
-    { }
+    XYZAccessor::~XYZAccessor() { }
 
     float XYZAccessor::getX(unsigned int pass) const {
         return src.float_array[offset + pass*stride + x_offset];
@@ -55,13 +45,9 @@ namespace collada {
         return src.float_array[offset + pass*stride + z_offset];
     }
 
-    Source::Source()
-        : accessor(XYZAccessor(*this)),
-          float_array()
-    { }
-
-    Source::~Source()
-    { }
+    // Class Source
+    Source::Source() : accessor(XYZAccessor(*this)), float_array() { }
+    Source::~Source() { }
 
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename) {
         XMLDocument doc;
