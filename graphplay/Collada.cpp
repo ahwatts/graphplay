@@ -6,21 +6,19 @@
 namespace collada {
     using namespace tinyxml2;
 
-    Geometry *loadGeometry(const XMLElement &elem);
-    MeshGeometry *loadMeshGeometry(const XMLElement &elem);
-    Source *loadSource(const XMLElement &elem);
+    Geometry *loadGeometry(XMLConstHandle geo_handle);
+    MeshGeometry *loadMeshGeometry(XMLConstHandle mesh_handle);
+    Source *loadSource(XMLConstHandle source_handle);
+    void loadFloatArray(std::vector<float> &array, XMLConstHandle float_array_handle);
+    void handleError(const char *message);
 
     // Class Geometry
     Geometry::Geometry() { }
     Geometry::~Geometry() { }
 
     // Class MeshGeometry
-    MeshGeometry::MeshGeometry() : Geometry() { }
-    MeshGeometry::~MeshGeometry() {
-        for (unsigned int i = 0; i < sources.size(); ++i) {
-            delete sources[i];
-        }
-    }
+    MeshGeometry::MeshGeometry() : Geometry(), sources() { }
+    MeshGeometry::~MeshGeometry() { }
 
     // Class Accessor
     Accessor::Accessor() : count(0), offset(0), stride(0) { }
@@ -54,75 +52,93 @@ namespace collada {
 
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename) {
         XMLDocument doc;
-        XMLElement *elem;
+        XMLConstHandle handle(NULL);
         Geometry *geo;
 
         doc.LoadFile(filename);
 
-        elem = doc.FirstChildElement("COLLADA");
-        if (elem == NULL) {
-            fprintf(stderr, "Could not find a COLLADA element in the document.\n");
-            exit(1);
+        handle = XMLConstHandle(&doc)
+            .FirstChildElement("COLLADA")
+            .FirstChildElement("library_geometries")
+            .FirstChildElement("geometry");
+
+        if (handle.ToElement() == NULL) {
+            handleError("Could not find any geometry elements.\n");
         }
 
-        elem = elem->FirstChildElement("library_geometries");
-        if (elem == NULL) {
-            fprintf(stderr, "Could not find library_geometries in the COLLADA element.\n");
-            exit(1);
-        }
-
-        elem = elem->FirstChildElement("geometry");
-        while (elem != NULL) {
-            geo = loadGeometry(*elem);
+        while (handle.ToElement() != NULL) {
+            geo = loadGeometry(handle);
             if (geo != NULL) {
                 geos.push_back(*geo);
             }
-            elem = elem->NextSiblingElement("geometry");
+            handle = handle.NextSiblingElement("geometry");
         }
     }
 
-    Geometry *loadGeometry(const XMLElement &geo_elem) {
-        const XMLElement *elem;
+    Geometry *loadGeometry(XMLConstHandle geo_handle) {
+        XMLConstHandle handle(NULL);
         Geometry *rv;
 
-        printf("Parsing geometry name = %s id = %s\n", geo_elem.Attribute("name"), geo_elem.Attribute("id"));
+        handle = geo_handle.FirstChildElement("mesh");
 
-        elem = geo_elem.FirstChildElement();
-
-        if (elem) {
-            if (strcmp(elem->Name(), "mesh") == 0) {
-                rv = loadMeshGeometry(*elem);
+        if (handle.ToElement() != NULL) {
+            if (strcmp(handle.ToElement()->Name(), "mesh") == 0) {
+                rv = loadMeshGeometry(handle);
             } else {
-                fprintf(stderr, "Don't know how to handle a geometry child of type %s!\n", elem->Name());
-                exit(1);
+                handleError("Don't know how to handle a non-mesh geometry child!\n");
             }
         } else {
-            fprintf(stderr, "Geometry node has no children!\n");
-            exit(1);
+            handleError("Geometry node has no children!\n");
         }
 
         return rv;
     }
 
-    MeshGeometry *loadMeshGeometry(const XMLElement &mesh_elem) {
-        const XMLElement *elem;
-        Source *src = NULL;
+    MeshGeometry *loadMeshGeometry(XMLConstHandle mesh_handle) {
+        XMLConstHandle handle(NULL);
         MeshGeometry *rv = new MeshGeometry();
+        Source *src;
 
-        elem = mesh_elem.FirstChildElement("source");
-        if (elem) {
-            src = loadSource(*elem);
-            if (src) { rv->sources.push_back(src); }
+        handle = mesh_handle.FirstChildElement("source");
+        if (handle.ToElement()) {
+            src = loadSource(handle);
+            if (src) { rv->sources.push_back(*src); }
         } else {
-            fprintf(stderr, "Mesh node has no sources!\n");
-            exit(1);
+            handleError("Mesh node has no sources!\n");
         }
 
-        return NULL;
+        return rv;
     }
 
-    Source *loadSource(const XMLElement &source_elem) {
-        printf("Parsing source id = %s\n", source_elem.Attribute("id"));
-        return NULL;
+    Source *loadSource(XMLConstHandle source_handle) {
+        XMLConstHandle handle(NULL);
+        Source *rv = new Source();
+
+        handle = source_handle.FirstChildElement("float_array");
+        if (handle.ToElement()) {
+            loadFloatArray(rv->float_array, handle);
+        } else {
+            handleError("Source node has no float_array!\n");
+        }
+
+        return rv;
+    }
+
+    void loadFloatArray(std::vector<float> &array, XMLConstHandle float_array_handle) {
+        const char *text;
+        const XMLText *text_node;
+
+        text_node = float_array_handle.FirstChild().ToText();
+        if (text_node) {
+            text = text_node->Value();
+            printf("Parsing float array: %s\n", text);
+        } else {
+            handleError("Float array node has no values?!\n");
+        }
+    }
+
+    void handleError(const char *message) {
+        fprintf(stderr, message);
+        exit(1);
     }
 };

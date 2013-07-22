@@ -15,21 +15,6 @@ namespace collada {
     // The main factory method to create these objects.
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename);
 
-    // Geometries and geometry types. Only Mesh geometries are supported.
-    class Geometry {
-    public:
-        Geometry();
-        virtual ~Geometry();
-    };
-
-    class MeshGeometry : public Geometry {
-    public:
-        MeshGeometry();
-        virtual ~MeshGeometry();
-
-        std::vector<Source*> sources;
-    };
-
     // Accessors for accessing Sources. Only XYZ in Floats is supported.
     class Accessor {
     public:
@@ -52,7 +37,7 @@ namespace collada {
         unsigned int x_offset, y_offset, z_offset;
     };
 
-    // Sources.
+    // Sources. Only sources with float arrays are supported.
     class Source {
     public:
         Source();
@@ -60,6 +45,21 @@ namespace collada {
 
         Accessor accessor;
         std::vector<float> float_array;
+    };
+
+    // Geometries and geometry types. Only Mesh geometries are supported.
+    class Geometry {
+    public:
+        Geometry();
+        virtual ~Geometry();
+    };
+
+    class MeshGeometry : public Geometry {
+    public:
+        MeshGeometry();
+        virtual ~MeshGeometry();
+
+        std::vector<Source> sources;
     };
 };
 

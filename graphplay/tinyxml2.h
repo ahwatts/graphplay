@@ -1,3 +1,4 @@
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: t -*-
 /*
 Original code by Lee Thomason (www.grinninglizard.com)
 
@@ -125,16 +126,16 @@ class StrPair
 {
 public:
     enum {
-        NEEDS_ENTITY_PROCESSING			= 0x01,
-        NEEDS_NEWLINE_NORMALIZATION		= 0x02,
+        NEEDS_ENTITY_PROCESSING				= 0x01,
+        NEEDS_NEWLINE_NORMALIZATION			= 0x02,
         COLLAPSE_WHITESPACE	                = 0x04,
 
         TEXT_ELEMENT		            	= NEEDS_ENTITY_PROCESSING | NEEDS_NEWLINE_NORMALIZATION,
-        TEXT_ELEMENT_LEAVE_ENTITIES		= NEEDS_NEWLINE_NORMALIZATION,
+        TEXT_ELEMENT_LEAVE_ENTITIES			= NEEDS_NEWLINE_NORMALIZATION,
         ATTRIBUTE_NAME		            	= 0,
         ATTRIBUTE_VALUE		            	= NEEDS_ENTITY_PROCESSING | NEEDS_NEWLINE_NORMALIZATION,
         ATTRIBUTE_VALUE_LEAVE_ENTITIES  	= NEEDS_NEWLINE_NORMALIZATION,
-        COMMENT				        = NEEDS_NEWLINE_NORMALIZATION
+        COMMENT				        		= NEEDS_NEWLINE_NORMALIZATION
     };
 
     StrPair() : _flags( 0 ), _start( 0 ), _end( 0 ) {}
