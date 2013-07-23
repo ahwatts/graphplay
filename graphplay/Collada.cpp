@@ -20,7 +20,7 @@ namespace collada {
 
     // Utility methods.
     void handleError(const char *message);
-    void tokenizeStringToFloatArray(std::vector<float> &array, char *all_floats);
+    void tokenizeStringToFloatArray(std::vector<float> &array, const char *all_floats);
 
     // Class Geometry
     Geometry::Geometry() { }
@@ -118,7 +118,6 @@ namespace collada {
 
     void loadFloatArray(std::vector<float> &array, XMLConstHandle float_array_elem) {
         int count = -1;
-        char *text = NULL;
         const XMLElement *fa_node;
         const XMLText *text_node;
 
@@ -129,9 +128,7 @@ namespace collada {
 
         text_node = float_array_elem.FirstChild().ToText();
         if (text_node != NULL) {
-            text = strdup(text_node->Value());
-            tokenizeStringToFloatArray(array, text);
-            free(text);
+            tokenizeStringToFloatArray(array, text_node->Value());
         }
 
         if (count != (int)array.size()) {
@@ -146,13 +143,15 @@ namespace collada {
         exit(1);
     }
 
-    void tokenizeStringToFloatArray(std::vector<float> &array, char *all_floats) {
+    void tokenizeStringToFloatArray(std::vector<float> &array, const char *floats) {
+        char *local_floats = strdup(floats);
         char *this_float = NULL, *next_float = NULL;
 
-        this_float = strtok_r(all_floats, " ", &next_float);
+        this_float = strtok_r(local_floats, " ", &next_float);
         do {
             array.push_back((float)atof(this_float));
             this_float = strtok_r(NULL, " ", &next_float);
         } while (this_float != NULL);
+        free(local_floats);
     }
 };
