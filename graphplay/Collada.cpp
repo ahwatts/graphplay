@@ -22,18 +22,6 @@ namespace collada {
     void handleError(const char *message);
     void tokenizeStringToFloatArray(std::vector<float> &array, const char *all_floats);
 
-    // Class Geometry
-    Geometry::Geometry() { }
-    Geometry::~Geometry() { }
-
-    // Class MeshGeometry
-    MeshGeometry::MeshGeometry() : Geometry(), sources() { }
-    MeshGeometry::~MeshGeometry() { }
-
-    // Class Accessor
-    Accessor::Accessor() : count(0), offset(0), stride(0) { }
-    Accessor::~Accessor() { }
-
     // Class XYZAccessor
     XYZAccessor::XYZAccessor(const Source &s)
         : Accessor(),
@@ -41,8 +29,6 @@ namespace collada {
           x_offset(0),
           y_offset(1),
           z_offset(2) { }
-
-    XYZAccessor::~XYZAccessor() { }
 
     float XYZAccessor::getX(unsigned int pass) const {
         return src.float_array[offset + pass*stride + x_offset];
@@ -55,10 +41,6 @@ namespace collada {
     float XYZAccessor::getZ(unsigned int pass) const {
         return src.float_array[offset + pass*stride + z_offset];
     }
-
-    // Class Source
-    Source::Source() : accessor(XYZAccessor(*this)), float_array() { }
-    Source::~Source() { }
 
     // Static functions.
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename) {

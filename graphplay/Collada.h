@@ -18,16 +18,12 @@ namespace collada {
     // Accessors for accessing Sources. Only XYZ in Floats is supported.
     class Accessor {
     public:
-        Accessor();
-        virtual ~Accessor();
-
         unsigned int count, offset, stride;
     };
 
     class XYZAccessor : public Accessor {
     public:
         XYZAccessor(const Source &s);
-        virtual ~XYZAccessor();
 
         float getX(unsigned int pass) const;
         float getY(unsigned int pass) const;
@@ -40,25 +36,15 @@ namespace collada {
     // Sources. Only sources with float arrays are supported.
     class Source {
     public:
-        Source();
-        virtual ~Source();
-
         Accessor accessor;
         std::vector<float> float_array;
     };
 
     // Geometries and geometry types. Only Mesh geometries are supported.
-    class Geometry {
-    public:
-        Geometry();
-        virtual ~Geometry();
-    };
+    class Geometry { };
 
     class MeshGeometry : public Geometry {
     public:
-        MeshGeometry();
-        virtual ~MeshGeometry();
-
         std::vector<Source> sources;
     };
 };
