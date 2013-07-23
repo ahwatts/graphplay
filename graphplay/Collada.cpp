@@ -134,9 +134,9 @@ namespace collada {
             free(text);
         }
 
-        if (count != array.size()) {
+        if (count != (int)array.size()) {
             char msg[256];
-            snprintf(msg, 256, "Expected %d floats, got %d floats!\n", count, array.size());
+            snprintf(msg, 256, "Expected %d floats, got %lud floats!\n", count, array.size());
             handleError((const char *)msg);
         }
     }
@@ -148,7 +148,6 @@ namespace collada {
 
     void tokenizeStringToFloatArray(std::vector<float> &array, char *all_floats) {
         char *this_float = NULL, *next_float = NULL;
-        int i = 0;
 
         this_float = strtok_r(all_floats, " ", &next_float);
         do {
