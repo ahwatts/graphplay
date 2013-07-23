@@ -4,9 +4,9 @@
 #include "tinyxml2.h"
 
 #ifdef _WIN32
-#    define snprintf _snprintf_s
-#    define strdup _strdup
-#    define strtok_r strtok_s
+#define snprintf _snprintf_s
+#define strdup _strdup
+#define strtok_r strtok_s
 #endif
 
 namespace collada {
