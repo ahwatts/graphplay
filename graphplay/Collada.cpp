@@ -1,5 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <cstdlib>
 #include <sstream>
 
 #include "Collada.h"
@@ -251,11 +252,11 @@ namespace collada {
         char *curr = (char *)floats_string, *next = (char *)floats_string;
         float this_float = 0;
 
-        this_float = strtof(curr, &next);
+        this_float = (float)strtod(curr, &next);
         while (curr != next) {
             array.push_back(this_float);
             curr = next;
-            this_float = strtof(curr, &next);
+            this_float = (float)strtod(curr, &next);
         }
     }
 
