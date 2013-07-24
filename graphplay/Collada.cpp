@@ -1,10 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <cstring>
-#include <iterator>
-#include <stdexcept>
 #include <sstream>
-#include <string>
 
 #include "Collada.h"
 #include "tinyxml2.h"
@@ -191,15 +187,15 @@ namespace collada {
     }
 
     void tokenizeStringToFloatArray(std::vector<float> &array, const char *floats_string) {
-        std::string floats = floats_string;
-        unsigned int index = 0;
+        char *curr = (char *)floats_string, *next = (char *)floats_string;
         float this_float = 0;
 
-        this_float = std::stof(floats.substr(index, floats.size() - index), &index);
-        do {
+        this_float = strtof(curr, &next);
+        while (curr != next) {
             array.push_back(this_float);
-            this_float = std::stof(floats.substr(index, floats.size() - index), &index);
-        } while (this_float != NULL);
+            curr = next;
+            this_float = strtof(curr, &next);
+        }
     }
 
     unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value) {
@@ -218,10 +214,6 @@ namespace collada {
 
         rv = strtoul(string_value, NULL, 10);
 
-        if (rv == UINT_MAX && errno == ERANGE) {
-            return default_value;
-        } else {
-            return rv;
-        }
+        return rv;
     }
 };

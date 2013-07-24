@@ -16,7 +16,7 @@ namespace collada {
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename);
 
     // Accessors for accessing Sources.
-    typedef enum accessor_type_t { XYZ, ST };
+    enum accessor_type_t { XYZ, ST };
     
     class Accessor {
     public:
@@ -25,12 +25,12 @@ namespace collada {
         const Source *source;
         unsigned int count, offset, stride;
 
-        inline float getX(unsigned int pass) const { getValue(XYZ, 0, pass); };
-        inline float getY(unsigned int pass) const { getValue(XYZ, 1, pass); };
-        inline float getZ(unsigned int pass) const { getValue(XYZ, 2, pass); };
+        inline float getX(unsigned int pass) const { return getValue(XYZ, 0, pass); };
+        inline float getY(unsigned int pass) const { return getValue(XYZ, 1, pass); };
+        inline float getZ(unsigned int pass) const { return getValue(XYZ, 2, pass); };
 
-        inline float getS(unsigned int pass) const { getValue(ST, 0, pass); };
-        inline float getT(unsigned int pass) const { getValue(ST, 1, pass); };
+        inline float getS(unsigned int pass) const { return getValue(ST, 0, pass); };
+        inline float getT(unsigned int pass) const { return getValue(ST, 1, pass); };
 
         accessor_type_t type;
         union {
