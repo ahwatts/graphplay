@@ -3,6 +3,7 @@
 #ifndef _COLLADA_H_
 #define _COLLADA_H_
 
+#include <string>
 #include <vector>
 
 namespace collada {
@@ -16,7 +17,7 @@ namespace collada {
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename);
 
     // Accessors for accessing Sources.
-    enum accessor_type_t { XYZ, ST };
+    enum accessor_type_t { XYZ, ST, RGB };
     
     class Accessor {
     public:
@@ -32,6 +33,10 @@ namespace collada {
         inline float getS(unsigned int pass) const { return getValue(ST, 0, pass); };
         inline float getT(unsigned int pass) const { return getValue(ST, 1, pass); };
 
+        inline float getR(unsigned int pass) const { return getValue(RGB, 0, pass); };
+        inline float getG(unsigned int pass) const { return getValue(RGB, 1, pass); };
+        inline float getB(unsigned int pass) const { return getValue(RGB, 2, pass); };
+
         accessor_type_t type;
         union {
             union {
@@ -43,6 +48,11 @@ namespace collada {
                 struct { unsigned int s_offset, t_offset; };
                 unsigned int offsets[2];
             } st;
+
+            union {
+                struct { unsigned int r_offset, g_offset, b_offset; };
+                unsigned int offsets[3];
+            } rgb;
         };
 
     private:
@@ -54,6 +64,7 @@ namespace collada {
     public:
         Source();
 
+        std::string id;
         Accessor accessor;
         std::vector<float> float_array;
     };

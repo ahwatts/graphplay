@@ -101,22 +101,30 @@ namespace collada {
     }
 
     Source *loadSource(XMLConstHandle source_elem) {
-        Source *rv = new Source();
-        loadFloatArray(rv->float_array, source_elem.FirstChildElement("float_array"));
-        loadAccessor(rv, source_elem.FirstChildElement("technique_common").FirstChildElement("accessor"));
+        if (source_elem.ToElement() != NULL) {
+            Source *rv = new Source();
 
-        printf("Loaded Source:\n");
-        printf("float_array: %lu elements.\n", rv->float_array.size());
-        printf("accessor:\n");
-        printf("  count: %u offset: %u stride: %u\n", rv->accessor.count, rv->accessor.offset, rv->accessor.stride);
-        printf("  type: %d\n", rv->accessor.type);
-        if (rv->accessor.type == XYZ) {
-            printf("  offsets: x: %u y: %u z: %u\n", rv->accessor.xyz.x_offset, rv->accessor.xyz.y_offset, rv->accessor.xyz.z_offset);
-        } else if (rv->accessor.type == ST) {
-            printf("  offsets: s: %u t: %u\n", rv->accessor.st.s_offset, rv->accessor.st.t_offset);
+            rv->id = source_elem.ToElement()->Attribute("id");
+            loadFloatArray(rv->float_array, source_elem.FirstChildElement("float_array"));
+            loadAccessor(rv, source_elem.FirstChildElement("technique_common").FirstChildElement("accessor"));
+
+            printf("Loaded Source: %s\n", rv->id.c_str());
+            printf("float_array: %lu elements.\n", rv->float_array.size());
+            printf("accessor:\n");
+            printf("  count: %u offset: %u stride: %u\n", rv->accessor.count, rv->accessor.offset, rv->accessor.stride);
+            printf("  type: %d\n", rv->accessor.type);
+            if (rv->accessor.type == XYZ) {
+                printf("  offsets: x: %u y: %u z: %u\n", rv->accessor.xyz.x_offset, rv->accessor.xyz.y_offset, rv->accessor.xyz.z_offset);
+            } else if (rv->accessor.type == ST) {
+                printf("  offsets: s: %u t: %u\n", rv->accessor.st.s_offset, rv->accessor.st.t_offset);
+            } else if (rv->accessor.type == RGB) {
+                printf("  offsets: r: %u g: %u b: %u\n", rv->accessor.rgb.r_offset, rv->accessor.rgb.g_offset, rv->accessor.rgb.b_offset);
+            }
+
+            return rv;
+        } else {
+            return NULL;
         }
-
-        return rv;
     }
 
     void loadFloatArray(std::vector<float> &array, XMLConstHandle float_array_elem) {
@@ -174,7 +182,7 @@ namespace collada {
 
                     node = node.NextSiblingElement("param");
                 }
-            } else if (param_names.compare("ST")) {
+            } else if (param_names.compare("ST") == 0) {
                 source->accessor.type = ST;
 
                 node = accessor_elem.FirstChildElement("param");
@@ -185,6 +193,23 @@ namespace collada {
                         source->accessor.st.s_offset = getUintAttribute(node.ToElement(), "offset", 0);
                     } else if (param_name.compare("T") == 0) {
                         source->accessor.st.t_offset = getUintAttribute(node.ToElement(), "offset", 1);
+                    }
+
+                    node = node.NextSiblingElement("param");
+                }
+            } else if (param_names.compare("RGB") == 0) {
+                source->accessor.type = RGB;
+
+                node = accessor_elem.FirstChildElement("param");
+                while (node.ToElement() != NULL) {
+                    param_name = node.ToElement()->Attribute("name");
+
+                    if (param_name.compare("R") == 0) {
+                        source->accessor.rgb.r_offset = getUintAttribute(node.ToElement(), "offset", 0);
+                    } else if (param_name.compare("G") == 0) {
+                        source->accessor.rgb.g_offset = getUintAttribute(node.ToElement(), "offset", 1);
+                    } else if (param_name.compare("B") == 0) {
+                        source->accessor.rgb.b_offset = getUintAttribute(node.ToElement(), "offset", 2);
                     }
 
                     node = node.NextSiblingElement("param");
