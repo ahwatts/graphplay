@@ -1,13 +1,13 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <cstring>
+#include <iterator>
+#include <stdexcept>
+#include <sstream>
+#include <string>
+
 #include "Collada.h"
 #include "tinyxml2.h"
-
-#ifdef _WIN32
-#define snprintf _snprintf_s
-#define strdup _strdup
-#define strtok_r strtok_s
-#endif
 
 namespace collada {
     using namespace tinyxml2;
@@ -17,30 +17,48 @@ namespace collada {
     MeshGeometry *loadMeshGeometry(XMLConstHandle mesh_elem);
     Source *loadSource(XMLConstHandle source_elem);
     void loadFloatArray(std::vector<float> &array, XMLConstHandle float_array_elem);
+    void loadAccessor(Source *source, XMLConstHandle accessor_elem);
 
     // Utility methods.
     void handleError(const char *message);
-    void tokenizeStringToFloatArray(std::vector<float> &array, const char *all_floats);
+    void tokenizeStringToFloatArray(std::vector<float> &array, const char *float_string);
+    unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value);
 
-    // Class XYZAccessor
-    XYZAccessor::XYZAccessor(const Source &s)
-        : Accessor(),
-          src(s),
-          x_offset(0),
-          y_offset(1),
-          z_offset(2) { }
-
-    float XYZAccessor::getX(unsigned int pass) const {
-        return src.float_array[offset + pass*stride + x_offset];
+    // class Accessor.
+    Accessor::Accessor(const Source *src)
+        : source(src),
+          count(0),
+          offset(0),
+          stride(1),
+          type(XYZ) {
+        xyz.x_offset = 0;
+        xyz.y_offset = 0;
+        xyz.z_offset = 0;
     }
 
-    float XYZAccessor::getY(unsigned int pass) const {
-        return src.float_array[offset + pass*stride + y_offset];
+    float Accessor::getValue(accessor_type_t type, unsigned int index, unsigned int pass) const {
+        if (source == NULL) { return 0; }
+
+        switch (type) {
+        case XYZ:
+            if (index < 0 || index > 2) {
+                return 0;
+            } else {
+                return source->float_array[offset + pass*stride + xyz.offsets[index]];
+            }
+        case ST:
+            if (index < 0 || index > 1) {
+                return 0;
+            } else {
+                return source->float_array[offset + pass*stride + st.offsets[index]];
+            }
+        default:
+            return 0;
+        }
     }
 
-    float XYZAccessor::getZ(unsigned int pass) const {
-        return src.float_array[offset + pass*stride + z_offset];
-    }
+    // class Source.
+    Source::Source() : accessor(this), float_array() { }
 
     // Static functions.
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename) {
@@ -89,12 +107,6 @@ namespace collada {
     Source *loadSource(XMLConstHandle source_elem) {
         Source *rv = new Source();
         loadFloatArray(rv->float_array, source_elem.FirstChildElement("float_array"));
-
-        for (unsigned int i = 0; i < rv->float_array.size(); ++i) {
-            printf("%g ", rv->float_array[i]);
-        }
-        printf("\n");
-
         return rv;
     }
 
@@ -114,26 +126,102 @@ namespace collada {
         }
 
         if (count != (int)array.size()) {
-            char msg[256];
-            snprintf(msg, 256, "Expected %d floats, got %lud floats!\n", count, array.size());
-            handleError((const char *)msg);
+            std::ostringstream msg;
+            msg << "Expected " << count << " floats, got " << array.size() << " floats!\n";
+            handleError(msg.str().c_str());
         }
     }
 
+    void loadAccessor(Source *source, XMLConstHandle accessor_elem) {
+        std::string param_names, param_name;
+        XMLConstHandle node(NULL);
+        const XMLElement *acc_node = accessor_elem.ToElement();
+
+        if (acc_node != NULL) {
+            source->accessor.count = getUintAttribute(acc_node, "count", 0);
+            source->accessor.offset = getUintAttribute(acc_node, "offset", 0);
+            source->accessor.stride = getUintAttribute(acc_node, "stride", 1);
+
+            node = accessor_elem.FirstChildElement("param");
+            while (node.ToElement() != NULL) {
+                param_names += node.ToElement()->Attribute("name");
+                node = node.NextSiblingElement("param");
+            }
+
+            if (param_names.compare("XYZ") == 0) {
+                source->accessor.type = XYZ;
+
+                node = accessor_elem.FirstChildElement("param");
+                while (node.ToElement() != NULL) {
+                    param_name = node.ToElement()->Attribute("name");
+
+                    if (param_name.compare("X") == 0) {
+                        source->accessor.xyz.x_offset = getUintAttribute(node.ToElement(), "offset", 0);
+                    } else if (param_name.compare("Y") == 0) {
+                        source->accessor.xyz.y_offset = getUintAttribute(node.ToElement(), "offset", 1);
+                    } else if (param_name.compare("Z") == 0) {
+                        source->accessor.xyz.z_offset = getUintAttribute(node.ToElement(), "offset", 2);
+                    }
+
+                    node = node.NextSiblingElement("param");
+                }
+            } else if (param_names.compare("ST")) {
+                source->accessor.type = ST;
+
+                node = accessor_elem.FirstChildElement("param");
+                while (node.ToElement() != NULL) {
+                    param_name = node.ToElement()->Attribute("name");
+
+                    if (param_name.compare("S") == 0) {
+                        source->accessor.st.s_offset = getUintAttribute(node.ToElement(), "offset", 0);
+                    } else if (param_name.compare("T") == 0) {
+                        source->accessor.st.t_offset = getUintAttribute(node.ToElement(), "offset", 1);
+                    }
+
+                    node = node.NextSiblingElement("param");
+                }
+            }
+        }
+    }
+
+    // Utility functions.
     void handleError(const char *message) {
         fprintf(stderr, message);
         exit(1);
     }
 
-    void tokenizeStringToFloatArray(std::vector<float> &array, const char *floats) {
-        char *local_floats = strdup(floats);
-        char *this_float = NULL, *next_float = NULL;
+    void tokenizeStringToFloatArray(std::vector<float> &array, const char *floats_string) {
+        std::string floats = floats_string;
+        unsigned int index = 0;
+        float this_float = 0;
 
-        this_float = strtok_r(local_floats, " ", &next_float);
+        this_float = std::stof(floats.substr(index, floats.size() - index), &index);
         do {
-            array.push_back((float)atof(this_float));
-            this_float = strtok_r(NULL, " ", &next_float);
+            array.push_back(this_float);
+            this_float = std::stof(floats.substr(index, floats.size() - index), &index);
         } while (this_float != NULL);
-        free(local_floats);
+    }
+
+    unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value) {
+        const char *string_value;
+        unsigned int rv;
+
+        if (node == NULL) {
+            return default_value;
+        }
+
+        string_value = node->Attribute(attr);
+
+        if (string_value == NULL) {
+            return default_value;
+        }
+
+        rv = strtoul(string_value, NULL, 10);
+
+        if (rv == UINT_MAX && errno == ERANGE) {
+            return default_value;
+        } else {
+            return rv;
+        }
     }
 };

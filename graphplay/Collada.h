@@ -15,27 +15,45 @@ namespace collada {
     // The main factory method to create these objects.
     void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename);
 
-    // Accessors for accessing Sources. Only XYZ in Floats is supported.
+    // Accessors for accessing Sources.
+    typedef enum accessor_type_t { XYZ, ST };
+    
     class Accessor {
     public:
+        Accessor(const Source *src);
+
+        const Source *source;
         unsigned int count, offset, stride;
-    };
 
-    class XYZAccessor : public Accessor {
-    public:
-        XYZAccessor(const Source &s);
+        inline float getX(unsigned int pass) const { getValue(XYZ, 0, pass); };
+        inline float getY(unsigned int pass) const { getValue(XYZ, 1, pass); };
+        inline float getZ(unsigned int pass) const { getValue(XYZ, 2, pass); };
 
-        float getX(unsigned int pass) const;
-        float getY(unsigned int pass) const;
-        float getZ(unsigned int pass) const;
+        inline float getS(unsigned int pass) const { getValue(ST, 0, pass); };
+        inline float getT(unsigned int pass) const { getValue(ST, 1, pass); };
 
-        const Source &src;
-        unsigned int x_offset, y_offset, z_offset;
+        accessor_type_t type;
+        union {
+            union {
+                struct { unsigned int x_offset, y_offset, z_offset; };
+                unsigned int offsets[3];
+            } xyz;
+
+            union {
+                struct { unsigned int s_offset, t_offset; };
+                unsigned int offsets[2];
+            } st;
+        };
+
+    private:
+        float getValue(accessor_type_t type, unsigned int index, unsigned int pass) const;
     };
 
     // Sources. Only sources with float arrays are supported.
     class Source {
     public:
+        Source();
+
         Accessor accessor;
         std::vector<float> float_array;
     };

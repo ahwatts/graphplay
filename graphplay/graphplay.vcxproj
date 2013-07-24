@@ -141,7 +141,9 @@
     <GraphplayExtraOutputs Include="$(OutDir)chair.dae" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\chair.dae" />
+    <None Include="..\chair.dae">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\octohedron.dae">
       <SubType>Designer</SubType>
     </None>
