@@ -28,8 +28,8 @@ namespace collada {
           stride(1),
           type(XYZ) {
         xyz.x_offset = 0;
-        xyz.y_offset = 0;
-        xyz.z_offset = 0;
+        xyz.y_offset = 1;
+        xyz.z_offset = 2;
     }
 
     float Accessor::getValue(accessor_type_t type, unsigned int index, unsigned int pass) const {
@@ -103,6 +103,19 @@ namespace collada {
     Source *loadSource(XMLConstHandle source_elem) {
         Source *rv = new Source();
         loadFloatArray(rv->float_array, source_elem.FirstChildElement("float_array"));
+        loadAccessor(rv, source_elem.FirstChildElement("technique_common").FirstChildElement("accessor"));
+
+        printf("Loaded Source:\n");
+        printf("float_array: %lu elements.\n", rv->float_array.size());
+        printf("accessor:\n");
+        printf("  count: %u offset: %u stride: %u\n", rv->accessor.count, rv->accessor.offset, rv->accessor.stride);
+        printf("  type: %d\n", rv->accessor.type);
+        if (rv->accessor.type == XYZ) {
+            printf("  offsets: x: %u y: %u z: %u\n", rv->accessor.xyz.x_offset, rv->accessor.xyz.y_offset, rv->accessor.xyz.z_offset);
+        } else if (rv->accessor.type == ST) {
+            printf("  offsets: s: %u t: %u\n", rv->accessor.st.s_offset, rv->accessor.st.t_offset);
+        }
+
         return rv;
     }
 
@@ -200,6 +213,7 @@ namespace collada {
 
     unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value) {
         const char *string_value;
+        char *next = NULL;
         unsigned int rv;
 
         if (node == NULL) {
@@ -212,8 +226,12 @@ namespace collada {
             return default_value;
         }
 
-        rv = strtoul(string_value, NULL, 10);
+        rv = strtoul(string_value, &next, 10);
 
-        return rv;
+        if (next == string_value) {
+            return default_value;
+        } else {
+            return rv;
+        }
     }
 };
