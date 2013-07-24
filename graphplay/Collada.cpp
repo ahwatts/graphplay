@@ -20,6 +20,24 @@ namespace collada {
     void tokenizeStringToFloatArray(std::vector<float> &array, const char *float_string);
     unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value);
 
+    // class Geometry.
+    Geometry::~Geometry() { }
+
+    // class MeshGeometry.
+    MeshGeometry::MeshGeometry() : sources() { }
+
+    MeshGeometry::MeshGeometry(const MeshGeometry &other) : sources() { }
+
+    MeshGeometry::~MeshGeometry() {
+        for (unsigned int i = 0; i < sources.size(); ++i) {
+            Source *s = sources[i];
+            if (s != NULL) {
+                delete s;
+                sources[i] = NULL;
+            }
+        }
+    }
+
     // class Accessor.
     Accessor::Accessor(const Source *src)
         : source(src),
@@ -56,8 +74,12 @@ namespace collada {
     // class Source.
     Source::Source() : accessor(this), float_array() { }
 
+    Source::Source(const Source &other) : accessor(this), float_array() { }
+
+    Source::~Source() { }
+
     // Static functions.
-    void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename) {
+    void loadGeometriesFromFile(std::vector<Geometry *> &geos, const char* filename) {
         XMLDocument doc;
         XMLConstHandle node(NULL);
         Geometry *geo;
@@ -71,7 +93,7 @@ namespace collada {
 
         while (node.ToElement() != NULL) {
             geo = loadGeometry(node);
-            if (geo != NULL) { geos.push_back(*geo); }
+            if (geo != NULL) { geos.push_back(geo); }
             node = node.NextSiblingElement("geometry");
         }
     }
@@ -93,7 +115,7 @@ namespace collada {
         node = mesh_elem.FirstChildElement("source");
         while (node.ToElement() != NULL) {
             src = loadSource(node);
-            if (src != NULL) { rv->sources.push_back(*src); }
+            if (src != NULL) { rv->sources.push_back(src); }
             node = node.NextSiblingElement("source");
         }
 
@@ -120,6 +142,7 @@ namespace collada {
             } else if (rv->accessor.type == RGB) {
                 printf("  offsets: r: %u g: %u b: %u\n", rv->accessor.rgb.r_offset, rv->accessor.rgb.g_offset, rv->accessor.rgb.b_offset);
             }
+            printf("\n");
 
             return rv;
         } else {

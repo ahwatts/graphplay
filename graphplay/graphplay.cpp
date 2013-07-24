@@ -59,8 +59,16 @@ int main(int argc, char **argv)
     xmlCleanupParser();
     xmlMemoryDump();*/
 
-    std::vector<collada::Geometry> geos;
+    std::vector<collada::Geometry *> geos;
     collada::loadGeometriesFromFile(geos, "chair.dae");
+
+    for (unsigned int i = 0; i < geos.size(); ++i) {
+        collada::Geometry *g = geos[i];
+        if (g != NULL) {
+            delete g;
+            geos[i] = NULL;
+        }
+    }
 
     return 0;
 }

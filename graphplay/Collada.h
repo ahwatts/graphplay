@@ -14,7 +14,7 @@ namespace collada {
     class XYZAccessor;
 
     // The main factory method to create these objects.
-    void loadGeometriesFromFile(std::vector<Geometry> &geos, const char* filename);
+    void loadGeometriesFromFile(std::vector<Geometry *> &geos, const char* filename);
 
     // Accessors for accessing Sources.
     enum accessor_type_t { XYZ, ST, RGB };
@@ -63,6 +63,10 @@ namespace collada {
     class Source {
     public:
         Source();
+        Source(const Source &other);
+        virtual ~Source();
+
+        Source &operator=(const Source &other);
 
         std::string id;
         Accessor accessor;
@@ -70,11 +74,20 @@ namespace collada {
     };
 
     // Geometries and geometry types. Only Mesh geometries are supported.
-    class Geometry { };
+    class Geometry {
+    public:
+        virtual ~Geometry();
+    };
 
     class MeshGeometry : public Geometry {
     public:
-        std::vector<Source> sources;
+        MeshGeometry();
+        MeshGeometry(const MeshGeometry &other);
+        virtual ~MeshGeometry();
+
+        MeshGeometry &operator=(const MeshGeometry &other);
+
+        std::vector<Source *> sources;
     };
 };
 
