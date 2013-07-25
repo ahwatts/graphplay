@@ -3,27 +3,27 @@
 #ifndef _COLLADA_H_
 #define _COLLADA_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
 namespace collada {
-    class Geometry;
     class MeshGeometry;
     class Source;
     class Accessor;
     class XYZAccessor;
 
     // The main factory method to create these objects.
-    void loadGeometriesFromFile(std::vector<Geometry *> &geos, const char* filename);
+    void loadGeometriesFromFile(std::vector<MeshGeometry> &geos, const char *filename);
 
     // Accessors for accessing Sources.
     enum accessor_type_t { XYZ, ST, RGB };
     
     class Accessor {
     public:
-        Accessor(const Source *src);
+        Accessor(const Source &src);
 
-        const Source *source;
+        const Source &source;
         unsigned int count, offset, stride;
 
         inline float getX(unsigned int pass) const { return getValue(XYZ, 0, pass); };
@@ -73,13 +73,20 @@ namespace collada {
         std::vector<float> float_array;
     };
 
-    // Geometries and geometry types. Only Mesh geometries are supported.
-    class Geometry {
+    class SharedInput {
     public:
-        virtual ~Geometry();
+        unsigned int offset, set;
+        Source *source;
     };
 
-    class MeshGeometry : public Geometry {
+    class Vertices {
+    public:
+        std::string id;
+        std::map<std::string, SharedInput> inputs;
+    };
+
+    // Geometries and geometry types. Only Mesh geometries are supported.
+    class MeshGeometry {
     public:
         MeshGeometry();
         MeshGeometry(const MeshGeometry &other);
@@ -87,7 +94,9 @@ namespace collada {
 
         MeshGeometry &operator=(const MeshGeometry &other);
 
-        std::vector<Source *> sources;
+        std::vector<Source> sources;
+        Vertices vertices;
+        std::map<std::string, SharedInput> inputs;
     };
 };
 

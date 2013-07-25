@@ -10,37 +10,41 @@ namespace collada {
     using namespace tinyxml2;
 
     // Loader methods.
-    Geometry *loadGeometry(XMLConstHandle geo_elem);
-    MeshGeometry *loadMeshGeometry(XMLConstHandle mesh_elem);
-    Source *loadSource(XMLConstHandle source_elem);
-    void loadFloatArray(std::vector<float> &array, XMLConstHandle float_array_elem);
-    void loadAccessor(Source *source, XMLConstHandle accessor_elem);
+    void loadMeshGeometry(MeshGeometry &mgeo, XMLConstHandle mesh_elem);
+    void loadSource(Source &source, XMLConstHandle source_elem);
+    void loadAccessor(Accessor &acc, XMLConstHandle acc_elem);
+
+    void loadFloatArray(std::vector<float> &array, XMLConstHandle farray_elem);
 
     // Utility methods.
     void handleError(const char *message);
     void tokenizeStringToFloatArray(std::vector<float> &array, const char *float_string);
     unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value);
 
-    // class Geometry.
-    Geometry::~Geometry() { }
-
     // class MeshGeometry.
-    MeshGeometry::MeshGeometry() : sources() { }
+    MeshGeometry::MeshGeometry() { }
 
-    MeshGeometry::MeshGeometry(const MeshGeometry &other) : sources() { }
+    // TODO: Implement this correctly.
+    MeshGeometry::MeshGeometry(const MeshGeometry &other) 
+        : sources(other.sources),
+          vertices(other.vertices),
+          inputs(other.inputs) { }
 
-    MeshGeometry::~MeshGeometry() {
-        for (unsigned int i = 0; i < sources.size(); ++i) {
-            Source *s = sources[i];
-            if (s != NULL) {
-                delete s;
-                sources[i] = NULL;
-            }
-        }
-    }
+    MeshGeometry::~MeshGeometry() { }
+
+    // class Source.
+    Source::Source() : accessor(*this), float_array() { }
+
+    // TODO: Implement this correctly.
+    Source::Source(const Source &other)
+        : id(other.id),
+          accessor(other.accessor),
+          float_array(other.float_array) { }
+
+    Source::~Source() { }
 
     // class Accessor.
-    Accessor::Accessor(const Source *src)
+    Accessor::Accessor(const Source &src)
         : source(src),
           count(0),
           offset(0),
@@ -52,38 +56,34 @@ namespace collada {
     }
 
     float Accessor::getValue(accessor_type_t type, unsigned int index, unsigned int pass) const {
-        if (source == NULL) { return 0; }
-
         switch (type) {
         case XYZ:
             if (index < 0 || index > 2) {
                 return 0;
             } else {
-                return source->float_array[offset + pass*stride + xyz.offsets[index]];
+                return source.float_array[offset + pass*stride + xyz.offsets[index]];
             }
         case ST:
             if (index < 0 || index > 1) {
                 return 0;
             } else {
-                return source->float_array[offset + pass*stride + st.offsets[index]];
+                return source.float_array[offset + pass*stride + st.offsets[index]];
+            }
+        case RGB:
+            if (index < 0 || index > 2) {
+                return 0;
+            } else {
+                return source.float_array[offset + pass*stride + rgb.offsets[index]];
             }
         default:
             return 0;
         }
     }
 
-    // class Source.
-    Source::Source() : accessor(this), float_array() { }
-
-    Source::Source(const Source &other) : accessor(this), float_array() { }
-
-    Source::~Source() { }
-
     // Static functions.
-    void loadGeometriesFromFile(std::vector<Geometry *> &geos, const char* filename) {
+    void loadGeometriesFromFile(std::vector<MeshGeometry> &geos, const char* filename) {
         XMLDocument doc;
         XMLConstHandle node(NULL);
-        Geometry *geo;
 
         doc.LoadFile(filename);
 
@@ -91,63 +91,51 @@ namespace collada {
             .FirstChildElement("COLLADA")
             .FirstChildElement("library_geometries")
             .FirstChildElement("geometry");             
-
-        while (node.ToElement() != NULL) {
-            geo = loadGeometry(node);
-            if (geo != NULL) { geos.push_back(geo); }
+ 
+        while (node.ToElement() != NULL && node.FirstChildElement("mesh").ToElement() != NULL) {
+            MeshGeometry mg = MeshGeometry();
+            loadMeshGeometry(mg, node.FirstChildElement("mesh"));
+            geos.push_back(mg);
             node = node.NextSiblingElement("geometry");
         }
     }
 
-    Geometry *loadGeometry(XMLConstHandle geo_elem) {
-        Geometry *rv = NULL;
-        rv = loadMeshGeometry(geo_elem.FirstChildElement("mesh"));
-        // If there is no mesh element, rv will be null. We could use
-        // that to try to find other geometry types here...
-        return rv;
-    }
-
-    MeshGeometry *loadMeshGeometry(XMLConstHandle mesh_elem) {
+    void loadMeshGeometry(MeshGeometry &mgeo, XMLConstHandle mesh_elem) {
         XMLConstHandle node(NULL);
-        MeshGeometry *rv = new MeshGeometry();
-        Source *src;
 
         // Load up the sources.
         node = mesh_elem.FirstChildElement("source");
         while (node.ToElement() != NULL) {
-            src = loadSource(node);
-            if (src != NULL) { rv->sources.push_back(src); }
+            Source src = Source();
+            loadSource(src, node);
+            mgeo.sources.push_back(src);
             node = node.NextSiblingElement("source");
         }
-
-        return rv;
     }
 
-    Source *loadSource(XMLConstHandle source_elem) {
+    void loadSource(Source &source, XMLConstHandle source_elem) {
         if (source_elem.ToElement() != NULL) {
-            Source *rv = new Source();
+            source.id = source_elem.ToElement()->Attribute("id");
+            loadFloatArray(source.float_array, source_elem.FirstChildElement("float_array"));
+            loadAccessor(source.accessor, source_elem.FirstChildElement("technique_common").FirstChildElement("accessor"));
 
-            rv->id = source_elem.ToElement()->Attribute("id");
-            loadFloatArray(rv->float_array, source_elem.FirstChildElement("float_array"));
-            loadAccessor(rv, source_elem.FirstChildElement("technique_common").FirstChildElement("accessor"));
-
-            printf("Loaded Source: %s\n", rv->id.c_str());
-            printf("float_array: %lu elements.\n", rv->float_array.size());
+            printf("Loaded Source: %s\n", source.id.c_str());
+            printf("float_array: %lu elements.\n", source.float_array.size());
             printf("accessor:\n");
-            printf("  count: %u offset: %u stride: %u\n", rv->accessor.count, rv->accessor.offset, rv->accessor.stride);
-            printf("  type: %d\n", rv->accessor.type);
-            if (rv->accessor.type == XYZ) {
-                printf("  offsets: x: %u y: %u z: %u\n", rv->accessor.xyz.x_offset, rv->accessor.xyz.y_offset, rv->accessor.xyz.z_offset);
-            } else if (rv->accessor.type == ST) {
-                printf("  offsets: s: %u t: %u\n", rv->accessor.st.s_offset, rv->accessor.st.t_offset);
-            } else if (rv->accessor.type == RGB) {
-                printf("  offsets: r: %u g: %u b: %u\n", rv->accessor.rgb.r_offset, rv->accessor.rgb.g_offset, rv->accessor.rgb.b_offset);
+            printf("  count: %u offset: %u stride: %u\n", source.accessor.count, source.accessor.offset, source.accessor.stride);
+            printf("  type: %d\n", source.accessor.type);
+            switch (source.accessor.type) {
+            case XYZ: 
+                printf("  offsets: x: %u y: %u z: %u\n", source.accessor.xyz.x_offset, source.accessor.xyz.y_offset, source.accessor.xyz.z_offset);
+                break;
+            case ST:
+                printf("  offsets: s: %u t: %u\n", source.accessor.st.s_offset, source.accessor.st.t_offset);
+                break;
+            case RGB:
+                printf("  offsets: r: %u g: %u b: %u\n", source.accessor.rgb.r_offset, source.accessor.rgb.g_offset, source.accessor.rgb.b_offset);
+                break;
             }
             printf("\n");
-
-            return rv;
-        } else {
-            return NULL;
         }
     }
 
@@ -173,15 +161,15 @@ namespace collada {
         }
     }
 
-    void loadAccessor(Source *source, XMLConstHandle accessor_elem) {
+    void loadAccessor(Accessor &accessor, XMLConstHandle accessor_elem) {
         std::string param_names, param_name;
         XMLConstHandle node(NULL);
         const XMLElement *acc_node = accessor_elem.ToElement();
 
         if (acc_node != NULL) {
-            source->accessor.count = getUintAttribute(acc_node, "count", 0);
-            source->accessor.offset = getUintAttribute(acc_node, "offset", 0);
-            source->accessor.stride = getUintAttribute(acc_node, "stride", 1);
+            accessor.count = getUintAttribute(acc_node, "count", 0);
+            accessor.offset = getUintAttribute(acc_node, "offset", 0);
+            accessor.stride = getUintAttribute(acc_node, "stride", 1);
 
             node = accessor_elem.FirstChildElement("param");
             while (node.ToElement() != NULL) {
@@ -190,50 +178,50 @@ namespace collada {
             }
 
             if (param_names.compare("XYZ") == 0) {
-                source->accessor.type = XYZ;
+                accessor.type = XYZ;
 
                 node = accessor_elem.FirstChildElement("param");
                 while (node.ToElement() != NULL) {
                     param_name = node.ToElement()->Attribute("name");
 
                     if (param_name.compare("X") == 0) {
-                        source->accessor.xyz.x_offset = getUintAttribute(node.ToElement(), "offset", 0);
+                        accessor.xyz.x_offset = getUintAttribute(node.ToElement(), "offset", 0);
                     } else if (param_name.compare("Y") == 0) {
-                        source->accessor.xyz.y_offset = getUintAttribute(node.ToElement(), "offset", 1);
+                        accessor.xyz.y_offset = getUintAttribute(node.ToElement(), "offset", 1);
                     } else if (param_name.compare("Z") == 0) {
-                        source->accessor.xyz.z_offset = getUintAttribute(node.ToElement(), "offset", 2);
+                        accessor.xyz.z_offset = getUintAttribute(node.ToElement(), "offset", 2);
                     }
 
                     node = node.NextSiblingElement("param");
                 }
             } else if (param_names.compare("ST") == 0) {
-                source->accessor.type = ST;
+                accessor.type = ST;
 
                 node = accessor_elem.FirstChildElement("param");
                 while (node.ToElement() != NULL) {
                     param_name = node.ToElement()->Attribute("name");
 
                     if (param_name.compare("S") == 0) {
-                        source->accessor.st.s_offset = getUintAttribute(node.ToElement(), "offset", 0);
+                        accessor.st.s_offset = getUintAttribute(node.ToElement(), "offset", 0);
                     } else if (param_name.compare("T") == 0) {
-                        source->accessor.st.t_offset = getUintAttribute(node.ToElement(), "offset", 1);
+                        accessor.st.t_offset = getUintAttribute(node.ToElement(), "offset", 1);
                     }
 
                     node = node.NextSiblingElement("param");
                 }
             } else if (param_names.compare("RGB") == 0) {
-                source->accessor.type = RGB;
+                accessor.type = RGB;
 
                 node = accessor_elem.FirstChildElement("param");
                 while (node.ToElement() != NULL) {
                     param_name = node.ToElement()->Attribute("name");
 
                     if (param_name.compare("R") == 0) {
-                        source->accessor.rgb.r_offset = getUintAttribute(node.ToElement(), "offset", 0);
+                        accessor.rgb.r_offset = getUintAttribute(node.ToElement(), "offset", 0);
                     } else if (param_name.compare("G") == 0) {
-                        source->accessor.rgb.g_offset = getUintAttribute(node.ToElement(), "offset", 1);
+                        accessor.rgb.g_offset = getUintAttribute(node.ToElement(), "offset", 1);
                     } else if (param_name.compare("B") == 0) {
-                        source->accessor.rgb.b_offset = getUintAttribute(node.ToElement(), "offset", 2);
+                        accessor.rgb.b_offset = getUintAttribute(node.ToElement(), "offset", 2);
                     }
 
                     node = node.NextSiblingElement("param");
