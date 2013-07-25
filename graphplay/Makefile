@@ -3,7 +3,7 @@
 # SOURCES=$(wildcard *.cpp)
 
 CPPFLAGS=-Wall -ggdb
-LDFLAGS=-lGL -lglut -lm -lGLEW -lstdc++
+LDFLAGS=-lstdc++ -Wl,--as-needed
 SOURCES=graphplay.cpp Collada.cpp tinyxml2.cpp
 
 graphplay: $(SOURCES:.cpp=.o)

@@ -1,5 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <algorithm>
 #include <cstdlib>
 #include <sstream>
 
@@ -24,28 +25,26 @@ namespace collada {
     // class MeshGeometry.
     MeshGeometry::MeshGeometry() { }
 
-    // TODO: Implement this correctly.
-    MeshGeometry::MeshGeometry(const MeshGeometry &other) 
-        : sources(other.sources),
-          vertices(other.vertices),
-          inputs(other.inputs) { }
-
-    MeshGeometry::~MeshGeometry() { }
-
     // class Source.
     Source::Source() : accessor(*this), float_array() { }
 
-    // TODO: Implement this correctly.
     Source::Source(const Source &other)
         : id(other.id),
-          accessor(other.accessor),
+          accessor(other.accessor, *this),
           float_array(other.float_array) { }
 
     Source::~Source() { }
 
+    Source &Source::operator=(const Source &other) {
+        id = other.id;
+        accessor.set(other.accessor, *this);
+        float_array = other.float_array;
+        return *this;
+    }
+
     // class Accessor.
     Accessor::Accessor(const Source &src)
-        : source(src),
+        : source(&src),
           count(0),
           offset(0),
           stride(1),
@@ -55,25 +54,44 @@ namespace collada {
         xyz.z_offset = 2;
     }
 
+    Accessor::Accessor(const Accessor &other, const Source &src) {
+        set(other, src);
+    }
+
+    Accessor &Accessor::set(const Accessor &other, const Source &src) {
+        source = &src;
+        count = other.count;
+        offset = other.offset;
+        stride = other.stride;
+        type = other.type;
+        switch (type) {
+        case XYZ: std::copy(other.xyz.offsets, other.xyz.offsets + 3, xyz.offsets); break;
+        case ST:  std::copy(other.st.offsets,  other.st.offsets  + 2, st.offsets);  break;
+        case RGB: std::copy(other.rgb.offsets, other.rgb.offsets + 3, rgb.offsets); break;
+        }
+
+        return *this;
+    }
+
     float Accessor::getValue(accessor_type_t type, unsigned int index, unsigned int pass) const {
         switch (type) {
         case XYZ:
             if (index < 0 || index > 2) {
                 return 0;
             } else {
-                return source.float_array[offset + pass*stride + xyz.offsets[index]];
+                return source->float_array[offset + pass*stride + xyz.offsets[index]];
             }
         case ST:
             if (index < 0 || index > 1) {
                 return 0;
             } else {
-                return source.float_array[offset + pass*stride + st.offsets[index]];
+                return source->float_array[offset + pass*stride + st.offsets[index]];
             }
         case RGB:
             if (index < 0 || index > 2) {
                 return 0;
             } else {
-                return source.float_array[offset + pass*stride + rgb.offsets[index]];
+                return source->float_array[offset + pass*stride + rgb.offsets[index]];
             }
         default:
             return 0;

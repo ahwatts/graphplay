@@ -23,8 +23,13 @@ namespace collada {
     public:
         Accessor(const Source &src);
 
-        const Source &source;
-        unsigned int count, offset, stride;
+        // If we're going to copy an Accessor, it's usually going to
+        // be because we're copying the Source, so we're going to want
+        // to copy the Accessor, but attach a different Source to it.
+        Accessor(const Accessor &other, const Source &source);
+
+        // Assignment but with a different Source.
+        Accessor &set(const Accessor &other, const Source &source);
 
         inline float getX(unsigned int pass) const { return getValue(XYZ, 0, pass); };
         inline float getY(unsigned int pass) const { return getValue(XYZ, 1, pass); };
@@ -37,7 +42,10 @@ namespace collada {
         inline float getG(unsigned int pass) const { return getValue(RGB, 1, pass); };
         inline float getB(unsigned int pass) const { return getValue(RGB, 2, pass); };
 
+        const Source *source;
+        unsigned int count, offset, stride;
         accessor_type_t type;
+
         union {
             union {
                 struct { unsigned int x_offset, y_offset, z_offset; };
@@ -57,6 +65,11 @@ namespace collada {
 
     private:
         float getValue(accessor_type_t type, unsigned int index, unsigned int pass) const;
+
+        // These should not be used, since a copied Accessor needs to
+        // point to a different Source.
+        Accessor(const Accessor &other);
+        Accessor &operator=(const Accessor &other);
     };
 
     // Sources. Only sources with float arrays are supported.
@@ -64,7 +77,7 @@ namespace collada {
     public:
         Source();
         Source(const Source &other);
-        virtual ~Source();
+        ~Source();
 
         Source &operator=(const Source &other);
 
@@ -75,8 +88,10 @@ namespace collada {
 
     class SharedInput {
     public:
+        SharedInput(const Source &source);
+
         unsigned int offset, set;
-        Source *source;
+        const Source &source;
     };
 
     class Vertices {
@@ -89,10 +104,6 @@ namespace collada {
     class MeshGeometry {
     public:
         MeshGeometry();
-        MeshGeometry(const MeshGeometry &other);
-        virtual ~MeshGeometry();
-
-        MeshGeometry &operator=(const MeshGeometry &other);
 
         std::vector<Source> sources;
         Vertices vertices;
