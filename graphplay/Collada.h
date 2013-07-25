@@ -88,10 +88,9 @@ namespace collada {
 
     class SharedInput {
     public:
-        SharedInput(const Source &source);
-
-        unsigned int offset, set;
-        const Source &source;
+        std::string semantic, source_id;
+        int offset, set;
+        const Source *source;
     };
 
     class Vertices {
@@ -105,6 +104,7 @@ namespace collada {
     public:
         MeshGeometry();
 
+        std::string id, name;
         std::vector<Source> sources;
         Vertices vertices;
         std::map<std::string, SharedInput> inputs;

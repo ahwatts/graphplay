@@ -13,14 +13,16 @@ namespace collada {
     // Loader methods.
     void loadMeshGeometry(MeshGeometry &mgeo, XMLConstHandle mesh_elem);
     void loadSource(Source &source, XMLConstHandle source_elem);
-    void loadAccessor(Accessor &acc, XMLConstHandle acc_elem);
-
     void loadFloatArray(std::vector<float> &array, XMLConstHandle farray_elem);
+    void loadAccessor(Accessor &acc, XMLConstHandle acc_elem);
+    void loadVertices(Vertices &vers, XMLConstHandle verts_elem);
+    void loadSharedInput(SharedInput &input, XMLConstHandle input_elem);
 
     // Utility methods.
     void handleError(const char *message);
     void tokenizeStringToFloatArray(std::vector<float> &array, const char *float_string);
-    unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value);
+    int          getIntAttribute( const XMLElement *node, const char *attr, int default_value);
+    unsigned int getUintAttribute(const XMLElement *node, const char *attr, unsigned int default_value);
 
     // class MeshGeometry.
     MeshGeometry::MeshGeometry() { }
@@ -112,6 +114,8 @@ namespace collada {
  
         while (node.ToElement() != NULL && node.FirstChildElement("mesh").ToElement() != NULL) {
             MeshGeometry mg = MeshGeometry();
+            mg.id = node.ToElement()->Attribute("id");
+            mg.name = node.ToElement()->Attribute("name");
             loadMeshGeometry(mg, node.FirstChildElement("mesh"));
             geos.push_back(mg);
             node = node.NextSiblingElement("geometry");
@@ -119,15 +123,21 @@ namespace collada {
     }
 
     void loadMeshGeometry(MeshGeometry &mgeo, XMLConstHandle mesh_elem) {
+        const XMLElement *mesh_node = mesh_elem.ToElement();
         XMLConstHandle node(NULL);
 
-        // Load up the sources.
-        node = mesh_elem.FirstChildElement("source");
-        while (node.ToElement() != NULL) {
-            Source src = Source();
-            loadSource(src, node);
-            mgeo.sources.push_back(src);
-            node = node.NextSiblingElement("source");
+        if (mesh_node != NULL) {
+            // Load up the sources.
+            node = mesh_elem.FirstChildElement("source");
+            while (node.ToElement() != NULL) {
+                Source src = Source();
+                loadSource(src, node);
+                mgeo.sources.push_back(src);
+                node = node.NextSiblingElement("source");
+            }
+
+            // Load up the vertices element.
+            loadVertices(mgeo.vertices, mesh_elem.FirstChildElement("vertices"));
         }
     }
 
@@ -136,24 +146,6 @@ namespace collada {
             source.id = source_elem.ToElement()->Attribute("id");
             loadFloatArray(source.float_array, source_elem.FirstChildElement("float_array"));
             loadAccessor(source.accessor, source_elem.FirstChildElement("technique_common").FirstChildElement("accessor"));
-
-            printf("Loaded Source: %s\n", source.id.c_str());
-            printf("float_array: %lu elements.\n", source.float_array.size());
-            printf("accessor:\n");
-            printf("  count: %u offset: %u stride: %u\n", source.accessor.count, source.accessor.offset, source.accessor.stride);
-            printf("  type: %d\n", source.accessor.type);
-            switch (source.accessor.type) {
-            case XYZ: 
-                printf("  offsets: x: %u y: %u z: %u\n", source.accessor.xyz.x_offset, source.accessor.xyz.y_offset, source.accessor.xyz.z_offset);
-                break;
-            case ST:
-                printf("  offsets: s: %u t: %u\n", source.accessor.st.s_offset, source.accessor.st.t_offset);
-                break;
-            case RGB:
-                printf("  offsets: r: %u g: %u b: %u\n", source.accessor.rgb.r_offset, source.accessor.rgb.g_offset, source.accessor.rgb.b_offset);
-                break;
-            }
-            printf("\n");
         }
     }
 
@@ -248,6 +240,33 @@ namespace collada {
         }
     }
 
+    void loadVertices(Vertices &verts, XMLConstHandle verts_elem) {
+        XMLConstHandle node(NULL);
+
+        if (verts_elem.ToElement() != NULL) {
+            verts.id = verts_elem.ToElement()->Attribute("id");
+
+            node = verts_elem.FirstChildElement("input");
+            while (node.ToElement() != NULL) {
+                SharedInput s;
+                loadSharedInput(s, node);
+                verts.inputs[s.semantic] = s;
+                node = node.NextSiblingElement("input");
+            }
+        }
+    }
+
+    void loadSharedInput(SharedInput &input, XMLConstHandle input_elem) {
+        const XMLElement *node = input_elem.ToElement();
+
+        if (node != NULL) {
+            input.semantic = node->Attribute("semantic");
+            input.source_id = node->Attribute("source");
+            input.offset = getIntAttribute(node, "offset", -1);
+            input.set = getIntAttribute(node, "set", -1);
+        }
+    }
+
     // Utility functions.
     void handleError(const char *message) {
         fprintf(stderr, message);
@@ -266,7 +285,7 @@ namespace collada {
         }
     }
 
-    unsigned int getUintAttribute(const XMLElement *node, const char *attr, int default_value) {
+    unsigned int getUintAttribute(const XMLElement *node, const char *attr, unsigned int default_value) {
         const char *string_value;
         char *next = NULL;
         unsigned int rv;
@@ -282,6 +301,30 @@ namespace collada {
         }
 
         rv = strtoul(string_value, &next, 10);
+
+        if (next == string_value) {
+            return default_value;
+        } else {
+            return rv;
+        }
+    }
+
+    int getIntAttribute(const XMLElement *node, const char *attr, int default_value) {
+        const char *string_value;
+        char *next = NULL;
+        int rv;
+
+        if (node == NULL) {
+            return default_value;
+        }
+
+        string_value = node->Attribute(attr);
+
+        if (string_value == NULL) {
+            return default_value;
+        }
+
+        rv = strtol(string_value, &next, 10);
 
         if (next == string_value) {
             return default_value;

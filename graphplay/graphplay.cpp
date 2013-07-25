@@ -13,6 +13,7 @@
 #include "World.h"
 #include "graphplay.h"*/
 
+#include <cstdio>
 #include "Collada.h"
 
 /*BasicShader *g_shader = NULL;
@@ -59,16 +60,48 @@ int main(int argc, char **argv)
     xmlCleanupParser();
     xmlMemoryDump();*/
 
+    unsigned int i, j;
+    std::map<std::string, collada::SharedInput>::const_iterator k;
+
     std::vector<collada::MeshGeometry> geos;
     collada::loadGeometriesFromFile(geos, "chair.dae");
 
-    /* for (unsigned int i = 0; i < geos.size(); ++i) {
-        collada::Geometry *g = geos[i];
-        if (g != NULL) {
-            delete g;
-            geos[i] = NULL;
+    for (i = 0; i < geos.size(); ++i) {
+        collada::MeshGeometry &g = geos[i];
+
+        printf("Geometry id: %s name: %s\n", g.id.c_str(), g.name.c_str());
+
+        for (j = 0; j < g.sources.size(); ++j) {
+            collada::Source &s = g.sources[j];
+            printf("  Source: %s\n", s.id.c_str());
+            printf("    float_array: %lu elements.\n", s.float_array.size());
+            printf("    Accessor:\n");
+            printf("      count: %u offset: %u stride: %u\n", s.accessor.count, s.accessor.offset, s.accessor.stride);
+            printf("      type: %d\n", s.accessor.type);
+            switch (s.accessor.type) {
+            case collada::XYZ: 
+                printf("      offsets: x: %u y: %u z: %u\n", s.accessor.xyz.x_offset, s.accessor.xyz.y_offset, s.accessor.xyz.z_offset);
+                break;
+            case collada::ST:
+                printf("      offsets: s: %u t: %u\n", s.accessor.st.s_offset, s.accessor.st.t_offset);
+                break;
+            case collada::RGB:
+                printf("      offsets: r: %u g: %u b: %u\n", s.accessor.rgb.r_offset, s.accessor.rgb.g_offset, s.accessor.rgb.b_offset);
+                break;
+            }
         }
-        }*/
+
+        printf("  Vertices id: %s\n", g.vertices.id.c_str());
+        for (k = g.vertices.inputs.begin(); k != g.vertices.inputs.end(); ++k) {
+            const std::string &key = (*k).first;
+            const collada::SharedInput &value = (*k).second;
+            printf("    semantic: %s\n", key.c_str());
+            printf("      Input semantic: %s source_id: %s offset: %i set: %i\n",
+                   value.semantic.c_str(), value.source_id.c_str(), value.offset, value.set);
+        }
+
+        printf("\n");
+    }
 
     return 0;
 }
