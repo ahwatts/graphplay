@@ -99,6 +99,13 @@ namespace collada {
         std::map<std::string, SharedInput> inputs;
     };
 
+    class Polylist {
+    public:
+        unsigned int count;
+        std::map<std::string, SharedInput> inputs;
+        std::vector<unsigned int> vcounts, indices;
+    };
+
     // Geometries and geometry types. Only Mesh geometries are supported.
     class MeshGeometry {
     public:
@@ -108,6 +115,7 @@ namespace collada {
         std::vector<Source> sources;
         Vertices vertices;
         std::map<std::string, SharedInput> inputs;
+        Polylist polys;
     };
 };
 
