@@ -77,7 +77,7 @@ int main(int argc, char **argv)
             const collada::Source &s = (*j).second;
             printf("  Source: %s\n", key.c_str());
             printf("    id: %s\n", s.id.c_str());
-            printf("    float_array: %lu elements.\n", s.float_array.size());
+            printf("    float_array: %u elements.\n", s.float_array.size());
             printf("    Accessor:\n");
             printf("      count: %u offset: %u stride: %u\n", s.accessor.count, s.accessor.offset, s.accessor.stride);
             printf("      type: %d\n", s.accessor.type);
@@ -111,8 +111,8 @@ int main(int argc, char **argv)
             printf("      Input semantic: %s source_id: %s offset: %i set: %i\n",
                    value.semantic.c_str(), value.source_id.c_str(), value.offset, value.set);
         }
-        printf("    vcounts: %lu elements.\n", g.polys.vcounts.size());
-        printf("    indices: %lu elements.\n", g.polys.indices.size());
+        printf("    vcounts: %u elements.\n", g.polys.vcounts.size());
+        printf("    indices: %u elements.\n", g.polys.indices.size());
 
         printf("\n");
     }
