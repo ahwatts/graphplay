@@ -3,6 +3,7 @@
 # SOURCES=$(wildcard *.cpp)
 
 CPPFLAGS=-Wall -ggdb
+CXXFLAGS=
 LDFLAGS=-Wl,--as-needed
 LDLIBS=-lstdc++
 SOURCES=graphplay.cpp Collada.cpp tinyxml2.cpp
@@ -16,11 +17,12 @@ clean:
 	rm -f *.d
 	rm -f *.d.*
 	rm -f graphplay
+	rm -f graphplay.exe
 
 %.d: %.cpp
 	@set -e
 	rm -f $@
-	$(CXX) -M $(CPPFLAGS) $< > $@.tmp
+	$(CXX) -M $(CPPFLAGS) $(CXXFLAGS) $< > $@.tmp
 	sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' < $@.tmp > $@
 	rm -f $@.tmp
 

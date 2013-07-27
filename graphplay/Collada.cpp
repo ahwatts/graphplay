@@ -1,7 +1,5 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <algorithm>
-#include <cstdlib>
 #include <sstream>
 
 #include "Collada.h"
@@ -18,11 +16,103 @@ namespace collada {
     void loadVertices(Vertices &vers, XMLConstHandle verts_elem);
     void loadSharedInput(SharedInput &input, XMLConstHandle input_elem);
 
-    // Utility methods.
+    // Utility stuff.
+
+    // Prints message and exits.
     void handleError(const char *message);
-    void tokenizeStringToFloatArray(std::vector<float> &array, const char *float_string);
-    int          getIntAttribute( const XMLElement *node, const char *attr, int default_value);
-    unsigned int getUintAttribute(const XMLElement *node, const char *attr, unsigned int default_value);
+
+    // Wraps a function pointer to strtol, strtod, etc. Handles the
+    // difference in arity between the floating-point and integral
+    // methods by statically passing a base of 10 to the integral ones.
+    template<class T>
+    class ConversionFunc {
+    public:
+        ConversionFunc(T (*strtointegral)(const char *, char **, int)) : integral(strtointegral), floating(NULL) { }
+        ConversionFunc(T (*strtofloating)(const char *, char **)) : integral(NULL), floating(strtofloating) { }
+
+        T operator()(const char * str, char **nptr) const {
+            if (integral != NULL) {
+                return integral(str, nptr, 10);
+            } else if (floating != NULL) {
+                return floating(str, nptr);
+            } else {
+                return 0;
+            }
+        }
+
+    private:
+        T (*integral)(const char *, char **, int);
+        T (*floating)(const char *, char **);
+    };
+
+    static const ConversionFunc<double> cf_strtod(&strtod);
+    static const ConversionFunc<unsigned long> cf_strtoul(&strtoul);
+    static const ConversionFunc<long> cf_strtol(&strtol);
+
+    // Converts each value in string with convert, storing it to array.
+    template<class T, class IT>
+    class tokenizeStringToArray {
+    public:
+        tokenizeStringToArray(const ConversionFunc<IT> &func) : convert(func) { }
+
+        void operator()(std::vector<T> &array, const char *string) const {
+            char *curr = (char *)string, *next = (char *)string;
+            T this_value = 0;
+
+            this_value = (T)convert(curr, &next);
+
+            while (curr != next) {
+                array.push_back(this_value);
+                curr = next;
+                this_value = (T)convert(curr, &next);
+            }
+        }
+
+    private:
+        const ConversionFunc<IT> &convert;
+    };
+
+    static const tokenizeStringToArray<float, double> tokenizeStringToFloatArray(cf_strtod);
+
+    // Retrives attr from node, converts it with convert. If anything
+    // goes awry (e.g. node is null, node doesn't have attr, the value
+    // isn't numeric), returns default_value.
+    template<class T, class IT>
+    class getNumericAttribute {
+    public:
+        getNumericAttribute(const ConversionFunc<IT> &func) : convert(func) { }
+
+        T operator()(const XMLElement *node, const char *attr, T default_value) const {
+            const char *string_value;
+            char *next = NULL;
+            T rv;
+
+            if (node == NULL) {
+                return default_value;
+            }
+
+            string_value = node->Attribute(attr);
+
+            if (string_value == NULL) {
+                return default_value;
+            }
+
+            rv = (T)convert(string_value, &next);
+
+            if (next == string_value) {
+                return default_value;
+            } else {
+                return rv;
+            }
+        }
+
+    private:
+        const ConversionFunc<IT> &convert;
+    };
+
+    static const getNumericAttribute<unsigned int, unsigned long> getUintAttribute(cf_strtoul);
+    static const getNumericAttribute<int, long> getIntAttribute(cf_strtol);
+    static const getNumericAttribute<float, double> getFloatAttribute(cf_strtod);
 
     // class MeshGeometry.
     MeshGeometry::MeshGeometry() { }
@@ -110,8 +200,8 @@ namespace collada {
         node = XMLConstHandle(&doc)
             .FirstChildElement("COLLADA")
             .FirstChildElement("library_geometries")
-            .FirstChildElement("geometry");             
- 
+            .FirstChildElement("geometry");
+
         while (node.ToElement() != NULL && node.FirstChildElement("mesh").ToElement() != NULL) {
             MeshGeometry mg = MeshGeometry();
             mg.id = node.ToElement()->Attribute("id");
@@ -156,7 +246,7 @@ namespace collada {
 
         fa_node = float_array_elem.ToElement();
         if (fa_node != NULL) {
-            count = atoi(fa_node->Attribute("count"));
+            count = getIntAttribute(fa_node, "count", 0);
         }
 
         text_node = float_array_elem.FirstChild().ToText();
@@ -271,65 +361,5 @@ namespace collada {
     void handleError(const char *message) {
         fprintf(stderr, message);
         exit(1);
-    }
-
-    void tokenizeStringToFloatArray(std::vector<float> &array, const char *floats_string) {
-        char *curr = (char *)floats_string, *next = (char *)floats_string;
-        float this_float = 0;
-
-        this_float = (float)strtod(curr, &next);
-        while (curr != next) {
-            array.push_back(this_float);
-            curr = next;
-            this_float = (float)strtod(curr, &next);
-        }
-    }
-
-    unsigned int getUintAttribute(const XMLElement *node, const char *attr, unsigned int default_value) {
-        const char *string_value;
-        char *next = NULL;
-        unsigned int rv;
-
-        if (node == NULL) {
-            return default_value;
-        }
-
-        string_value = node->Attribute(attr);
-
-        if (string_value == NULL) {
-            return default_value;
-        }
-
-        rv = strtoul(string_value, &next, 10);
-
-        if (next == string_value) {
-            return default_value;
-        } else {
-            return rv;
-        }
-    }
-
-    int getIntAttribute(const XMLElement *node, const char *attr, int default_value) {
-        const char *string_value;
-        char *next = NULL;
-        int rv;
-
-        if (node == NULL) {
-            return default_value;
-        }
-
-        string_value = node->Attribute(attr);
-
-        if (string_value == NULL) {
-            return default_value;
-        }
-
-        rv = strtol(string_value, &next, 10);
-
-        if (next == string_value) {
-            return default_value;
-        } else {
-            return rv;
-        }
     }
 };
