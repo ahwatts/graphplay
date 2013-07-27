@@ -60,7 +60,8 @@ int main(int argc, char **argv)
     xmlCleanupParser();
     xmlMemoryDump();*/
 
-    unsigned int i, j;
+    unsigned int i;
+    std::map<std::string, collada::Source>::const_iterator j;
     std::map<std::string, collada::SharedInput>::const_iterator k;
 
     std::vector<collada::MeshGeometry> geos;
@@ -71,9 +72,11 @@ int main(int argc, char **argv)
 
         printf("Geometry id: %s name: %s\n", g.id.c_str(), g.name.c_str());
 
-        for (j = 0; j < g.sources.size(); ++j) {
-            collada::Source &s = g.sources[j];
-            printf("  Source: %s\n", s.id.c_str());
+        for (j = g.sources.begin(); j != g.sources.end(); ++j) {
+            const std::string &key = (*j).first;
+            const collada::Source &s = (*j).second;
+            printf("  Source: %s\n", key.c_str());
+            printf("    id: %s\n", s.id.c_str());
             printf("    float_array: %lu elements.\n", s.float_array.size());
             printf("    Accessor:\n");
             printf("      count: %u offset: %u stride: %u\n", s.accessor.count, s.accessor.offset, s.accessor.stride);

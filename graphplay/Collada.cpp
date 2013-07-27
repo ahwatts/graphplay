@@ -222,7 +222,7 @@ namespace collada {
             while (node.ToElement() != NULL) {
                 Source src = Source();
                 loadSource(src, node);
-                mgeo.sources.push_back(src);
+                mgeo.sources[src.id] = src;
                 node = node.NextSiblingElement("source");
             }
 

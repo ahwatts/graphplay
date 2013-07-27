@@ -112,10 +112,12 @@ namespace collada {
         MeshGeometry();
 
         std::string id, name;
-        std::vector<Source> sources;
+
         Vertices vertices;
-        std::map<std::string, SharedInput> inputs;
         Polylist polys;
+
+        std::map<std::string, Source> sources;
+        std::map<std::string, SharedInput> inputs;
     };
 };
 
