@@ -15,6 +15,7 @@ namespace collada {
     void loadAccessor(Accessor &acc, XMLConstHandle acc_elem);
     void loadVertices(Vertices &vers, XMLConstHandle verts_elem);
     void loadSharedInput(SharedInput &input, XMLConstHandle input_elem);
+    void loadPolylist(Polylist &polys, XMLConstHandle poly_elem);
 
     // Utility stuff.
 
@@ -73,6 +74,7 @@ namespace collada {
     };
 
     static const tokenizeStringToArray<float, double> tokenizeStringToFloatArray(cf_strtod);
+    static const tokenizeStringToArray<unsigned int, unsigned long> tokenizeStringToUintArray(cf_strtoul);
 
     // Retrives attr from node, converts it with convert. If anything
     // goes awry (e.g. node is null, node doesn't have attr, the value
@@ -228,6 +230,9 @@ namespace collada {
 
             // Load up the vertices element.
             loadVertices(mgeo.vertices, mesh_elem.FirstChildElement("vertices"));
+
+            // Load up the polylist element.
+            loadPolylist(mgeo.polys, mesh_elem.FirstChildElement("polylist"));
         }
     }
 
@@ -354,6 +359,33 @@ namespace collada {
             input.source_id = node->Attribute("source");
             input.offset = getIntAttribute(node, "offset", -1);
             input.set = getIntAttribute(node, "set", -1);
+        }
+    }
+
+    void loadPolylist(Polylist &polys, XMLConstHandle poly_elem) {
+        const XMLElement *pnode = poly_elem.ToElement();
+        XMLConstHandle node(NULL);
+
+        if (pnode != NULL) {
+            polys.count = getUintAttribute(pnode, "count", 0);
+
+            for (node = poly_elem.FirstChildElement("input");
+                 node.ToElement() != NULL;
+                 node = node.NextSiblingElement("input")) {
+                SharedInput s;
+                loadSharedInput(s, node);
+                polys.inputs[s.semantic] = s;
+            }
+
+            const XMLText *vc = poly_elem.FirstChildElement("vcount").FirstChild().ToText();
+            if (vc != NULL) {
+                tokenizeStringToUintArray(polys.vcounts, vc->Value());
+            }
+
+            const XMLText *p = poly_elem.FirstChildElement("p").FirstChild().ToText();
+            if (p != NULL) {
+                tokenizeStringToUintArray(polys.indices, p->Value());
+            }
         }
     }
 

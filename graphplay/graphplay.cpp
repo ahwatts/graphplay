@@ -103,6 +103,17 @@ int main(int argc, char **argv)
                    value.semantic.c_str(), value.source_id.c_str(), value.offset, value.set);
         }
 
+        printf("  Polylist count: %u\n", g.polys.count);
+        for (k = g.polys.inputs.begin(); k != g.polys.inputs.end(); ++k) {
+            const std::string &key = (*k).first;
+            const collada::SharedInput &value = (*k).second;
+            printf("    semantic: %s\n", key.c_str());
+            printf("      Input semantic: %s source_id: %s offset: %i set: %i\n",
+                   value.semantic.c_str(), value.source_id.c_str(), value.offset, value.set);
+        }
+        printf("    vcounts: %lu elements.\n", g.polys.vcounts.size());
+        printf("    indices: %lu elements.\n", g.polys.indices.size());
+
         printf("\n");
     }
 
