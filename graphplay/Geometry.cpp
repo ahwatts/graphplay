@@ -1,13 +1,29 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
 #include "Geometry.h"
 
 namespace graphplay {
     Geometry::Geometry(void)
-    { }
+        : m_positions(),
+          m_normals(),
+          m_colors(),
+          m_tex_coords(),
+          m_indices(),
+          m_data_buffer(0),
+          m_element_buffer(0) { }
 
-    Geometry::~Geometry(void)
-    { }
+    Geometry::Geometry(const collada::MeshGeometry &mesh_geo)
+        : m_positions(),
+          m_normals(),
+          m_colors(),
+          m_tex_coords(),
+          m_indices(),
+          m_data_buffer(0),
+          m_element_buffer(0) {
 
-    void Geometry::generateBuffers() {
+    }
+
+    /* void Geometry::generateBuffers() {
         GLuint buffers[2];
         GLsizeiptr vertex_size = m_positions.size() * 3 * sizeof(float);
         GLsizeiptr color_size = m_colors.size() * 4 * sizeof(float);
@@ -40,5 +56,5 @@ namespace graphplay {
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
         glDrawElements(GL_TRIANGLES, m_indices.size() / 2, GL_UNSIGNED_INT, 0);
-    }
+        }*/
 };

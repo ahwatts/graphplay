@@ -101,16 +101,17 @@ namespace collada {
 
     class Polylist {
     public:
+        unsigned int vertexCount() const;
+
         unsigned int count;
         std::map<std::string, SharedInput> inputs;
         std::vector<unsigned int> vcounts, indices;
     };
 
-    // Geometries and geometry types. Only Mesh geometries are supported.
+    class VertexIterator;
+
     class MeshGeometry {
     public:
-        MeshGeometry();
-
         std::string id, name;
 
         Vertices vertices;
@@ -118,6 +119,33 @@ namespace collada {
 
         std::map<std::string, Source> sources;
         std::map<std::string, SharedInput> inputs;
+
+        // iterator BS.
+        friend class VertexIterator;
+        typedef VertexIterator iterator;
+        typedef ptrdiff_t difference_type;
+        typedef size_t size_type;
+        typedef std::map<std::string, std::vector<float> > value_type;
+        typedef value_type* pointer;
+        typedef value_type& reference;
+
+        iterator begin() const;
+        iterator end() const;
+    };
+
+    class VertexIterator {
+    public:
+        VertexIterator(const MeshGeometry &geo, unsigned int init_loc);
+
+        bool operator==(const VertexIterator &other) const;
+        bool operator!=(const VertexIterator &other) const;
+        std::map<std::string, std::vector<float> > operator*() const;
+        VertexIterator &operator++();   // prefix
+        VertexIterator operator++(int); // postfix
+
+    private:
+        const MeshGeometry &geo;
+        unsigned int location;
     };
 };
 

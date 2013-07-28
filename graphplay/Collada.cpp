@@ -1,5 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <numeric>
 #include <sstream>
 
 #include "Collada.h"
@@ -116,8 +117,41 @@ namespace collada {
     static const getNumericAttribute<int, long> getIntAttribute(cf_strtol);
     static const getNumericAttribute<float, double> getFloatAttribute(cf_strtod);
 
-    // class MeshGeometry.
-    MeshGeometry::MeshGeometry() { }
+    // MeshGeometry and its iterator.
+    MeshGeometry::iterator MeshGeometry::begin() const {
+        return MeshGeometry::iterator(*this, 0);
+    }
+
+    MeshGeometry::iterator MeshGeometry::end() const {
+        return MeshGeometry::iterator(*this, polys.vertexCount());
+    }
+
+    VertexIterator::VertexIterator(const MeshGeometry &container, unsigned int init_loc)
+        : geo(container), location(init_loc) { }
+
+    bool VertexIterator::operator==(const VertexIterator &other) const {
+        return !(*this != other);
+    }
+
+    bool VertexIterator::operator!=(const VertexIterator &other) const {
+        return (this != &other) || (location != other.location);
+    }
+
+    std::map<std::string, std::vector<float> > VertexIterator::operator*() const {
+        std::map<std::string, std::vector<float> > rv;
+        return rv;
+    }
+
+    VertexIterator &VertexIterator::operator++() {
+        ++location;
+        return *this;
+    }
+
+    VertexIterator VertexIterator::operator++(int) {
+        VertexIterator clone(*this);
+        ++location;
+        return clone;
+    }
 
     // class Source.
     Source::Source() : accessor(*this), float_array() { }
@@ -190,6 +224,11 @@ namespace collada {
         default:
             return 0;
         }
+    }
+
+    unsigned int Polylist::vertexCount() const {
+        return std::accumulate<std::vector<unsigned int>::const_iterator, unsigned int>
+            (vcounts.begin(), vcounts.end(), 0);
     }
 
     // Static functions.
