@@ -1,35 +1,37 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _BODY_H_
-#define _BODY_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_BODY_H_
+#define _GRAPHPLAY_GRAPHPLAY_BODY_H_
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-class Body
-{
-public:
-    Body();
-    virtual ~Body();
+namespace graphplay {
+    class Body
+    {
+    public:
+        Body();
+        virtual ~Body();
 
-    // The position of the object in "world" coordinates.
-    glm::vec3 mw_pos;
+        // The position of the object in "world" coordinates.
+        glm::vec3 mw_pos;
 
-    // The velocity of the object in "world" coordinates, as a unit vector, 
-    // and a float for its magnitude.
-    glm::vec3 mw_vel_dir;
-    float m_vel_mag;
+        // The velocity of the object in "world" coordinates, as a unit vector, 
+        // and a float for its magnitude.
+        glm::vec3 mw_vel_dir;
+        float m_vel_mag;
 
-    // Angular quantities: The angular position, angular velocity, and the
-    // axis around which it's rotating.
-    float m_ang_pos, m_ang_vel;
-    glm::vec3 mw_ang_vel_dir;
+        // Angular quantities: The angular position, angular velocity, and the
+        // axis around which it's rotating.
+        float m_ang_pos, m_ang_vel;
+        glm::vec3 mw_ang_vel_dir;
 
-    virtual void render(const glm::mat4 &projection, const glm::mat4 &model_view, int flags);
-    void update(float dt);
+        virtual void render(const glm::mat4 &projection, const glm::mat4 &model_view, int flags);
+        void update(float dt);
 
-protected:
-    glm::mat4 baseModelView(const glm::mat4 &wld_model_view);
+    protected:
+        glm::mat4 baseModelView(const glm::mat4 &wld_model_view);
+    };
 };
 
 #endif
