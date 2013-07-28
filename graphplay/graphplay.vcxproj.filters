@@ -33,9 +33,6 @@
     <ClCompile Include="SphereBody.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DaeFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SphereBody.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DaeFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">

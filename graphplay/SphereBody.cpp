@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "BasicShader.h"
-#include "DaeFile.h"
 #include "Mesh.h"
 #include "SphereBody.h"
 
@@ -13,7 +12,7 @@ SphereBody::SphereBody(BasicShader &shader)
       m_color_buffer(0),
       m_mesh()
 {
-    const AttrInfo *pos_info;
+    /*const AttrInfo *pos_info;
     float *color_buffer;
     const float *vsoup;
 
@@ -41,7 +40,7 @@ SphereBody::SphereBody(BasicShader &shader)
         color_buffer,
         GL_STATIC_DRAW);
 
-    delete [] color_buffer;
+    delete [] color_buffer;*/
 }
 
 SphereBody::~SphereBody(void)
