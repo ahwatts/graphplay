@@ -14,7 +14,9 @@
 #include "graphplay.h"*/
 
 #include <cstdio>
+
 #include "Collada.h"
+#include "Scene.h"
 
 /*BasicShader *g_shader = NULL;
 World *g_world = NULL;

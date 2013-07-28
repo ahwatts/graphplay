@@ -6,9 +6,11 @@
 #define BUFFER_OFFSET_BYTES(n) ((GLvoid *)n)
 
 #include "BasicShader.h"
-#include "World.h"
+#include "Scene.h"
 
-extern BasicShader *g_shader;
-extern World *g_world;
+namespace graphplay {
+    extern BasicShader *g_shader;
+    extern Scene *g_world;
+};
 
 #endif
