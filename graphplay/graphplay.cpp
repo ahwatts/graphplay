@@ -13,7 +13,7 @@
 #include "World.h"
 #include "graphplay.h"*/
 
-#include <cstdio>
+#include <iostream>
 
 #include "Collada.h"
 #include "Scene.h"
@@ -72,53 +72,75 @@ int main(int argc, char **argv)
     for (i = 0; i < geos.size(); ++i) {
         collada::MeshGeometry &g = geos[i];
 
-        printf("Geometry id: %s name: %s\n", g.id.c_str(), g.name.c_str());
+        std::cout << "Geometry id: " << g.id << " name: " << g.name << std::endl;
 
         for (j = g.sources.begin(); j != g.sources.end(); ++j) {
             const std::string &key = (*j).first;
             const collada::Source &s = (*j).second;
-            printf("  Source: %s\n", key.c_str());
-            printf("    id: %s\n", s.id.c_str());
-            printf("    float_array: %u elements.\n", s.float_array.size());
-            printf("    Accessor:\n");
-            printf("      count: %u offset: %u stride: %u\n", s.accessor.count, s.accessor.offset, s.accessor.stride);
-            printf("      type: %d\n", s.accessor.type);
+            std::cout << "  Source: " << key << std::endl;
+            std::cout << "    id: " << s.id << std::endl;
+            std::cout << "    float_array: " << s.float_array.size() << " elements." << std::endl;
+            std::cout << "    Accessor:" << std::endl;
+            std::cout << "     "
+                      << " count: " << s.accessor.count
+                      << " offset: " << s.accessor.offset
+                      << " stride: " << s.accessor.stride
+                      << std::endl;
+            std::cout << "      type: " << s.accessor.type << std::endl;
+
             switch (s.accessor.type) {
             case collada::XYZ: 
-                printf("      offsets: x: %u y: %u z: %u\n", s.accessor.xyz.x_offset, s.accessor.xyz.y_offset, s.accessor.xyz.z_offset);
+                std::cout << "      offsets:"
+                          << " x: " << s.accessor.xyz.x_offset
+                          << " y: " << s.accessor.xyz.y_offset
+                          << " z: " << s.accessor.xyz.z_offset
+                          << std::endl;
                 break;
             case collada::ST:
-                printf("      offsets: s: %u t: %u\n", s.accessor.st.s_offset, s.accessor.st.t_offset);
+                std::cout << "      offsets:"
+                          << " s: " << s.accessor.st.s_offset
+                          << " t: " << s.accessor.st.t_offset
+                          << std::endl;
                 break;
             case collada::RGB:
-                printf("      offsets: r: %u g: %u b: %u\n", s.accessor.rgb.r_offset, s.accessor.rgb.g_offset, s.accessor.rgb.b_offset);
+                std::cout << "      offsets:"
+                          << " r: " << s.accessor.rgb.r_offset
+                          << " g: " << s.accessor.rgb.g_offset
+                          << " b: " << s.accessor.rgb.b_offset
+                          << std::endl;
                 break;
             }
         }
 
-        printf("  Vertices id: %s\n", g.vertices.id.c_str());
+        std::cout << "  Vertices id: " << g.vertices.id << std::endl;
         for (k = g.vertices.inputs.begin(); k != g.vertices.inputs.end(); ++k) {
             const std::string &key = (*k).first;
             const collada::SharedInput &value = (*k).second;
-            printf("    semantic: %s\n", key.c_str());
-            printf("      Input semantic: %s source_id: %s offset: %i set: %i\n",
-                   value.semantic.c_str(), value.source_id.c_str(), value.offset, value.set);
+            std::cout << "    semantic: " << key << std::endl;
+            std::cout << "      Input semantic: " << value.semantic
+                      << " source_id: " << value.source_id
+                      << " offset: " << value.offset
+                      << " set: " << value.set
+                      << std::endl;
         }
 
-        printf("  Polylist count: %u\n", g.polys.count);
+        std::cout << "  Polylist count: " << g.polys.count << std::endl;
         for (k = g.polys.inputs.begin(); k != g.polys.inputs.end(); ++k) {
             const std::string &key = (*k).first;
             const collada::SharedInput &value = (*k).second;
-            printf("    semantic: %s\n", key.c_str());
-            printf("      Input semantic: %s source_id: %s offset: %i set: %i\n",
-                   value.semantic.c_str(), value.source_id.c_str(), value.offset, value.set);
+            std::cout << "    semantic: " << key << std::endl;
+            std::cout << "      Input semantic: " << value.semantic
+                      << " source_id: " << value.source_id
+                      << " offset: " << value.offset
+                      << " set: " << value.set
+                      << std::endl;
         }
-        printf("    vcounts: %u elements.\n", g.polys.vcounts.size());
-        printf("    indices: %u elements.\n", g.polys.indices.size());
+        std::cout << "    vcounts: " << g.polys.vcounts.size() << " elements." << std::endl;
+        std::cout << "    indices: " << g.polys.indices.size() << " elements." << std::endl;
 
         collada::MeshGeometry::iterator m = g.begin();
         for (int n = 0; n < 10; ++n) {
-            printf("m[%i] = 0x%p\n", n, &(*m));
+            *m;
             ++m;
         }
 

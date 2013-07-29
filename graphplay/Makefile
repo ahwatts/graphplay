@@ -1,12 +1,8 @@
-# CPPFLAGS=-Wall -ggdb $(shell xml2-config --cflags)
-# LDFLAGS=-lGL -lglut -lm -lGLEW -lstdc++ $(shell xml2-config --libs)
-# SOURCES=$(wildcard *.cpp)
-
 CPPFLAGS=-Wall -ggdb
 CXXFLAGS=
 LDFLAGS=-Wl,--as-needed
-LDLIBS=-lstdc++
-SOURCES=graphplay.cpp Collada.cpp tinyxml2.cpp
+LDLIBS=-lGL -lglut -lm -lGLEW -lstdc++
+SOURCES=$(wildcard *.cpp)
 
 graphplay: $(SOURCES:.cpp=.o)
 

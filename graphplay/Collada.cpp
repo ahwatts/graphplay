@@ -1,5 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <iostream>
 #include <numeric>
 #include <sstream>
 
@@ -148,13 +149,16 @@ namespace collada {
 
         unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
         unsigned int offset = location * nattrs;
-        printf("location = %u offset = %u nattrs = %u #verts = %u #indices = %u\n",
-               location, offset, nattrs, geo.polys.indices.size(), geo.polys.vertexCount());
 
-        std::map<std::string, std::vector<SharedInput> >::iterator i;
+        std::cout << "location = " << location << " offset = " << offset
+                  << " nattrs = " << nattrs << " #verts = " << geo.polys.vertexCount()
+                  << " #indices = " << geo.polys.indices.size()
+                  << std::endl;
+
+        std::map<std::string, SharedInput>::const_iterator i;
         for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
-            std::string &semantic = i->first;
-            SharedInput &input = i->second;
+            const std::string &semantic = i->first;
+            std::cout << "location = " << location << " semantic = " << semantic << std::endl;
         }
 
         return rv;

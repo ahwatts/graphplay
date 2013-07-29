@@ -127,8 +127,8 @@ namespace collada {
         // iterator BS.
         friend class VertexIterator;
         typedef VertexIterator iterator;
-        typedef ptrdiff_t difference_type;
-        typedef size_t size_type;
+        typedef std::ptrdiff_t difference_type;
+        typedef std::size_t size_type;
         typedef std::map<std::string, std::vector<float> > value_type;
         typedef value_type* pointer;
         typedef value_type& reference;
@@ -143,7 +143,7 @@ namespace collada {
 
         bool operator==(const VertexIterator &other) const;
         bool operator!=(const VertexIterator &other) const;
-        std::map<std::string, std::vector<float> > operator*() const;
+        MeshGeometry::value_type operator*() const;
         VertexIterator &operator++();   // prefix
         VertexIterator operator++(int); // postfix
 
