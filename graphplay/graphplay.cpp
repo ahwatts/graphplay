@@ -116,6 +116,12 @@ int main(int argc, char **argv)
         printf("    vcounts: %u elements.\n", g.polys.vcounts.size());
         printf("    indices: %u elements.\n", g.polys.indices.size());
 
+        collada::MeshGeometry::iterator m = g.begin();
+        for (int n = 0; n < 10; ++n) {
+            printf("m[%i] = 0x%p\n", n, &(*m));
+            ++m;
+        }
+
         printf("\n");
     }
 

@@ -117,7 +117,11 @@ namespace collada {
     static const getNumericAttribute<int, long> getIntAttribute(cf_strtol);
     static const getNumericAttribute<float, double> getFloatAttribute(cf_strtod);
 
-    // MeshGeometry and its iterator.
+    // class MeshGeometry.
+    void MeshGeometry::resolveSources() {
+        // ...
+    }
+
     MeshGeometry::iterator MeshGeometry::begin() const {
         return MeshGeometry::iterator(*this, 0);
     }
@@ -126,6 +130,8 @@ namespace collada {
         return MeshGeometry::iterator(*this, polys.vertexCount());
     }
 
+    // class VertexIterator, which iterates over the vertices in a
+    // MeshGeometry.
     VertexIterator::VertexIterator(const MeshGeometry &container, unsigned int init_loc)
         : geo(container), location(init_loc) { }
 
@@ -139,15 +145,29 @@ namespace collada {
 
     std::map<std::string, std::vector<float> > VertexIterator::operator*() const {
         std::map<std::string, std::vector<float> > rv;
+
+        unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
+        unsigned int offset = location * nattrs;
+        printf("location = %u offset = %u nattrs = %u #verts = %u #indices = %u\n",
+               location, offset, nattrs, geo.polys.indices.size(), geo.polys.vertexCount());
+
+        std::map<std::string, std::vector<SharedInput> >::iterator i;
+        for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
+            std::string &semantic = i->first;
+            SharedInput &input = i->second;
+        }
+
         return rv;
     }
 
     VertexIterator &VertexIterator::operator++() {
+        // pre-increment.
         ++location;
         return *this;
     }
 
     VertexIterator VertexIterator::operator++(int) {
+        // post-increment.
         VertexIterator clone(*this);
         ++location;
         return clone;
@@ -226,6 +246,10 @@ namespace collada {
         }
     }
 
+    // class SharedInput.
+    SharedInput::SharedInput() : semantic(), source_id(), offset(0), set(-1), source(NULL) { }
+
+    // class PolyList.
     unsigned int Polylist::vertexCount() const {
         return std::accumulate<std::vector<unsigned int>::const_iterator, unsigned int>
             (vcounts.begin(), vcounts.end(), 0);
