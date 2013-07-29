@@ -122,7 +122,15 @@ namespace collada {
 
     // class MeshGeometry.
     void MeshGeometry::resolveSources() {
-        // ...
+        for (Polylist::inputs_t::iterator i = polys.inputs.begin(); i != polys.inputs.end(); ++i) {
+            SharedInput &in = i->second;
+
+            // Strip off the leading #.
+            sources_t::iterator s = sources.find(in.source_id.substr(1));
+            if (s != sources.end()) {
+                in.source = &s->second;
+            }
+        }
     }
 
     MeshGeometry::iterator MeshGeometry::begin() const {
@@ -149,19 +157,19 @@ namespace collada {
     MeshGeometry::value_type VertexIterator::operator*() const {
         MeshGeometry::value_type rv;
 
-        unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
-        unsigned int offset = location * nattrs;
+        // unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
+        // unsigned int offset = location * nattrs;
 
-        std::cout << "location = " << location << " offset = " << offset
-                  << " nattrs = " << nattrs << " #verts = " << geo.polys.vertexCount()
-                  << " #indices = " << geo.polys.indices.size()
-                  << std::endl;
+        // std::cout << "location = " << location << " offset = " << offset
+        //           << " nattrs = " << nattrs << " #verts = " << geo.polys.vertexCount()
+        //           << " #indices = " << geo.polys.indices.size()
+        //           << std::endl;
 
-        MeshGeometry::inputs_t::const_iterator i;
-        for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
-            const std::string &semantic = i->first;
-            std::cout << "location = " << location << " semantic = " << semantic << std::endl;
-        }
+        // MeshGeometry::inputs_t::const_iterator i;
+        // for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
+        //     const std::string &semantic = i->first;
+        //     std::cout << "location = " << location << " semantic = " << semantic << std::endl;
+        // }
 
         return rv;
     }
@@ -303,6 +311,8 @@ namespace collada {
             // Load up the polylist element.
             loadPolylist(mgeo.polys, mesh_elem.FirstChildElement("polylist"));
         }
+
+        mgeo.resolveSources();
     }
 
     void loadSource(Source &source, XMLConstHandle source_elem) {

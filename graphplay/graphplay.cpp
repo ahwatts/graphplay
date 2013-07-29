@@ -121,15 +121,19 @@ int main(int argc, char **argv)
         }
 
         std::cout << "  Polylist count: " << g.polys.count << std::endl;
-        for (collada::MeshGeometry::inputs_t::const_iterator k = g.polys.inputs.begin(); k != g.polys.inputs.end(); ++k) {
+        for (collada::Polylist::inputs_t::const_iterator k = g.polys.inputs.begin(); k != g.polys.inputs.end(); ++k) {
             const std::string &key = (*k).first;
             const collada::SharedInput &value = (*k).second;
             std::cout << "    semantic: " << key << std::endl;
             std::cout << "      Input semantic: " << value.semantic
                       << " source_id: " << value.source_id
                       << " offset: " << value.offset
-                      << " set: " << value.set
-                      << std::endl;
+                      << " set: " << value.set;
+            if (value.source == NULL) {
+                std::cout << " source: NULL" << std::endl;
+            } else {
+                std::cout << " source: " << value.source->id << std::endl;
+            }
         }
         std::cout << "    vcounts: " << g.polys.vcounts.size() << " elements." << std::endl;
         std::cout << "    indices: " << g.polys.indices.size() << " elements." << std::endl;

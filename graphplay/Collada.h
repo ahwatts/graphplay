@@ -122,7 +122,6 @@ namespace collada {
         void resolveSources();
 
         typedef std::map<std::string, Source> sources_t;
-        typedef std::map<std::string, SharedInput> inputs_t;
 
         std::string id, name;
 
@@ -130,7 +129,6 @@ namespace collada {
         Polylist polys;
 
         sources_t sources;
-        inputs_t inputs;
 
         // iterator BS.
         friend class VertexIterator;
