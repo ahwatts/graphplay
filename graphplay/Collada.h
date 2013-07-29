@@ -97,17 +97,22 @@ namespace collada {
 
     class Vertices {
     public:
+        typedef std::map<std::string, SharedInput> inputs_t;
+
         std::string id;
-        std::map<std::string, SharedInput> inputs;
+        inputs_t inputs;
     };
 
     class Polylist {
     public:
         unsigned int vertexCount() const;
 
+        typedef std::map<std::string, SharedInput> inputs_t;
+        typedef std::vector<unsigned int> uint_vec_t;
+
         unsigned int count;
-        std::map<std::string, SharedInput> inputs;
-        std::vector<unsigned int> vcounts, indices;
+        inputs_t inputs;
+        uint_vec_t vcounts, indices;
     };
 
     class VertexIterator;
@@ -116,13 +121,16 @@ namespace collada {
     public:
         void resolveSources();
 
+        typedef std::map<std::string, Source> sources_t;
+        typedef std::map<std::string, SharedInput> inputs_t;
+
         std::string id, name;
 
         Vertices vertices;
         Polylist polys;
 
-        std::map<std::string, Source> sources;
-        std::map<std::string, SharedInput> inputs;
+        sources_t sources;
+        inputs_t inputs;
 
         // iterator BS.
         friend class VertexIterator;

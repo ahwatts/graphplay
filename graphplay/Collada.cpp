@@ -10,10 +10,12 @@
 namespace collada {
     using namespace tinyxml2;
 
+    typedef std::vector<float> float_vec_t;
+
     // Loader methods.
     void loadMeshGeometry(MeshGeometry &mgeo, XMLConstHandle mesh_elem);
     void loadSource(Source &source, XMLConstHandle source_elem);
-    void loadFloatArray(std::vector<float> &array, XMLConstHandle farray_elem);
+    void loadFloatArray(float_vec_t &array, XMLConstHandle farray_elem);
     void loadAccessor(Accessor &acc, XMLConstHandle acc_elem);
     void loadVertices(Vertices &vers, XMLConstHandle verts_elem);
     void loadSharedInput(SharedInput &input, XMLConstHandle input_elem);
@@ -144,8 +146,8 @@ namespace collada {
         return (this != &other) || (location != other.location);
     }
 
-    std::map<std::string, std::vector<float> > VertexIterator::operator*() const {
-        std::map<std::string, std::vector<float> > rv;
+    MeshGeometry::value_type VertexIterator::operator*() const {
+        MeshGeometry::value_type rv;
 
         unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
         unsigned int offset = location * nattrs;
@@ -155,7 +157,7 @@ namespace collada {
                   << " #indices = " << geo.polys.indices.size()
                   << std::endl;
 
-        std::map<std::string, SharedInput>::const_iterator i;
+        MeshGeometry::inputs_t::const_iterator i;
         for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
             const std::string &semantic = i->first;
             std::cout << "location = " << location << " semantic = " << semantic << std::endl;
@@ -255,7 +257,7 @@ namespace collada {
 
     // class PolyList.
     unsigned int Polylist::vertexCount() const {
-        return std::accumulate<std::vector<unsigned int>::const_iterator, unsigned int>
+        return std::accumulate<uint_vec_t::const_iterator, unsigned int>
             (vcounts.begin(), vcounts.end(), 0);
     }
 
@@ -311,7 +313,7 @@ namespace collada {
         }
     }
 
-    void loadFloatArray(std::vector<float> &array, XMLConstHandle float_array_elem) {
+    void loadFloatArray(float_vec_t &array, XMLConstHandle float_array_elem) {
         int count = -1;
         const XMLElement *fa_node;
         const XMLText *text_node;

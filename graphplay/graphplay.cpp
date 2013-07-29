@@ -62,19 +62,15 @@ int main(int argc, char **argv)
     xmlCleanupParser();
     xmlMemoryDump();*/
 
-    unsigned int i;
-    std::map<std::string, collada::Source>::const_iterator j;
-    std::map<std::string, collada::SharedInput>::const_iterator k;
-
     std::vector<collada::MeshGeometry> geos;
     collada::loadGeometriesFromFile(geos, "chair.dae");
 
-    for (i = 0; i < geos.size(); ++i) {
+    for (unsigned int i = 0; i < geos.size(); ++i) {
         collada::MeshGeometry &g = geos[i];
 
         std::cout << "Geometry id: " << g.id << " name: " << g.name << std::endl;
 
-        for (j = g.sources.begin(); j != g.sources.end(); ++j) {
+        for (collada::MeshGeometry::sources_t::const_iterator j = g.sources.begin(); j != g.sources.end(); ++j) {
             const std::string &key = (*j).first;
             const collada::Source &s = (*j).second;
             std::cout << "  Source: " << key << std::endl;
@@ -113,7 +109,7 @@ int main(int argc, char **argv)
         }
 
         std::cout << "  Vertices id: " << g.vertices.id << std::endl;
-        for (k = g.vertices.inputs.begin(); k != g.vertices.inputs.end(); ++k) {
+        for (collada::Vertices::inputs_t::const_iterator k = g.vertices.inputs.begin(); k != g.vertices.inputs.end(); ++k) {
             const std::string &key = (*k).first;
             const collada::SharedInput &value = (*k).second;
             std::cout << "    semantic: " << key << std::endl;
@@ -125,7 +121,7 @@ int main(int argc, char **argv)
         }
 
         std::cout << "  Polylist count: " << g.polys.count << std::endl;
-        for (k = g.polys.inputs.begin(); k != g.polys.inputs.end(); ++k) {
+        for (collada::MeshGeometry::inputs_t::const_iterator k = g.polys.inputs.begin(); k != g.polys.inputs.end(); ++k) {
             const std::string &key = (*k).first;
             const collada::SharedInput &value = (*k).second;
             std::cout << "    semantic: " << key << std::endl;
