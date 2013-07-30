@@ -144,17 +144,30 @@ namespace collada {
 
     class VertexIterator {
     public:
+        VertexIterator(const VertexIterator &other);
         VertexIterator(const MeshGeometry &geo, unsigned int init_loc);
+        ~VertexIterator(); 
 
         bool operator==(const VertexIterator &other) const;
         bool operator!=(const VertexIterator &other) const;
-        MeshGeometry::value_type operator*() const;
+        MeshGeometry::value_type operator*();
         VertexIterator &operator++();   // prefix
         VertexIterator operator++(int); // postfix
 
     private:
+        typedef std::map<std::string, const Source *> source_cache_t;
+
+        // You can't create a VertexIterator without a MeshGeometry,
+        // nor can you assign one, since geo is a reference and can't
+        // be re-assigned.
+        VertexIterator();
+        VertexIterator &operator=(const VertexIterator &other);
+
+        const Source *getSource(const std::string &id);
+
         const MeshGeometry &geo;
         unsigned int location;
+        source_cache_t source_cache;
     };
 };
 

@@ -144,7 +144,12 @@ namespace collada {
     // class VertexIterator, which iterates over the vertices in a
     // MeshGeometry.
     VertexIterator::VertexIterator(const MeshGeometry &container, unsigned int init_loc)
-        : geo(container), location(init_loc) { }
+        : geo(container), location(init_loc), source_cache() { }
+
+    VertexIterator::VertexIterator(const VertexIterator &other)
+        : geo(other.geo), location(other.location), source_cache() { }
+
+    VertexIterator::~VertexIterator() { }
 
     bool VertexIterator::operator==(const VertexIterator &other) const {
         return !(*this != other);
@@ -154,27 +159,40 @@ namespace collada {
         return (this != &other) || (location != other.location);
     }
 
-    MeshGeometry::value_type VertexIterator::operator*() const {
+    const Source *VertexIterator::getSource(const std::string &id) {
+        source_cache_t::const_iterator s = source_cache.find(id);
+        const Source *source = NULL;
+
+        if (s != source_cache.end()) {
+            source = s->second;
+        } else {
+            source = geo.getSource(id);
+            if (source != NULL) {
+                source_cache[id] = source;
+            }
+        }
+
+        return source;
+    }
+
+    MeshGeometry::value_type VertexIterator::operator*() {
         MeshGeometry::value_type rv;
 
         unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
         unsigned int offset = location * nattrs;
 
-        std::cout << "location = " << location << " offset = " << offset
-                << " nattrs = " << nattrs << " #verts = " << geo.polys.vertexCount()
-                << " #indices = " << geo.polys.indices.size()
-                << std::endl;
-
         Polylist::inputs_t::const_iterator i;
         for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
             const std::string &semantic = i->first;
             const SharedInput &input = i->second;
-            const Source *source = geo.getSource(input.source_id);
-            std::cout << "location = " << location << " semantic = " << semantic;
-            if (source != NULL) {
-                std::cout << " source id = " << source->id;
+            const Source *source = getSource(input.source_id);
+
+            std::cout << "location = " << location
+                      << " semantic = " << semantic;
+            if (source == NULL) {
+                std::cout << " source = NULL";
             } else {
-                std::cout << " source is NULL.";
+                std::cout << " source = " << source->id;
             }
             std::cout << std::endl;
         }
