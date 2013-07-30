@@ -94,9 +94,16 @@ namespace collada {
         int offset, set;
     };
 
+    class UnsharedInput {
+    public:
+        UnsharedInput();
+
+        std::string semantic, source_id;
+    };
+
     class Vertices {
     public:
-        typedef std::map<std::string, SharedInput> inputs_t;
+        typedef std::map<std::string, UnsharedInput> inputs_t;
 
         std::string id;
         inputs_t inputs;

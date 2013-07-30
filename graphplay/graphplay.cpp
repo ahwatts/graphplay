@@ -110,12 +110,10 @@ int main(int argc, char **argv)
         std::cout << "  Vertices id: " << g.vertices.id << std::endl;
         for (collada::Vertices::inputs_t::const_iterator k = g.vertices.inputs.begin(); k != g.vertices.inputs.end(); ++k) {
             const std::string &key = (*k).first;
-            const collada::SharedInput &value = (*k).second;
+            const collada::UnsharedInput &value = (*k).second;
             std::cout << "    semantic: " << key << std::endl;
             std::cout << "      Input semantic: " << value.semantic
                       << " source_id: " << value.source_id
-                      << " offset: " << value.offset
-                      << " set: " << value.set
                       << std::endl;
         }
 

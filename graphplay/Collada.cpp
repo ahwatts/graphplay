@@ -19,6 +19,7 @@ namespace collada {
     void loadAccessor(Accessor &acc, XMLConstHandle acc_elem);
     void loadVertices(Vertices &vers, XMLConstHandle verts_elem);
     void loadSharedInput(SharedInput &input, XMLConstHandle input_elem);
+    void loadUnsharedInput(UnsharedInput &input, XMLConstHandle input_elem);
     void loadPolylist(Polylist &polys, XMLConstHandle poly_elem);
 
     // Utility stuff.
@@ -178,8 +179,8 @@ namespace collada {
     MeshGeometry::value_type VertexIterator::operator*() {
         MeshGeometry::value_type rv;
 
-        unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
-        unsigned int offset = location * nattrs;
+        // unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
+        // unsigned int offset = location * nattrs;
 
         Polylist::inputs_t::const_iterator i;
         for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
@@ -288,6 +289,9 @@ namespace collada {
 
     // class SharedInput.
     SharedInput::SharedInput() : semantic(), source_id(), offset(0), set(-1) { }
+
+    // class UnsharedInput.
+    UnsharedInput::UnsharedInput() : semantic(), source_id() { }
 
     // class PolyList.
     unsigned int Polylist::vertexCount() const {
@@ -446,8 +450,8 @@ namespace collada {
 
             node = verts_elem.FirstChildElement("input");
             while (node.ToElement() != NULL) {
-                SharedInput s;
-                loadSharedInput(s, node);
+                UnsharedInput s;
+                loadUnsharedInput(s, node);
                 verts.inputs[s.semantic] = s;
                 node = node.NextSiblingElement("input");
             }
@@ -462,6 +466,15 @@ namespace collada {
             input.source_id = node->Attribute("source");
             input.offset = getIntAttribute(node, "offset", -1);
             input.set = getIntAttribute(node, "set", -1);
+        }
+    }
+
+    void loadUnsharedInput(UnsharedInput &input, XMLConstHandle input_elem) {
+        const XMLElement *node = input_elem.ToElement();
+
+        if (node != NULL) {
+            input.semantic = node->Attribute("semantic");
+            input.source_id = node->Attribute("source");
         }
     }
 
