@@ -121,15 +121,15 @@ namespace collada {
     static const getNumericAttribute<float, double> getFloatAttribute(cf_strtod);
 
     // class MeshGeometry.
-    void MeshGeometry::resolveSources() {
-        for (Polylist::inputs_t::iterator i = polys.inputs.begin(); i != polys.inputs.end(); ++i) {
-            SharedInput &in = i->second;
+    Source *MeshGeometry::getSource(const std::string &id) const {
+        // Strip off the leading #.
+        std::string source_id = id.substr(1);
 
-            // Strip off the leading #.
-            sources_t::iterator s = sources.find(in.source_id.substr(1));
-            if (s != sources.end()) {
-                in.source = &s->second;
-            }
+        sources_t::const_iterator smi = sources.find(source_id);
+        if (smi != sources.end()) {
+            return (Source *)&smi->second;
+        } else {
+            return NULL;
         }
     }
 
@@ -157,19 +157,27 @@ namespace collada {
     MeshGeometry::value_type VertexIterator::operator*() const {
         MeshGeometry::value_type rv;
 
-        // unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
-        // unsigned int offset = location * nattrs;
+        unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
+        unsigned int offset = location * nattrs;
 
-        // std::cout << "location = " << location << " offset = " << offset
-        //           << " nattrs = " << nattrs << " #verts = " << geo.polys.vertexCount()
-        //           << " #indices = " << geo.polys.indices.size()
-        //           << std::endl;
+        std::cout << "location = " << location << " offset = " << offset
+                << " nattrs = " << nattrs << " #verts = " << geo.polys.vertexCount()
+                << " #indices = " << geo.polys.indices.size()
+                << std::endl;
 
-        // MeshGeometry::inputs_t::const_iterator i;
-        // for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
-        //     const std::string &semantic = i->first;
-        //     std::cout << "location = " << location << " semantic = " << semantic << std::endl;
-        // }
+        Polylist::inputs_t::const_iterator i;
+        for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
+            const std::string &semantic = i->first;
+            const SharedInput &input = i->second;
+            const Source *source = geo.getSource(input.source_id);
+            std::cout << "location = " << location << " semantic = " << semantic;
+            if (source != NULL) {
+                std::cout << " source id = " << source->id;
+            } else {
+                std::cout << " source is NULL.";
+            }
+            std::cout << std::endl;
+        }
 
         return rv;
     }
@@ -261,7 +269,7 @@ namespace collada {
     }
 
     // class SharedInput.
-    SharedInput::SharedInput() : semantic(), source_id(), offset(0), set(-1), source(NULL) { }
+    SharedInput::SharedInput() : semantic(), source_id(), offset(0), set(-1) { }
 
     // class PolyList.
     unsigned int Polylist::vertexCount() const {
@@ -311,8 +319,6 @@ namespace collada {
             // Load up the polylist element.
             loadPolylist(mgeo.polys, mesh_elem.FirstChildElement("polylist"));
         }
-
-        mgeo.resolveSources();
     }
 
     void loadSource(Source &source, XMLConstHandle source_elem) {

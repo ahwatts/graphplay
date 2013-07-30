@@ -92,7 +92,6 @@ namespace collada {
 
         std::string semantic, source_id;
         int offset, set;
-        const Source *source;
     };
 
     class Vertices {
@@ -119,7 +118,7 @@ namespace collada {
 
     class MeshGeometry {
     public:
-        void resolveSources();
+        Source *getSource(const std::string &id) const;
 
         typedef std::map<std::string, Source> sources_t;
 

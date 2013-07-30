@@ -71,9 +71,8 @@ int main(int argc, char **argv)
         std::cout << "Geometry id: " << g.id << " name: " << g.name << std::endl;
 
         for (collada::MeshGeometry::sources_t::const_iterator j = g.sources.begin(); j != g.sources.end(); ++j) {
-            const std::string &key = (*j).first;
-            const collada::Source &s = (*j).second;
-            std::cout << "  Source: " << key << std::endl;
+            const collada::Source &s = j->second;
+            std::cout << "  Source address: " << &s << std::endl;
             std::cout << "    id: " << s.id << std::endl;
             std::cout << "    float_array: " << s.float_array.size() << " elements." << std::endl;
             std::cout << "    Accessor:" << std::endl;
@@ -128,12 +127,8 @@ int main(int argc, char **argv)
             std::cout << "      Input semantic: " << value.semantic
                       << " source_id: " << value.source_id
                       << " offset: " << value.offset
-                      << " set: " << value.set;
-            if (value.source == NULL) {
-                std::cout << " source: NULL" << std::endl;
-            } else {
-                std::cout << " source: " << value.source->id << std::endl;
-            }
+                      << " set: " << value.set
+                      << std::endl;
         }
         std::cout << "    vcounts: " << g.polys.vcounts.size() << " elements." << std::endl;
         std::cout << "    indices: " << g.polys.indices.size() << " elements." << std::endl;
