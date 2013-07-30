@@ -1,6 +1,6 @@
-CPPFLAGS=-Wall -ggdb
+CPPFLAGS=-Wall -ggdb -pg
 CXXFLAGS=
-LDFLAGS=-Wl,--as-needed
+LDFLAGS=-Wl,--as-needed -g -pg
 LDLIBS=-lGL -lglut -lm -lGLEW -lstdc++
 SOURCES=$(wildcard *.cpp)
 

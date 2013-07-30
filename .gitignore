@@ -12,5 +12,6 @@
 *.d
 *.o
 *.blend1
+gmon.out
 /graphplay/graphplay
 /graphplay/graphplay.exe
