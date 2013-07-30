@@ -179,22 +179,58 @@ namespace collada {
     MeshGeometry::value_type VertexIterator::operator*() {
         MeshGeometry::value_type rv;
 
-        // unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
-        // unsigned int offset = location * nattrs;
+        unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
+        unsigned int primitive_offset = location * nattrs;
 
         Polylist::inputs_t::const_iterator i;
         for (i = geo.polys.inputs.begin(); i != geo.polys.inputs.end(); ++i) {
             const std::string &semantic = i->first;
+            std::vector<float> &value = rv[semantic];
             const SharedInput &input = i->second;
             const Source *source = getSource(input.source_id);
+            unsigned int source_index = geo.polys.indices[primitive_offset + input.offset];
+
+            if (source != NULL) {
+                value.clear();
+                const Accessor &acc = source->accessor;
+                switch (acc.type) {
+                case XYZ:
+                    value.push_back(acc.getX(source_index));
+                    value.push_back(acc.getY(source_index));
+                    value.push_back(acc.getZ(source_index));
+                    break;
+                case ST:
+                    value.push_back(acc.getS(source_index));
+                    value.push_back(acc.getT(source_index));
+                    break;
+                case RGB:
+                    value.push_back(acc.getR(source_index));
+                    value.push_back(acc.getG(source_index));
+                    value.push_back(acc.getB(source_index));
+                    break;
+                }
+            }
 
             std::cout << "location = " << location
                       << " semantic = " << semantic;
+
             if (source == NULL) {
                 std::cout << " source = NULL";
             } else {
                 std::cout << " source = " << source->id;
             }
+
+            std::cout << " source index = " << source_index;
+
+            std::cout << " value = [ ";
+            for (unsigned int i = 0; i < value.size(); ++i) {
+                std::cout << value[i];
+                if (i != value.size() - 1) {
+                    std::cout << ", ";
+                }
+            }
+            std::cout << " ]";
+
             std::cout << std::endl;
         }
 
