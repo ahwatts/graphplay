@@ -129,9 +129,16 @@ namespace collada {
         sources_t::const_iterator smi = sources.find(source_id);
         if (smi != sources.end()) {
             return (Source *)&smi->second;
-        } else {
-            return NULL;
+        } else if (vertices.id == source_id) {
+            // What if there were other inputs in the vertices element?
+            Vertices::inputs_t::const_iterator vii = vertices.inputs.find("POSITION");
+            if (vii != vertices.inputs.end()) {
+                const UnsharedInput &pos_input = vii->second;
+                return getSource(pos_input.source_id);
+            }
         }
+
+        return NULL;
     }
 
     MeshGeometry::iterator MeshGeometry::begin() const {
