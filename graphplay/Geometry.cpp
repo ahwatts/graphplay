@@ -34,7 +34,7 @@ namespace graphplay {
                     if (attr_value.size() == 3) {
                         m_colors.push_back(glm::vec4(attr_value[0], attr_value[1], attr_value[2], 0.0));
                     } else {
-                        m_colors.push_back(glm::vec4(attr_value[0], attr_value[1], attr_value[2], attr_value[3)));
+                        m_colors.push_back(glm::vec4(attr_value[0], attr_value[1], attr_value[2], attr_value[3]));
                     }
                 } else if (attr_name == "TEXCOORD") {
                 }
