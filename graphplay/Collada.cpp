@@ -164,7 +164,7 @@ namespace collada {
     }
 
     bool VertexIterator::operator!=(const VertexIterator &other) const {
-        return (this != &other) || (location != other.location);
+        return location != other.location;
     }
 
     const Source *VertexIterator::getSource(const std::string &id) {
