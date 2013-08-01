@@ -7,7 +7,11 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-#include "Collada.h"
+// Do a forward declaration of MeshGeometry to reduce header
+// pollution.
+namespace collada {
+    class MeshGeometry;
+};
 
 namespace graphplay {
     class Geometry

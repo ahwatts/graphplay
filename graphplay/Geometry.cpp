@@ -1,6 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include "Geometry.h"
+#include "Collada.h"
 
 namespace graphplay {
     Geometry::Geometry(void)
@@ -20,7 +21,25 @@ namespace graphplay {
           m_indices(),
           m_data_buffer(0),
           m_element_buffer(0) {
-
+        for (collada::MeshGeometry::iterator v = mesh_geo.begin(); v != mesh_geo.end(); ++v) {
+            collada::MeshGeometry::value_type vertex = *v;
+            for (collada::MeshGeometry::value_type::iterator a = vertex.begin(); a != vertex.end(); ++a) {
+                const std::string &attr_name = a->first;
+                std::vector<float> &attr_value = a->second;
+                if (attr_name == "VERTEX") {
+                    m_positions.push_back(glm::vec3(attr_value[0], attr_value[1], attr_value[2]));
+                } else if (attr_name == "NORMAL") {
+                    m_normals.push_back(glm::vec3(attr_value[0], attr_value[1], attr_value[2]));
+                } else if (attr_name == "COLOR") {
+                    if (attr_value.size() == 3) {
+                        m_colors.push_back(glm::vec4(attr_value[0], attr_value[1], attr_value[2], 0.0));
+                    } else {
+                        m_colors.push_back(glm::vec4(attr_value[0], attr_value[1], attr_value[2], attr_value[3)));
+                    }
+                } else if (attr_name == "TEXCOORD") {
+                }
+            }
+        }
     }
 
     /* void Geometry::generateBuffers() {

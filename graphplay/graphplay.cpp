@@ -131,9 +131,7 @@ int main(int argc, char **argv)
         std::cout << "    vcounts: " << g.polys.vcounts.size() << " elements." << std::endl;
         std::cout << "    indices: " << g.polys.indices.size() << " elements." << std::endl;
 
-        for (collada::MeshGeometry::iterator m = g.begin(); m != g.end(); ++m) {
-            *m;
-        }
+        for (collada::MeshGeometry::iterator m = g.begin(); m != g.end(); ++m) { *m; }
 
         printf("\n");
     }
