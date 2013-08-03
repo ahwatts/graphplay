@@ -128,6 +128,7 @@ namespace collada {
         Source *getSource(const std::string &id) const;
 
         typedef std::map<std::string, Source> sources_t;
+        void printDebug() const;
 
         std::string id, name;
 

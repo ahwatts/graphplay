@@ -141,6 +141,73 @@ namespace collada {
         return NULL;
     }
 
+    void MeshGeometry::printDebug() const {
+        std::cout << "Geometry id: " << id << " name: " << name << std::endl;
+
+        for (MeshGeometry::sources_t::const_iterator j = sources.begin(); j != sources.end(); ++j) {
+            const Source &s = j->second;
+            std::cout << "  Source address: " << &s << std::endl;
+            std::cout << "    id: " << s.id << std::endl;
+            std::cout << "    float_array: " << s.float_array.size() << " elements." << std::endl;
+            std::cout << "    Accessor:" << std::endl;
+            std::cout << "     "
+                      << " count: " << s.accessor.count
+                      << " offset: " << s.accessor.offset
+                      << " stride: " << s.accessor.stride
+                      << std::endl;
+            std::cout << "      type: " << s.accessor.type << std::endl;
+
+            switch (s.accessor.type) {
+            case XYZ: 
+                std::cout << "      offsets:"
+                          << " x: " << s.accessor.xyz.x_offset
+                          << " y: " << s.accessor.xyz.y_offset
+                          << " z: " << s.accessor.xyz.z_offset
+                          << std::endl;
+                break;
+            case ST:
+                std::cout << "      offsets:"
+                          << " s: " << s.accessor.st.s_offset
+                          << " t: " << s.accessor.st.t_offset
+                          << std::endl;
+                break;
+            case RGB:
+                std::cout << "      offsets:"
+                          << " r: " << s.accessor.rgb.r_offset
+                          << " g: " << s.accessor.rgb.g_offset
+                          << " b: " << s.accessor.rgb.b_offset
+                          << std::endl;
+                break;
+            }
+        }
+
+        std::cout << "  Vertices id: " << vertices.id << std::endl;
+        for (Vertices::inputs_t::const_iterator k = vertices.inputs.begin(); k != vertices.inputs.end(); ++k) {
+            const std::string &key = (*k).first;
+            const UnsharedInput &value = (*k).second;
+            std::cout << "    semantic: " << key << std::endl;
+            std::cout << "      Input semantic: " << value.semantic
+                      << " source_id: " << value.source_id
+                      << std::endl;
+        }
+
+        std::cout << "  Polylist count: " << polys.count << std::endl;
+        for (Polylist::inputs_t::const_iterator k = polys.inputs.begin(); k != polys.inputs.end(); ++k) {
+            const std::string &key = (*k).first;
+            const SharedInput &value = (*k).second;
+            std::cout << "    semantic: " << key << std::endl;
+            std::cout << "      Input semantic: " << value.semantic
+                      << " source_id: " << value.source_id
+                      << " offset: " << value.offset
+                      << " set: " << value.set
+                      << std::endl;
+        }
+        std::cout << "    vcounts: " << polys.vcounts.size() << " elements." << std::endl;
+        std::cout << "    indices: " << polys.indices.size() << " elements." << std::endl;
+
+        printf("\n");
+    }
+
     MeshGeometry::iterator MeshGeometry::begin() const {
         return MeshGeometry::iterator(*this, 0);
     }
@@ -218,7 +285,7 @@ namespace collada {
                 }
             }
 
-            std::cout << "location = " << location
+            /* std::cout << "location = " << location
                       << " semantic = " << semantic;
 
             if (source == NULL) {
@@ -238,7 +305,7 @@ namespace collada {
             }
             std::cout << " ]";
 
-            std::cout << std::endl;
+            std::cout << std::endl;*/
         }
 
         return rv;

@@ -16,6 +16,7 @@
 #include <iostream>
 
 #include "Collada.h"
+#include "Geometry.h"
 #include "Scene.h"
 
 /*BasicShader *g_shader = NULL;
@@ -64,77 +65,7 @@ int main(int argc, char **argv)
 
     std::vector<collada::MeshGeometry> geos;
     collada::loadGeometriesFromFile(geos, "chair.dae");
-
-    for (unsigned int i = 0; i < geos.size(); ++i) {
-        collada::MeshGeometry &g = geos[i];
-
-        std::cout << "Geometry id: " << g.id << " name: " << g.name << std::endl;
-
-        for (collada::MeshGeometry::sources_t::const_iterator j = g.sources.begin(); j != g.sources.end(); ++j) {
-            const collada::Source &s = j->second;
-            std::cout << "  Source address: " << &s << std::endl;
-            std::cout << "    id: " << s.id << std::endl;
-            std::cout << "    float_array: " << s.float_array.size() << " elements." << std::endl;
-            std::cout << "    Accessor:" << std::endl;
-            std::cout << "     "
-                      << " count: " << s.accessor.count
-                      << " offset: " << s.accessor.offset
-                      << " stride: " << s.accessor.stride
-                      << std::endl;
-            std::cout << "      type: " << s.accessor.type << std::endl;
-
-            switch (s.accessor.type) {
-            case collada::XYZ: 
-                std::cout << "      offsets:"
-                          << " x: " << s.accessor.xyz.x_offset
-                          << " y: " << s.accessor.xyz.y_offset
-                          << " z: " << s.accessor.xyz.z_offset
-                          << std::endl;
-                break;
-            case collada::ST:
-                std::cout << "      offsets:"
-                          << " s: " << s.accessor.st.s_offset
-                          << " t: " << s.accessor.st.t_offset
-                          << std::endl;
-                break;
-            case collada::RGB:
-                std::cout << "      offsets:"
-                          << " r: " << s.accessor.rgb.r_offset
-                          << " g: " << s.accessor.rgb.g_offset
-                          << " b: " << s.accessor.rgb.b_offset
-                          << std::endl;
-                break;
-            }
-        }
-
-        std::cout << "  Vertices id: " << g.vertices.id << std::endl;
-        for (collada::Vertices::inputs_t::const_iterator k = g.vertices.inputs.begin(); k != g.vertices.inputs.end(); ++k) {
-            const std::string &key = (*k).first;
-            const collada::UnsharedInput &value = (*k).second;
-            std::cout << "    semantic: " << key << std::endl;
-            std::cout << "      Input semantic: " << value.semantic
-                      << " source_id: " << value.source_id
-                      << std::endl;
-        }
-
-        std::cout << "  Polylist count: " << g.polys.count << std::endl;
-        for (collada::Polylist::inputs_t::const_iterator k = g.polys.inputs.begin(); k != g.polys.inputs.end(); ++k) {
-            const std::string &key = (*k).first;
-            const collada::SharedInput &value = (*k).second;
-            std::cout << "    semantic: " << key << std::endl;
-            std::cout << "      Input semantic: " << value.semantic
-                      << " source_id: " << value.source_id
-                      << " offset: " << value.offset
-                      << " set: " << value.set
-                      << std::endl;
-        }
-        std::cout << "    vcounts: " << g.polys.vcounts.size() << " elements." << std::endl;
-        std::cout << "    indices: " << g.polys.indices.size() << " elements." << std::endl;
-
-        for (collada::MeshGeometry::iterator m = g.begin(); m != g.end(); ++m) { *m; }
-
-        printf("\n");
-    }
+    graphplay::Geometry geo(geos[0]);
 
     return 0;
 }
