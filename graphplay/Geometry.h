@@ -5,6 +5,8 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <map>
+#include <string>
 #include <vector>
 
 // Do a forward declaration of MeshGeometry to reduce header
@@ -28,6 +30,9 @@ namespace graphplay {
         std::vector<GLuint> m_indices;*/
 
         std::vector<float> m_vertex_attrs;
+        std::vector<unsigned int> m_vertex_elems;
+        std::map<const std::string, unsigned int> m_offsets;
+        unsigned int m_stride;
 
         GLuint m_data_buffer;
         GLuint m_element_buffer;
