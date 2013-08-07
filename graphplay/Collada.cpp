@@ -284,28 +284,6 @@ namespace collada {
                     break;
                 }
             }
-
-            /* std::cout << "location = " << location
-                      << " semantic = " << semantic;
-
-            if (source == NULL) {
-                std::cout << " source = NULL";
-            } else {
-                std::cout << " source = " << source->id;
-            }
-
-            std::cout << " source index = " << source_index;
-
-            std::cout << " value = [ ";
-            for (unsigned int i = 0; i < value.size(); ++i) {
-                std::cout << value[i];
-                if (i != value.size() - 1) {
-                    std::cout << ", ";
-                }
-            }
-            std::cout << " ]";
-
-            std::cout << std::endl;*/
         }
 
         return rv;

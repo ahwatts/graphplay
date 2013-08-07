@@ -5,20 +5,12 @@
 
 namespace graphplay {
     Geometry::Geometry(void)
-        : m_positions(),
-          m_normals(),
-          m_colors(),
-          m_tex_coords(),
-          m_indices(),
+        : m_vertex_attrs(),
           m_data_buffer(0),
           m_element_buffer(0) { }
 
     Geometry::Geometry(const collada::MeshGeometry &mesh_geo)
-        : m_positions(),
-          m_normals(),
-          m_colors(),
-          m_tex_coords(),
-          m_indices(),
+        : m_vertex_attrs(),
           m_data_buffer(0),
           m_element_buffer(0) {
         for (collada::MeshGeometry::iterator v = mesh_geo.begin(); v != mesh_geo.end(); ++v) {
@@ -26,7 +18,7 @@ namespace graphplay {
             for (collada::MeshGeometry::value_type::iterator a = vertex.begin(); a != vertex.end(); ++a) {
                 const std::string &attr_name = a->first;
                 std::vector<float> &attr_value = a->second;
-                if (attr_name == "VERTEX") {
+                /* if (attr_name == "VERTEX") {
                     m_positions.push_back(glm::vec3(attr_value[0], attr_value[1], attr_value[2]));
                 } else if (attr_name == "NORMAL") {
                     m_normals.push_back(glm::vec3(attr_value[0], attr_value[1], attr_value[2]));
@@ -37,7 +29,8 @@ namespace graphplay {
                         m_colors.push_back(glm::vec4(attr_value[0], attr_value[1], attr_value[2], attr_value[3]));
                     }
                 } else if (attr_name == "TEXCOORD") {
-                }
+                    m_tex_coords.push_back(glm::vec2(attr_value[0], attr_value[1]));
+                } */
             }
         }
     }
@@ -45,8 +38,10 @@ namespace graphplay {
     /* void Geometry::generateBuffers() {
         GLuint buffers[2];
         GLsizeiptr vertex_size = m_positions.size() * 3 * sizeof(float);
+        GLsizeiptr normal_size = m_normals.size() * 3 * sizeof(float);
         GLsizeiptr color_size = m_colors.size() * 4 * sizeof(float);
-        GLsizeiptr total_size = vertex_size + color_size;
+        GLsizeiptr tex_coord_size = m_tex_coords.size() * 2 * sizeof(float);
+        GLsizeiptr total_size = vertex_size + normal_size + color_size + tex_coord_size;
 
         glGenBuffers(2, buffers);
         m_data_buffer = buffers[0];
@@ -75,5 +70,5 @@ namespace graphplay {
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
         glDrawElements(GL_TRIANGLES, m_indices.size() / 2, GL_UNSIGNED_INT, 0);
-        }*/
+    } */
 };
