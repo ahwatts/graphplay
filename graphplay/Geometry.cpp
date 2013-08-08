@@ -29,43 +29,37 @@ namespace graphplay {
                 const std::string &attr_name = a->first;
                 std::vector<float> &attr_value = a->second;
 
-                std::cout << attr_name << ": ";
-                for (unsigned int i = 0; i < attr_value.size(); ++i) std::cout << attr_value[i] << ", ";
-                std::cout << std::endl;
-
                 if (m_offsets.find(attr_name) == m_offsets.end()) {
-                    m_offsets[attr_name] = attr_value.size();
+                    m_offsets[attr_name] = vdata.size();
                     m_stride += attr_value.size();
                     if (attr_name == "COLOR" && attr_value.size() == 3) {
                         m_stride += 1;
                     }
-                    std::cout << "  m_offsets[" << attr_name << "] = " << m_offsets[attr_name] << std::endl;
-                    std::cout << "  m_stride = " << m_stride << std::endl;
                 }
 
                 unsigned int offset = m_offsets[attr_name];
-                vdata.reserve(vdata.size() + attr_value.size());
+                unsigned int new_size = vdata.size() + attr_value.size();
 
-                std::cout << "  stride = " << m_stride << " offset = " << offset << " vdata.size() = " << vdata.size() << std::endl;
-
-                for (unsigned int i = 0; i < attr_value.size(); ++i) {
-                    vdata[offset + i] = attr_value[i];
+                for (unsigned int i = 0; i < new_size; ++i) {
+                    if (i >= offset && i < offset + attr_value.size()) {
+                        float val = attr_value[i - offset];
+                        if (i >= vdata.size()) {
+                            vdata.push_back(val);
+                        } else {
+                            vdata[i] = val;
+                        }
+                    }
                 }
 
                 if (attr_name == "COLOR" && attr_value.size() == 3) {
-                    vdata.reserve(vdata.size() + 1);
-                    vdata[offset + 3] = 0.0;
+                    unsigned int a_off = offset + 3;
+                    if (a_off >= vdata.size()) {
+                        vdata.push_back(0);
+                    } else {
+                        vdata[a_off] = 0.0;
+                    }
                 }
-
-                std::cout << "  vdata = { ";
-                for (unsigned int i = 0; i < vdata.size(); ++i) {
-                    std::cout << vdata[i] << ", ";
-                }
-                std::cout << " }" << std::endl << std::endl;
             }
-
-            break;
-
         }
     }
 
