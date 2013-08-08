@@ -22,16 +22,12 @@ namespace graphplay {
         Geometry();
         Geometry(const collada::MeshGeometry &mesh_geo);
 
-    private:
-        /* std::vector<glm::vec3> m_positions;
-        std::vector<glm::vec3> m_normals;
-        std::vector<glm::vec4> m_colors;
-        std::vector<glm::vec2> m_tex_coords;
-        std::vector<GLuint> m_indices;*/
+        void generateBuffers();
 
+    private:
         std::vector<float> m_vertex_attrs;
-        std::vector<unsigned int> m_vertex_elems;
-        std::map<const std::string, unsigned int> m_offsets;
+        std::vector<GLuint> m_vertex_elems;
+        unsigned int m_position_offset, m_normal_offset, m_color_offset, m_tex_coord_offset;
         unsigned int m_stride;
 
         GLuint m_data_buffer;
