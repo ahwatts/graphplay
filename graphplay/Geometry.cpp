@@ -60,6 +60,30 @@ namespace graphplay {
                     }
                 }
             }
+
+            bool match = false;
+            for (unsigned int v_off = 0; v_off < m_vertex_attrs.size(); v_off += m_stride) {
+                bool this_matches = true;
+                for (unsigned int i = 0; i < m_stride; ++i) {
+                    if (vdata[i] != m_vertex_attrs[v_off + i]) {
+                        this_matches = false;
+                        break;
+                    }
+                }
+
+                if (this_matches) {
+                    m_vertex_elems.push_back(v_off / m_stride);
+                    match = true;
+                    break;
+                }
+            }
+
+            if (!match) {
+                m_vertex_elems.push_back(m_vertex_attrs.size() / m_stride);
+                for (unsigned int i = 0; i < vdata.size(); ++i) {
+                    m_vertex_attrs.push_back(vdata[i]);
+                }
+            }
         }
     }
 
