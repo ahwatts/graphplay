@@ -15,18 +15,17 @@ void update(int dt);
 
 int main(int argc, char **argv)
 {
-    GLenum glew_err;
     int width = 800, height = 600, dt_msec = 20;
 
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(width, height);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
     glutCreateWindow("graphplay");
 
-    glew_err = glewInit();
+    GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
-        fprintf(stderr, "Could not initialize GLEW: %s\n", glewGetErrorString(glew_err));
+        std::cerr << "Could not initialize GLEW: " << glewGetErrorString(glew_err) << std::endl;
         exit(1);
     }
 
@@ -73,7 +72,5 @@ void keypress(unsigned char key, int x, int y)
     case 27: // escape key.
         glutLeaveMainLoop();
         break;
-    // default:
-    //     printf("Key %u was pressed at (%d, %d)\n", key, x, y);
     }
 }

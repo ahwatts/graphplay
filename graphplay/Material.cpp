@@ -1,5 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 #include "Material.h"
@@ -22,7 +24,24 @@ namespace graphplay {
     }
 
     GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
-        // implement me.
+        GLuint shader = glCreateShader(shader_type);
+        GLint errlen, status, src_length = std::strlen(shader_src);
+
+        glShaderSource(shader, 1, &shader_src, &src_length);
+        glCompileShader(shader);
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+        if (!status) {
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &errlen);
+            char *err = new char[errlen];
+            glGetShaderInfoLog(shader, errlen - 1, NULL, err);
+            std::cerr << "Could not compile shader!" << std::endl;
+            std::cerr << "  error:" << std::endl << err << std::endl;
+            std::cerr << "  source:" << std::endl << shader_src << std::endl;
+            delete [] err;
+            std::exit(1);
+        }
+
+        return shader;
     }
 
     // Class Material.
