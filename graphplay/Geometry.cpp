@@ -3,8 +3,6 @@
 #include "Geometry.h"
 #include "Collada.h"
 
-#include <iostream>
-
 namespace graphplay {
     Geometry::Geometry(void)
         : m_vertex_attrs(),
