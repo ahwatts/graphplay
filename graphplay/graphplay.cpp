@@ -1,38 +1,22 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-/*#include <stdio.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <libxml/xmlversion.h>
-#include <libxml/parser.h>
-
-#include "BasicShader.h"
-#include "Collada.h"
-#include "DaeFile.h"
-#include "Mesh.h"
-#include "World.h"
-#include "graphplay.h"*/
-
 #include <iostream>
 
 #include "Collada.h"
 #include "Geometry.h"
-#include "Scene.h"
-
-/*BasicShader *g_shader = NULL;
-World *g_world = NULL;
+#include "Material.h"
 
 void display();
 void keypress(unsigned char key, int x, int y);
 void reshape(int new_width, int new_height);
-void update(int dt);*/
+void update(int dt);
 
 int main(int argc, char **argv)
 {
-    /*GLenum glew_err;
+    GLenum glew_err;
     int width = 800, height = 600, dt_msec = 20;
-
-    LIBXML_TEST_VERSION;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
@@ -46,11 +30,13 @@ int main(int argc, char **argv)
         exit(1);
     }
 
+    std::vector<collada::MeshGeometry> geos;
+    collada::loadGeometriesFromFile(geos, "chair.dae");
+    graphplay::Geometry geo(geos[0]);
+    graphplay::GouraudMaterial mat;
+
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);
-
-    g_shader = new BasicShader();
-    g_world = new World(width, height);
 
     glutDisplayFunc(display);
     glutKeyboardFunc(keypress);
@@ -58,21 +44,12 @@ int main(int argc, char **argv)
     glutTimerFunc(dt_msec, update, dt_msec);
     glutMainLoop();
 
-    delete g_shader;
-    delete g_world;
-    xmlCleanupParser();
-    xmlMemoryDump();*/
-
-    std::vector<collada::MeshGeometry> geos;
-    collada::loadGeometriesFromFile(geos, "chair.dae");
-    graphplay::Geometry geo(geos[0]);
-
     return 0;
 }
 
-/*void update(int dt)
+void update(int dt)
 {
-    g_world->update((float)dt / 1000.0f);
+    // g_world->update((float)dt / 1000.0f);
     glutPostRedisplay();
     glutTimerFunc(20, &update, 20);
 }
@@ -80,14 +57,14 @@ int main(int argc, char **argv)
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    g_world->render();
+    // g_world->render();
     glutSwapBuffers();
 }
 
 void reshape(int new_width, int new_height)
 {
     glViewport(0, 0, new_width, new_height);
-    g_world->setViewport(new_width, new_height);
+    // g_world->setViewport(new_width, new_height);
 }
 
 void keypress(unsigned char key, int x, int y)
@@ -99,4 +76,4 @@ void keypress(unsigned char key, int x, int y)
     // default:
     //     printf("Key %u was pressed at (%d, %d)\n", key, x, y);
     }
-}*/
+}

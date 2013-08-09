@@ -5,6 +5,10 @@
 #include "Material.h"
 
 namespace graphplay {
+    // Helper functions.
+
+    // You need to do a delete [] on whatever's passed to shaders
+    // after this method is called.
     void getAttachedShaders(GLuint program, int *num_shaders, GLuint **shaders) {
         glGetProgramiv(program, GL_ATTACHED_SHADERS, num_shaders);
 
@@ -17,6 +21,11 @@ namespace graphplay {
         }
     }
 
+    GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
+        // implement me.
+    }
+
+    // Class Material.
     Material::Material()
         : m_program(0) { }
 
@@ -93,5 +102,36 @@ namespace graphplay {
         }
 
         return rv;
+    }
+
+    // Class GouraudMaterial.
+    const char* GouraudMaterial::vertex_shader_src =
+        "attribute vec3 aPosition;"
+        "attribute vec4 aColor;"
+        "uniform mat4 uModelView;"
+        "uniform mat4 uProjection;"
+        "varying vec4 vColor;"
+        "void main(void) {"
+        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);"
+        "    vColor = aColor;"
+        "}";
+
+    const char* GouraudMaterial::fragment_shader_src =
+        "varying vec4 vColor;"
+        "void main(void) {"
+        "    gl_FragColor = vColor;"
+        "}";
+
+    GouraudMaterial::GouraudMaterial()
+        : Material(),
+          m_position_loc(0),
+          m_color_loc(0),
+          m_projection_loc(0),
+          m_model_view_loc(0) { }
+
+    GouraudMaterial::~GouraudMaterial() { }
+
+    void GouraudMaterial::createProgram() {
+        // implement me.
     }
 };

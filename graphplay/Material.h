@@ -19,13 +19,13 @@ namespace graphplay {
         GLuint getFragmentShader() const;
         GLuint getProgram() const;
 
-        virtual GLuint getPositionLocation() const = 0;
-        virtual GLuint getNormalLocation() const = 0;
-        virtual GLuint getColorLocation() const = 0;
-        virtual GLuint getTexCoordLocation() const = 0;
+        virtual GLuint getPositionLocation() const { return 0; }
+        virtual GLuint getNormalLocation() const { return 0; }
+        virtual GLuint getColorLocation() const { return 0; }
+        virtual GLuint getTexCoordLocation() const { return 0; }
 
-        virtual GLuint getProjectionLocation() const = 0;
-        virtual GLuint getModelViewLocation() const = 0;
+        virtual GLuint getProjectionLocation() const { return 0; }
+        virtual GLuint getModelViewLocation() const { return 0; }
 
     protected:
         GLuint m_program;
@@ -36,14 +36,15 @@ namespace graphplay {
         GouraudMaterial();
         virtual ~GouraudMaterial();
 
-        virtual GLuint getPositionLocation() const;
-        virtual GLuint getNormalLocation() const;
-        virtual GLuint getColorLocation() const;
-        virtual GLuint getTexCoordLocation() const;
+        virtual void createProgram();
 
-        virtual GLuint getProjectionLocation() const;
-        virtual GLuint getModelViewLocation() const;
-    private:
+        virtual GLuint getPositionLocation() const { return m_position_loc; }
+        virtual GLuint getColorLocation() const { return m_color_loc; }
+
+        virtual GLuint getProjectionLocation() const { return m_projection_loc; }
+        virtual GLuint getModelViewLocation() const { return m_model_view_loc; }
+
+    protected:
         GLuint m_position_loc;
         GLuint m_color_loc;
 
@@ -51,8 +52,6 @@ namespace graphplay {
         GLuint m_model_view_loc;
 
         static const char *vertex_shader_src, *fragment_shader_src;
-
-        GLuint createAndCompileShader(GLenum shader_type, const char* shader_src);
     };
 };
 
