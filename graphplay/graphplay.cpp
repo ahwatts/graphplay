@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
     collada::loadGeometriesFromFile(geos, "chair.dae");
     graphplay::Geometry geo(geos[0]);
     graphplay::GouraudMaterial mat;
+    mat.createProgram();
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);

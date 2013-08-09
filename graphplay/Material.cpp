@@ -15,12 +15,7 @@ namespace graphplay {
         glGetProgramiv(program, GL_ATTACHED_SHADERS, num_shaders);
 
         *shaders = new GLuint[*num_shaders];
-        int returned_shaders = 0;
-        glGetAttachedShaders(program, *num_shaders, &returned_shaders, *shaders);
-
-        if (*num_shaders != returned_shaders) {
-            std::cerr << "WFT? OpenGL says there's " << *num_shaders << " attached, but returned only " << returned_shaders << "?" << std::endl;
-        }
+        glGetAttachedShaders(program, *num_shaders, NULL, *shaders);
     }
 
     GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
@@ -33,9 +28,9 @@ namespace graphplay {
         if (!status) {
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &errlen);
             char *err = new char[errlen];
-            glGetShaderInfoLog(shader, errlen - 1, NULL, err);
+            glGetShaderInfoLog(shader, errlen, NULL, err);
             std::cerr << "Could not compile shader!" << std::endl;
-            std::cerr << "  error:" << std::endl << err << std::endl;
+            std::cerr << "  error: " << err << std::endl;
             std::cerr << "  source:" << std::endl << shader_src << std::endl;
             delete [] err;
             std::exit(1);
@@ -125,21 +120,21 @@ namespace graphplay {
 
     // Class GouraudMaterial.
     const char* GouraudMaterial::vertex_shader_src =
-        "attribute vec3 aPosition;"
-        "attribute vec4 aColor;"
-        "uniform mat4 uModelView;"
-        "uniform mat4 uProjection;"
-        "varying vec4 vColor;"
-        "void main(void) {"
-        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);"
-        "    vColor = aColor;"
-        "}";
+        "attribute vec3 aPosition;\n"
+        "attribute vec4 aColor;\n"
+        "uniform mat4 uModelView;\n"
+        "uniform mat4 uProjection;\n"
+        "varying vec4 vColor;\n"
+        "void main(void) {\n"
+        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
+        "    vColor = aColor;\n"
+        "}\n";
 
     const char* GouraudMaterial::fragment_shader_src =
-        "varying vec4 vColor;"
-        "void main(void) {"
-        "    gl_FragColor = vColor;"
-        "}";
+        "varying vec4 vColor;\n"
+        "void main(void) {\n"
+        "    gl_FragColor = vColor;\n"
+        "}\n";
 
     GouraudMaterial::GouraudMaterial()
         : Material(),
@@ -151,6 +146,26 @@ namespace graphplay {
     GouraudMaterial::~GouraudMaterial() { }
 
     void GouraudMaterial::createProgram() {
-        // implement me.
+        GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, GouraudMaterial::vertex_shader_src);
+        GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, GouraudMaterial::fragment_shader_src);
+
+        m_program = glCreateProgram();
+        glAttachShader(m_program, vertex_shader);
+        glAttachShader(m_program, fragment_shader);
+        glLinkProgram(m_program);
+
+        GLint status;
+        glGetProgramiv(m_program, GL_LINK_STATUS, &status);
+        if (!status) {
+            GLint errlen;
+            glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &errlen);
+
+            char *err = new char[errlen];
+            glGetProgramInfoLog(m_program, errlen, NULL, err);
+            std::cerr << "Could not link shader program: " << err << std::endl;
+            delete [] err;
+
+            std::exit(1);
+        }
     }
 };
