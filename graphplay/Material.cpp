@@ -41,7 +41,14 @@ namespace graphplay {
 
     // Class Material.
     Material::Material()
-        : m_program(0) { }
+        : m_program(0),
+          m_max_vertex_attribs(0) {
+        int max_vertex_attribs;
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_vertex_attribs);
+        if (max_vertex_attribs >= 0) {
+            m_max_vertex_attribs = (GLuint)max_vertex_attribs;
+        }
+    }
 
     Material::~Material() {
         destroyProgram();

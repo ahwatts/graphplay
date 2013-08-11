@@ -19,16 +19,19 @@ namespace graphplay {
         GLuint getFragmentShader() const;
         GLuint getProgram() const;
 
-        virtual GLuint getPositionLocation() const { return 0; }
-        virtual GLuint getNormalLocation() const { return 0; }
-        virtual GLuint getColorLocation() const { return 0; }
-        virtual GLuint getTexCoordLocation() const { return 0; }
+        virtual GLuint getPositionLocation() const { return m_max_vertex_attribs; }
+        virtual GLuint getNormalLocation() const { return m_max_vertex_attribs; }
+        virtual GLuint getColorLocation() const { return m_max_vertex_attribs; }
+        virtual GLuint getTexCoordLocation() const { return m_max_vertex_attribs; }
 
-        virtual GLuint getProjectionLocation() const { return 0; }
-        virtual GLuint getModelViewLocation() const { return 0; }
+        virtual GLuint getProjectionLocation() const { return m_max_vertex_attribs; }
+        virtual GLuint getModelViewLocation() const { return m_max_vertex_attribs; }
+
+        GLuint getMaxVertexAttribs() const { return m_max_vertex_attribs; }
 
     protected:
         GLuint m_program;
+        GLuint m_max_vertex_attribs;
     };
 
     class GouraudMaterial : public Material {
