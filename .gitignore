@@ -12,6 +12,9 @@
 *.d
 *.o
 *.blend1
-gmon.out
+/gmon.out
 /graphplay/graphplay
 /graphplay/graphplay.exe
+
+!/glew.dll
+!/glfw3.dll
