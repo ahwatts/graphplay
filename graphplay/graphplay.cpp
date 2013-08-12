@@ -3,28 +3,35 @@
 #include <GL/glew.h>
 #include <GL/glfw3.h>
 #include <string>
-#include <initializer_list>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "Collada.h"
 #include "Geometry.h"
 #include "Material.h"
 
-void bailout(std::initializer_list<std::string> msgs);
-void keypress(GLFWwindow *wnd, int key, int scancode);
+void bailout(const std::string &msg);
+
+#if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0
+void keypress(GLFWwindow *wnd, int key, int action);
+#else
+void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
+#endif
 
 int main(int argc, char **argv) {
     int width = 800, height = 600;
 
-    if (!glfwInit()) { bailout({ "Could not initialize GLFW!" }); }
+    if (!glfwInit()) { bailout("Could not initialize GLFW!"); }
     GLFWwindow *window = glfwCreateWindow(width, height, "Graphplay", NULL, NULL);
-    if (!window) { bailout({ "Could not create window!" }); }
+    if (!window) { bailout("Could not create window!"); }
     glfwMakeContextCurrent(window);
 
     GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
-        bailout({ "Could not initialize GLEW: ", (const char *)glewGetErrorString(glew_err) });
+        std::ostringstream msg;
+        msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
+        bailout(msg.str());
     }
 
     std::vector<collada::MeshGeometry> geos;
@@ -48,14 +55,17 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void bailout(std::initializer_list<std::string> msgs) {
-    for (auto m : msgs) std::cerr << m;
-    std::cerr << std::endl;
+void bailout(const std::string &msg) {
+    std::cerr << msg << std::endl;
     glfwTerminate();
     std::exit(1);
 }
 
-void keypress(GLFWwindow *wnd, int key, int scancode) {
+#if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0
+void keypress(GLFWwindow *wnd, int key, int action) {
+#else
+void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
+#endif
     if (key == GLFW_KEY_ESCAPE) {
         glfwSetWindowShouldClose(wnd, true);
     }
