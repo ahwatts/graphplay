@@ -1,32 +1,30 @@
-// -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <GL/glfw3.h>
+#include <string>
+#include <initializer_list>
 #include <iostream>
+#include <vector>
 
 #include "Collada.h"
 #include "Geometry.h"
 #include "Material.h"
 
-void display();
-void keypress(unsigned char key, int x, int y);
-void reshape(int new_width, int new_height);
-void update(int dt);
+void bailout(std::initializer_list<std::string> msgs);
+void keypress(GLFWwindow *wnd, int key, int scancode);
 
-int main(int argc, char **argv)
-{
-    int width = 800, height = 600, dt_msec = 20;
+int main(int argc, char **argv) {
+    int width = 800, height = 600;
 
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
-    glutInitWindowSize(width, height);
-    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
-    glutCreateWindow("graphplay");
+    if (!glfwInit()) { bailout({ "Could not initialize GLFW!" }); }
+    GLFWwindow *window = glfwCreateWindow(width, height, "Graphplay", NULL, NULL);
+    if (!window) { bailout({ "Could not create window!" }); }
+    glfwMakeContextCurrent(window);
 
     GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
-        std::cerr << "Could not initialize GLEW: " << glewGetErrorString(glew_err) << std::endl;
-        exit(1);
+        bailout({ "Could not initialize GLEW: ", (const char *)glewGetErrorString(glew_err) });
     }
 
     std::vector<collada::MeshGeometry> geos;
@@ -37,40 +35,27 @@ int main(int argc, char **argv)
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);
 
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keypress);
-    glutReshapeFunc(reshape);
-    glutTimerFunc(dt_msec, update, dt_msec);
-    glutMainLoop();
+    glfwSetKeyCallback(window, keypress);
 
+    while (!glfwWindowShouldClose(window)) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
     return 0;
 }
 
-void update(int dt)
-{
-    // g_world->update((float)dt / 1000.0f);
-    glutPostRedisplay();
-    glutTimerFunc(20, &update, 20);
+void bailout(std::initializer_list<std::string> msgs) {
+    for (auto m : msgs) std::cerr << m;
+    std::cerr << std::endl;
+    glfwTerminate();
+    std::exit(1);
 }
 
-void display()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // g_world->render();
-    glutSwapBuffers();
-}
-
-void reshape(int new_width, int new_height)
-{
-    glViewport(0, 0, new_width, new_height);
-    // g_world->setViewport(new_width, new_height);
-}
-
-void keypress(unsigned char key, int x, int y)
-{
-    switch (key) {
-    case 27: // escape key.
-        glutLeaveMainLoop();
-        break;
+void keypress(GLFWwindow *wnd, int key, int scancode) {
+    if (key == GLFW_KEY_ESCAPE) {
+        glfwSetWindowShouldClose(wnd, true);
     }
 }

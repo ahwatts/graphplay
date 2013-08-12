@@ -1,7 +1,7 @@
 CPPFLAGS=-Wall -ggdb -pg
-CXXFLAGS=
+CXXFLAGS=-std=c++11
 LDFLAGS=-Wl,--as-needed -ggdb -pg
-LDLIBS=-lGL -lglut -lm -lGLEW -lstdc++
+LDLIBS=-lstdc++ -lm -lglfw -lGL -lGLEW
 SOURCES=$(wildcard *.cpp)
 
 graphplay: $(SOURCES:.cpp=.o)
