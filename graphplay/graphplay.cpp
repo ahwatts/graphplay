@@ -99,7 +99,7 @@ void display(int width, int height, graphplay::Geometry &geo, graphplay::Materia
     GLuint color_loc = mat.getColorLocation();
     GLuint proj_loc = mat.getProjectionLocation();
     GLuint mv_loc = mat.getModelViewLocation();
-    unsigned int stride = geo.getStride();
+    unsigned int stride = geo.getStride()*sizeof(float);
 
     glBindBuffer(GL_ARRAY_BUFFER, geo.getArrayBuffer());
     glEnableVertexAttribArray(position_loc);
