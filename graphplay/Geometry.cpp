@@ -1,10 +1,9 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include "Geometry.h"
-#include "Collada.h"
 
 namespace graphplay {
-    Geometry::Geometry(void)
+    Geometry::Geometry()
         : m_vertex_attrs(),
           m_vertex_elems(),
           m_position_offset(-1),
@@ -12,10 +11,11 @@ namespace graphplay {
           m_color_offset(-1),
           m_tex_coord_offset(-1),
           m_stride(0),
+          m_new_vertex(),
           m_data_buffer(0),
           m_element_buffer(0) { }
 
-    Geometry::Geometry(const collada::MeshGeometry &mesh_geo)
+    /*Geometry::Geometry(const collada::MeshGeometry &mesh_geo)
         : m_vertex_attrs(),
           m_vertex_elems(),
           m_position_offset(-1),
@@ -23,52 +23,27 @@ namespace graphplay {
           m_color_offset(-1),
           m_tex_coord_offset(-1),
           m_stride(0),
+          m_new_vertex(),
           m_data_buffer(0),
           m_element_buffer(0) {
+        loadFromCollada(mesh_geo);
+    }*/
+
+    /*void Geometry::loadFromCollada(const collada::MeshGeometry &mesh_geo) {
         std::map<const std::string, unsigned int> offsets;
 
         // Copy the vertex data into m_data_buffer.
-        for (collada::MeshGeometry::iterator v = mesh_geo.begin(); v != mesh_geo.end(); ++v) {
-            collada::MeshGeometry::value_type vertex = *v;
+        for (auto v : mesh_geo) {
             std::vector<float> vdata(m_stride);
 
             // First, copy this vertex's data into vdata, stashing off
             // the offsets for the different attributes if we haven't
             // already.
-            for (collada::MeshGeometry::value_type::iterator a = vertex.begin(); a != vertex.end(); ++a) {
-                const std::string &attr_name = a->first;
-                std::vector<float> &attr_value = a->second;
+            for (auto a : v) {
+                const std::string &attr_name = a.first;
+                std::vector<float> &attr_value = a.second;
 
-                if (offsets.find(attr_name) == offsets.end()) {
-                    offsets[attr_name] = vdata.size();
-                    m_stride += attr_value.size();
-                    if (attr_name == "COLOR" && attr_value.size() == 3) {
-                        m_stride += 1;
-                    }
-                }
 
-                unsigned int offset = offsets[attr_name];
-                unsigned int new_size = vdata.size() + attr_value.size();
-
-                for (unsigned int i = 0; i < new_size; ++i) {
-                    if (i >= offset && i < offset + attr_value.size()) {
-                        float val = attr_value[i - offset];
-                        if (i >= vdata.size()) {
-                            vdata.push_back(val);
-                        } else {
-                            vdata[i] = val;
-                        }
-                    }
-                }
-
-                if (attr_name == "COLOR" && attr_value.size() == 3) {
-                    unsigned int a_off = offset + 3;
-                    if (a_off >= vdata.size()) {
-                        vdata.push_back(0);
-                    } else {
-                        vdata[a_off] = 0.0;
-                    }
-                }
             }
 
             // Now, search through the vertices we've already read to
@@ -117,11 +92,80 @@ namespace graphplay {
                 m_tex_coord_offset = off->second;
             }
         }
+    }*/
+
+    void Geometry::commitNewVertex() {
+        if (m_new_vertex.size() == 0) return;
+
+        unsigned int index = findVertex(m_new_vertex);
+
+        if (index < m_vertex_elems.size()) {
+            m_vertex_elems.push_back(index);
+        } else {
+            for (float v : m_new_vertex) { m_vertex_attrs.push_back(v); }
+            m_vertex_elems.push_back(m_vertex_elems.size());
+        }
+
+        m_new_vertex = std::vector<float>();
+    }
+
+    unsigned int Geometry::findVertex(std::vector<float> &vdata) {
+        for (unsigned int v_off = 0; v_off < m_vertex_attrs.size(); v_off += m_stride) {
+            bool match = true;
+
+            for (unsigned int i = 0; i < m_stride; ++i) {
+                if (vdata[i] != m_vertex_attrs[v_off + i]) {
+                    match = false;
+                    break;
+                }
+            }
+
+            if (match) {
+                return v_off / m_stride;
+            }
+        }
+
+        return m_vertex_elems.size();
+    }
+
+    void Geometry::vertex3f(float x, float y, float z) {
+        commitNewVertex();
+        m_new_vertex = std::vector<float>(m_stride);
+
+        if (m_position_offset < 0 && m_vertex_elems.size() == 0) {
+            m_position_offset = m_stride;
+            m_stride += 3;
+        }
+
+        if (m_position_offset < 0) { return; }
+
+        while (m_stride > m_new_vertex.size()) { m_new_vertex.push_back(0); }
+
+        m_new_vertex[m_position_offset]     = x;
+        m_new_vertex[m_position_offset + 1] = y;
+        m_new_vertex[m_position_offset + 2] = z;
+    }
+
+    void Geometry::color4f(float r, float g, float b, float a) {
+        if (m_color_offset < 0 && m_vertex_elems.size() == 0) {
+            m_color_offset = m_stride;
+            m_stride += 3;
+        }
+
+        if (m_color_offset < 0) { return; }
+
+        while (m_stride > m_new_vertex.size()) { m_new_vertex.push_back(0); }
+
+        m_new_vertex[m_color_offset]     = r;
+        m_new_vertex[m_color_offset + 1] = g;
+        m_new_vertex[m_color_offset + 2] = b;
+        m_new_vertex[m_color_offset + 3] = a;
     }
 
     void Geometry::generateBuffers() {
-        GLuint buffers[2];
+        commitNewVertex();
 
+        GLuint buffers[2];
         glGenBuffers(2, buffers);
         m_data_buffer = buffers[0];
         m_element_buffer = buffers[1];
@@ -153,4 +197,40 @@ namespace graphplay {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
         glDrawElements(GL_TRIANGLES, m_indices.size() / 2, GL_UNSIGNED_INT, 0);
     } */
+
+    OctohedronGeometry::OctohedronGeometry() : Geometry() {
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
+
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
+
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
+        
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
+        
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
+        
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
+        
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
+        
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
+
+        commitNewVertex();
+    }
 };
