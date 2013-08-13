@@ -6,6 +6,8 @@
 #include <GL/glew.h>
 #include <vector>
 
+#include "graphplay.h"
+
 // Do a forward declaration of MeshGeometry to reduce header
 // pollution.
 /*namespace collada {
@@ -26,8 +28,8 @@ namespace graphplay {
         GLuint getArrayBuffer() const { return m_data_buffer; }
         GLuint getElementBuffer() const { return m_element_buffer; }
 
-        unsigned int getPositionOffset() const { return m_position_offset; }
-        unsigned int getColorOffset() const { return m_color_offset; }
+        GLvoid *getPositionOffset() const { return BUFFER_OFFSET_BYTES(m_position_offset*sizeof(float)); }
+        GLvoid *getColorOffset() const { return BUFFER_OFFSET_BYTES(m_color_offset*sizeof(float)); }
         unsigned int getStride() const { return m_stride; }
         unsigned int getNumVertices() const { return m_vertex_elems.size(); }
 

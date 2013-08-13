@@ -12,6 +12,7 @@
 
 #include "Geometry.h"
 #include "Material.h"
+#include "graphplay.h"
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window);
 void initGLEW();
@@ -102,9 +103,9 @@ void display(int width, int height, graphplay::Geometry &geo, graphplay::Materia
 
     glBindBuffer(GL_ARRAY_BUFFER, geo.getArrayBuffer());
     glEnableVertexAttribArray(position_loc);
-    glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, stride, (const GLvoid *)geo.getPositionOffset());
+    glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, stride, geo.getPositionOffset());
     glEnableVertexAttribArray(color_loc);
-    glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_FALSE, stride, (const GLvoid *)geo.getColorOffset());
+    glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_FALSE, stride, geo.getColorOffset());
 
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));

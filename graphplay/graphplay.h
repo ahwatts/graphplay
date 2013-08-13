@@ -3,14 +3,8 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GRAPHPLAY_H_
 #define _GRAPHPLAY_GRAPHPLAY_GRAPHPLAY_H_
 
-#define BUFFER_OFFSET_BYTES(n) ((GLvoid *)n)
-
-#include "BasicShader.h"
-#include "Scene.h"
-
-namespace graphplay {
-    extern BasicShader *g_shader;
-    extern Scene *g_world;
-};
+#ifndef BUFFER_OFFSET_BYTES
+#define BUFFER_OFFSET_BYTES(n) ((GLvoid*)(n))
+#endif
 
 #endif
