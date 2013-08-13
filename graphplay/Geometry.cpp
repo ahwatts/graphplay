@@ -149,7 +149,7 @@ namespace graphplay {
     void Geometry::color4f(float r, float g, float b, float a) {
         if (m_color_offset < 0 && m_vertex_elems.size() == 0) {
             m_color_offset = m_stride;
-            m_stride += 3;
+            m_stride += 4;
         }
 
         if (m_color_offset < 0) { return; }
