@@ -23,6 +23,14 @@ namespace graphplay {
         void generateBuffers();
         void destroyBuffers();
 
+        GLuint getArrayBuffer() const { return m_data_buffer; }
+        GLuint getElementBuffer() const { return m_element_buffer; }
+
+        unsigned int getPositionOffset() const { return m_position_offset; }
+        unsigned int getColorOffset() const { return m_color_offset; }
+        unsigned int getStride() const { return m_stride; }
+        unsigned int getNumVertices() const { return m_vertex_elems.size(); }
+
         // This loads from the result of loading a Collada asset XML file.
         //void loadFromCollada(const collada::MeshGeometry &mesh_geo);
 

@@ -174,5 +174,10 @@ namespace graphplay {
 
             std::exit(1);
         }
+
+        m_position_loc = glGetAttribLocation(m_program, "aPosition");
+        m_color_loc = glGetAttribLocation(m_program, "aColor");
+        m_projection_loc = glGetUniformLocation(m_program, "uProjection");
+        m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
     }
 };
