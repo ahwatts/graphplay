@@ -1,5 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Geometry.h"
 #include "Material.h"
 #include "graphplay.h"
@@ -221,6 +223,9 @@ namespace graphplay {
             glEnableVertexAttribArray(tc_loc);
             glVertexAttribPointer(tc_loc, 2, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_tex_coord_offset*sizeof(float)));
         }
+
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
         glDrawElements(GL_TRIANGLES, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
