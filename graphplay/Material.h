@@ -4,6 +4,7 @@
 #define _GRAPHPLAY_GRAPHPLAY_MATERIAL_H_
 
 #include <GL/glew.h>
+#include <memory>
 
 namespace graphplay {
     class Material
@@ -56,6 +57,9 @@ namespace graphplay {
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };
+
+    typedef std::shared_ptr<Material> sp_Material;
+    typedef std::weak_ptr<Material> wp_Material;
 };
 
 #endif

@@ -98,26 +98,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BasicShader.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="Collada.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="graphplay.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="SphereBody.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BasicShader.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="graphplay.h" />
     <ClInclude Include="Collada.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="SphereBody.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Scene.h" />
   </ItemGroup>

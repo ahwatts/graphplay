@@ -4,6 +4,7 @@
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
 
 #include <GL/glew.h>
+#include <memory>
 #include <vector>
 
 #include "graphplay.h"
@@ -67,6 +68,9 @@ namespace graphplay {
     public:
         OctohedronGeometry();
     };
+
+    typedef std::shared_ptr<Geometry> sp_Geometry;
+    typedef std::weak_ptr<Geometry> wp_Geometry;
 };
 
 #endif

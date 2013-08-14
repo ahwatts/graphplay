@@ -89,7 +89,7 @@ void display(int width, int height, graphplay::Geometry &geo, graphplay::Materia
         0.1f, 100);
 
     auto model_view = glm::lookAt<float>(
-        glm::vec3(  0,  0,  5),
+        glm::vec3(  0,  0,  4),
         glm::vec3(  0,  0,  0),
         glm::vec3(  0,  1,  0));
 

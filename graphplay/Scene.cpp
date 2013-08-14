@@ -5,8 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/constants.hpp>
 #include "Scene.h"
-#include "SphereBody.h"
-#include "graphplay.h"
 
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
