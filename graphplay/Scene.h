@@ -3,9 +3,11 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_WORLD_H_
 #define _GRAPHPLAY_GRAPHPLAY_WORLD_H_
 
-#include <vector>
 #include <glm/glm.hpp>
-#include "Body.h"
+#include <memory>
+#include <vector>
+
+#include "Mesh.h"
 
 namespace graphplay {
     class Scene
@@ -15,15 +17,23 @@ namespace graphplay {
         ~Scene();
 
         void setViewport(unsigned int new_width, unsigned int new_height);
-        void update(float dt);
+
+        void addMesh(wp_Mesh mesh);
+        wp_Mesh removeMesh(wp_Mesh &mesh);
+
         void render();
 
     private:
         glm::mat4x4 m_perspective;
         glm::mat4x4 m_model_view;
         unsigned int m_vp_width, m_vp_height;
-        std::vector<Body*> m_bodies;
+
+        std::vector<wp_Mesh> m_meshes;
     };
+
+    typedef std::unique_ptr<Scene> up_Scene;
+    typedef std::shared_ptr<Scene> sp_Scene;
+    typedef std::weak_ptr<Scene> wp_Scene;
 };
 
 #endif

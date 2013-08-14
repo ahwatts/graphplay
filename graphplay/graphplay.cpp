@@ -2,22 +2,20 @@
 
 #include <GL/glew.h>
 #include <GL/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <string>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <vector>
 
 #include "Geometry.h"
 #include "Material.h"
-#include "graphplay.h"
+#include "Mesh.h"
+#include "Scene.h"
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window);
 void initGLEW();
 void bailout(const std::string &msg);
-void display(int width, int height, graphplay::Geometry &geo, graphplay::Material &mat);
 
 #if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0
 void keypress(GLFWwindow *wnd, int key, int action);
@@ -32,10 +30,15 @@ int main(int argc, char **argv) {
     initGLFW(width, height, "Graphplay", &window);
     initGLEW();
 
-    graphplay::OctohedronGeometry geo;
-    graphplay::GouraudMaterial mat;
-    geo.generateBuffers();
-    mat.createProgram();
+    graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
+    graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
+    octo_geo->generateBuffers();
+    gour_mat->createProgram();
+
+    graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, gour_mat));
+
+    graphplay::Scene scene(width, height);
+    scene.addMesh(octo);
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);
@@ -44,7 +47,7 @@ int main(int argc, char **argv) {
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        display(width, height, geo, mat);
+        scene.render();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -80,38 +83,6 @@ void bailout(const std::string &msg) {
     std::cerr << msg << std::endl;
     glfwTerminate();
     std::exit(1);
-}
-
-void display(int width, int height, graphplay::Geometry &geo, graphplay::Material &mat) {
-    auto projection = glm::perspective<float>(
-        90,
-        (float)width / (float)height, 
-        0.1f, 100);
-
-    auto model_view = glm::lookAt<float>(
-        glm::vec3(  0,  0,  4),
-        glm::vec3(  0,  0,  0),
-        glm::vec3(  0,  1,  0));
-
-    glUseProgram(mat.getProgram());
-
-    GLuint position_loc = mat.getPositionLocation();
-    GLuint color_loc = mat.getColorLocation();
-    GLuint proj_loc = mat.getProjectionLocation();
-    GLuint mv_loc = mat.getModelViewLocation();
-    unsigned int stride = geo.getStride()*sizeof(float);
-
-    glBindBuffer(GL_ARRAY_BUFFER, geo.getArrayBuffer());
-    glEnableVertexAttribArray(position_loc);
-    glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, stride, geo.getPositionOffset());
-    glEnableVertexAttribArray(color_loc);
-    glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_FALSE, stride, geo.getColorOffset());
-
-    glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geo.getElementBuffer());
-    glDrawElements(GL_TRIANGLES, geo.getNumVertices(), GL_UNSIGNED_INT, 0);
 }
 
 #if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0

@@ -35,6 +35,10 @@ namespace graphplay {
         GLuint m_max_vertex_attribs;
     };
 
+    typedef std::unique_ptr<Material> up_Material;
+    typedef std::shared_ptr<Material> sp_Material;
+    typedef std::weak_ptr<Material> wp_Material;
+
     class GouraudMaterial : public Material {
     public:
         GouraudMaterial();
@@ -57,9 +61,6 @@ namespace graphplay {
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };
-
-    typedef std::shared_ptr<Material> sp_Material;
-    typedef std::weak_ptr<Material> wp_Material;
 };
 
 #endif
