@@ -3,19 +3,27 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 #include "Material.h"
 
 namespace graphplay {
     // Helper functions.
 
-    // You need to do a delete [] on whatever's passed to shaders
-    // after this method is called.
-    void getAttachedShaders(GLuint program, int *num_shaders, GLuint **shaders) {
-        glGetProgramiv(program, GL_ATTACHED_SHADERS, num_shaders);
+    void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders) {
+        int num_shaders;
+        GLuint *shader_return;
+        glGetProgramiv(program, GL_ATTACHED_SHADERS, &num_shaders);
 
-        *shaders = new GLuint[*num_shaders];
-        glGetAttachedShaders(program, *num_shaders, NULL, *shaders);
+        shader_return = new GLuint[num_shaders];
+        glGetAttachedShaders(program, NULL, NULL, shader_return);
+
+        shaders.clear();
+        for (int i = 0; i < num_shaders; ++i) {
+            shaders.push_back(shader_return[i]);
+        }
+
+        delete [] shader_return;
     }
 
     GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
@@ -56,19 +64,16 @@ namespace graphplay {
 
     void Material::destroyProgram() {
         if (glIsProgram(m_program)) {
-            int num_shaders = 0;
-            GLuint *shaders = NULL;
+            std::vector<GLuint> shaders;
 
-            getAttachedShaders(m_program, &num_shaders, &shaders);
+            getAttachedShaders(m_program, shaders);
 
-            for (int i = 0; i < num_shaders; ++i) {
-                if (glIsShader(shaders[i])) {
-                    glDetachShader(m_program, shaders[i]);
-                    glDeleteShader(shaders[i]);
+            for (auto s : shaders) {
+                if (glIsShader(s)) {
+                    glDetachShader(m_program, s);
+                    glDeleteShader(s);
                 }
             }
-
-            delete [] shaders;
 
             glDeleteProgram(m_program);
             m_program = 0;
@@ -80,49 +85,42 @@ namespace graphplay {
     }
 
     GLuint Material::getVertexShader() const {
-        int num_shaders = 0, shader_type = 0;
-        GLuint *shaders = NULL, rv = 0;
-
         if (glIsProgram(m_program)) {
-            getAttachedShaders(m_program, &num_shaders, &shaders);
+            std::vector<GLuint> shaders;
+            getAttachedShaders(m_program, shaders);
 
-            for (int i = 0; i < num_shaders; ++i) {
-                if (glIsShader(shaders[i])) {
-                    glGetShaderiv(shaders[i], GL_SHADER_TYPE, &shader_type);
+            for (auto s : shaders) {
+                if (glIsShader(s)) {
+                    int shader_type = 0;
+                    glGetShaderiv(s, GL_SHADER_TYPE, &shader_type);
+
                     if (shader_type == GL_VERTEX_SHADER) {
-                        rv = shaders[i];
-                        break;
+                        return s;
                     }
                 }
             }
-
-            delete [] shaders;
         }
 
-        return rv;
+        return 0;
     }
 
     GLuint Material::getFragmentShader() const {
-        int num_shaders = 0, shader_type = 0;
-        GLuint *shaders = NULL, rv = 0;
-
         if (glIsProgram(m_program)) {
-            getAttachedShaders(m_program, &num_shaders, &shaders);
+            std::vector<GLuint> shaders;
+            getAttachedShaders(m_program, shaders);
 
-            for (int i = 0; i < num_shaders; ++i) {
-                if (glIsShader(shaders[i])) {
-                    glGetShaderiv(shaders[i], GL_SHADER_TYPE, &shader_type);
+            for (auto s : shaders) {
+                if (glIsShader(s)) {
+                    int shader_type = 0;
+                    glGetShaderiv(s, GL_SHADER_TYPE, &shader_type);
                     if (shader_type == GL_FRAGMENT_SHADER) {
-                        rv = shaders[i];
-                        break;
+                        return s;
                     }
                 }
             }
-
-            delete [] shaders;
         }
 
-        return rv;
+        return 0;
     }
 
     // Class GouraudMaterial.
