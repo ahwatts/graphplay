@@ -16,7 +16,7 @@ namespace graphplay {
         glGetProgramiv(program, GL_ATTACHED_SHADERS, &num_shaders);
 
         shader_return = new GLuint[num_shaders];
-        glGetAttachedShaders(program, NULL, NULL, shader_return);
+        glGetAttachedShaders(program, num_shaders, NULL, shader_return);
 
         shaders.clear();
         for (int i = 0; i < num_shaders; ++i) {
