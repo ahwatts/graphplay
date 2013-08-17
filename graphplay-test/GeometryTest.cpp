@@ -4,6 +4,9 @@
 
 #include "../graphplay/Geometry.h"
 
-TEST(Geometry, DefaultConstructor) {
-    ASSERT_TRUE(true);
-}
+namespace graphplay {
+    TEST(Geometry, DefaultConstructor) {
+        Geometry g;
+        ASSERT_EQ(0, g.m_stride);
+    }
+};

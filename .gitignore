@@ -6,6 +6,8 @@
 /graphplay/Debug - Console
 /graphplay/Release
 
+/graphplay-test/Debug
+
 *.sdf
 *.suo
 *.opensdf

@@ -5,6 +5,7 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <gtest/gtest_prod.h>
 #include <memory>
 #include <vector>
 
@@ -46,6 +47,8 @@ namespace graphplay {
 
         GLuint m_data_buffer;
         GLuint m_element_buffer;
+
+        FRIEND_TEST(Geometry, DefaultConstructor);
     };
 
     typedef std::unique_ptr<Geometry> up_Geometry;
