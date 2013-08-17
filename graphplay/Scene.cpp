@@ -50,8 +50,7 @@ namespace graphplay {
             glm::vec3(  0,  1,  0));
 
         for (auto wm : m_meshes) {
-            auto sm = wm.lock();
-            if (sm) {
+            if (auto sm = wm.lock()) {
                 sm->render(m_perspective, m_model_view);
             }
         }
