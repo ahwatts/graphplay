@@ -1,4 +1,6 @@
-.PHONY: graphplay graphplay-test clean
+.PHONY: ALL graphplay graphplay-test clean
+
+ALL: graphplay graphplay-test
 
 graphplay:
 	$(MAKE) -C graphplay
