@@ -67,7 +67,7 @@ namespace graphplay {
         private:
             VertexIterator();
 
-            std::shared_ptr<const Geometry> m_geo;
+            const Geometry &m_geo;
             unsigned int m_loc;
         };
         
