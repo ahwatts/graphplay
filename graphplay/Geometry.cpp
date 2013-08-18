@@ -106,8 +106,9 @@ namespace graphplay {
         if (index < m_vertex_elems.size()) {
             m_vertex_elems.push_back(index);
         } else {
+            unsigned int new_index = m_vertex_attrs.size() / m_stride;
             for (float v : m_new_vertex) { m_vertex_attrs.push_back(v); }
-            m_vertex_elems.push_back(m_vertex_elems.size());
+            m_vertex_elems.push_back(new_index);
         }
 
         m_new_vertex = std::vector<float>();
@@ -253,7 +254,7 @@ namespace graphplay {
 
     Geometry::value_type Geometry::VertexIterator::operator*() {
         std::vector<float> rv(m_geo.m_stride);
-        unsigned int vindex = m_geo.m_vertex_elems[m_loc*m_geo.m_stride];
+        unsigned int vindex = m_geo.m_vertex_elems[m_loc];
         unsigned int base_offset = vindex*m_geo.m_stride;
 
         for (unsigned int i = 0; i < m_geo.m_stride; ++i) {
