@@ -231,6 +231,41 @@ namespace graphplay {
         glDrawElements(GL_TRIANGLES, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
     }
 
+    Geometry::VertexIterator::VertexIterator(const Geometry &geo, unsigned int init_loc)
+        : m_geo(&geo),
+          m_loc(init_loc) { }
+
+    bool Geometry::VertexIterator::operator==(const Geometry::VertexIterator &other) const {
+        return !(*this != other);
+    }
+
+    bool Geometry::VertexIterator::operator!=(const Geometry::VertexIterator &other) const {
+        return m_geo.get() != other.m_geo.get() || m_loc != other.m_loc;
+    }
+
+    Geometry::value_type Geometry::VertexIterator::operator*() {
+        std::vector<float> rv(m_geo->m_stride);
+        unsigned int vindex = m_geo->m_vertex_elems[m_loc*m_geo->m_stride];
+        unsigned int base_offset = vindex*m_geo->m_stride;
+
+        for (unsigned int i = 0; i < m_geo->m_stride; ++i) {
+            rv[i] = m_geo->m_vertex_attrs[base_offset + i];
+        }
+
+        return rv;
+    }
+
+    Geometry::VertexIterator &Geometry::VertexIterator::operator++() {
+        ++m_loc;
+        return *this;
+    }
+
+    Geometry::VertexIterator Geometry::VertexIterator::operator++(int) {
+        Geometry::VertexIterator clone(*this);
+        ++m_loc;
+        return clone;
+    }
+
     OctohedronGeometry::OctohedronGeometry() : Geometry() {
         vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
         vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);

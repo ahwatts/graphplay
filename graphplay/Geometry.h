@@ -5,7 +5,6 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <gtest/gtest_prod.h>
 #include <memory>
 #include <vector>
 
@@ -21,6 +20,9 @@ namespace graphplay {
         void generateBuffers();
         void destroyBuffers();
 
+        // Renders the geometry.
+        void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const Material &material) const;
+
         // These work sort of like OpenGL's immediate-vertex functions, if you
         // want to generate the geometry directly. You'll need to call 
         // generateBuffers() after calling them.
@@ -28,11 +30,47 @@ namespace graphplay {
         void normal3f(float x, float y, float z);
         void color4f(float r, float g, float b, float a);
         void texCoord2f(float s, float t);
-        
         void clearVertices();
 
-        void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const Material &material) const;
+        // Getters for the various data parameters.
+        inline unsigned int getNumVertices() const { return m_vertex_elems.size(); }
+        inline unsigned int getStride() const { return m_stride; }
+        inline int getPositionOffset() const { return m_position_offset; }
+        inline int getNormalOffset() const { return m_normal_offset; }
+        inline int getColorOffset() const { return m_color_offset; }
+        inline int getTexCoordOffset() const { return m_tex_coord_offset; }
 
+        // Iterator mumbo-jumbo so that we can walk the vertex list.
+        class VertexIterator;
+
+        friend class VertexIterator;
+        typedef VertexIterator iterator;
+        typedef std::ptrdiff_t difference_type;
+        typedef std::size_t size_type;
+        typedef std::vector<float> value_type;
+        typedef value_type* pointer;
+        typedef value_type& reference;
+
+        iterator begin() const;
+        iterator end() const;
+
+        class VertexIterator {
+        public:
+            VertexIterator(const Geometry &geo, unsigned int init_loc);
+
+            bool operator==(const VertexIterator &other) const;
+            bool operator!=(const VertexIterator &other) const;
+            Geometry::value_type operator*();
+            VertexIterator &operator++();   // prefix
+            VertexIterator operator++(int); // postfix
+
+        private:
+            VertexIterator();
+
+            std::shared_ptr<const Geometry> m_geo;
+            unsigned int m_loc;
+        };
+        
     protected:
         void commitNewVertex();
         unsigned int findVertex(std::vector<float> &vdata);
@@ -47,8 +85,6 @@ namespace graphplay {
 
         GLuint m_data_buffer;
         GLuint m_element_buffer;
-
-        FRIEND_TEST(Geometry, DefaultConstructor);
     };
 
     typedef std::unique_ptr<Geometry> up_Geometry;

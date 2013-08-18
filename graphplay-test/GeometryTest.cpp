@@ -7,6 +7,5 @@
 namespace graphplay {
     TEST(Geometry, DefaultConstructor) {
         Geometry g;
-        ASSERT_EQ(0, g.m_stride);
     }
 };
