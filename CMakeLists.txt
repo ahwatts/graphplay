@@ -37,3 +37,8 @@ include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)
+
+enable_testing()
+add_test(NAME graphplay-test
+         WORKING_DIRECTORY .
+         COMMAND graphplay-test)
