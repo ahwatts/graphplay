@@ -8,6 +8,9 @@
 
 /graphplay-test/Debug
 
+/msvc
+/mingw
+
 *.sdf
 *.suo
 *.opensdf

@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 2.8.10)
+project(graphplay)
+
+set(CMAKE_PREFIX_PATH ../graphplay-deps)
+
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+
+if(WIN32 AND MINGW)
+  add_definitions(-DGLEW_STATIC)
+endif(WIN32 AND MINGW)
+
+if(MINGW AND CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION LESS "4.8")
+  set(CMAKE_CXX_FLAGS -std=gnu++11)
+endif(MINGW AND CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION LESS "4.8")
+
+find_path(GLFW_INCLUDE_PATH GL/glfw3.h)
+find_library(GLFW_LIBRARY NAMES glfw3)
+set(GLFW_INCLUDE_DIRS ${GLFW_INCLUDE_DIR})
+set(GLFW_LIBRARIES ${GLFW_LIBRARY})
+
+find_path(GLM_INCLUDE_PATH glm/glm.hpp)
+set(GLM_INCLUDE_DIRS ${GLM_INCLUDE_PATH})
+
+include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS})
+
+add_subdirectory(graphplay)
