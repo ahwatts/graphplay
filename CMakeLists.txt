@@ -22,6 +22,14 @@ set(GLFW_LIBRARIES ${GLFW_LIBRARY})
 find_path(GLM_INCLUDE_PATH glm/glm.hpp)
 set(GLM_INCLUDE_DIRS ${GLM_INCLUDE_PATH})
 
-include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS})
+find_path(GTEST_INCLUDE_PATH gtest/gtest.h)
+find_library(GTEST_LIBRARY NAMES gtest)
+find_library(GTEST_MAIN_LIBRARY gtest_main)
+set(GTEST_INCLUDE_DIRS ${GTEST_INCLUDE_PATH})
+set(GTEST_LIBRARIES ${GTEST_LIBRARY})
+set(GTEST_MAIN_LIBRARIES ${GTEST_MAIN_LIBRARY})
+
+include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
 
 add_subdirectory(graphplay)
+add_subdirectory(graphplay-test)
