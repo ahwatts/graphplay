@@ -30,6 +30,7 @@ namespace graphplay {
         void normal3f(float x, float y, float z);
         void color4f(float r, float g, float b, float a);
         void texCoord2f(float s, float t);
+        void commitNewVertex();
         void clearVertices();
 
         // Getters for the various data parameters.
@@ -72,7 +73,6 @@ namespace graphplay {
         };
         
     protected:
-        void commitNewVertex();
         unsigned int findVertex(std::vector<float> &vdata);
 
     private:
@@ -82,6 +82,7 @@ namespace graphplay {
         unsigned int m_stride;
 
         std::vector<float> m_new_vertex;
+        bool m_new_vertex_started;
 
         GLuint m_data_buffer;
         GLuint m_element_buffer;

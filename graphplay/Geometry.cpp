@@ -16,6 +16,7 @@ namespace graphplay {
           m_tex_coord_offset(-1),
           m_stride(0),
           m_new_vertex(),
+          m_new_vertex_started(false),
           m_data_buffer(0),
           m_element_buffer(0) { }
 
@@ -99,7 +100,7 @@ namespace graphplay {
     }*/
 
     void Geometry::commitNewVertex() {
-        if (m_new_vertex.size() == 0) return;
+        if (!m_new_vertex_started || m_position_offset < 0) return;
 
         unsigned int index = findVertex(m_new_vertex);
 
@@ -111,7 +112,8 @@ namespace graphplay {
             m_vertex_elems.push_back(new_index);
         }
 
-        m_new_vertex = std::vector<float>();
+        m_new_vertex = std::vector<float>(m_stride);
+        m_new_vertex_started = false;
     }
 
     unsigned int Geometry::findVertex(std::vector<float> &vdata) {
@@ -135,7 +137,6 @@ namespace graphplay {
 
     void Geometry::vertex3f(float x, float y, float z) {
         commitNewVertex();
-        m_new_vertex = std::vector<float>(m_stride);
 
         if (m_position_offset < 0 && m_vertex_elems.size() == 0) {
             m_position_offset = m_stride;
@@ -149,6 +150,7 @@ namespace graphplay {
         m_new_vertex[m_position_offset]     = x;
         m_new_vertex[m_position_offset + 1] = y;
         m_new_vertex[m_position_offset + 2] = z;
+        m_new_vertex_started = true;
     }
 
     void Geometry::color4f(float r, float g, float b, float a) {
@@ -165,6 +167,7 @@ namespace graphplay {
         m_new_vertex[m_color_offset + 1] = g;
         m_new_vertex[m_color_offset + 2] = b;
         m_new_vertex[m_color_offset + 3] = a;
+        m_new_vertex_started = true;
     }
 
     void Geometry::generateBuffers() {
