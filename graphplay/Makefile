@@ -1,7 +1,7 @@
-CPPFLAGS=-Wall -ggdb -pg
+CPPFLAGS=-Wall -ggdb -pg -I../../graphplay-deps/include -DGLEW_STATIC
 CXXFLAGS=-std=c++11
-LDFLAGS=-Wl,--as-needed -ggdb -pg
-LDLIBS=-lstdc++ -lm -lglfw -lGL -lGLEW
+LDFLAGS=-Wl,--as-needed -ggdb -pg -L../../graphplay-deps/lib/mingw
+LDLIBS=-lstdc++ -lglew32 -lglfw3 -lopengl32 -lglu32 -lgdi32
 SOURCES=$(wildcard *.cpp)
 
 graphplay: $(SOURCES:.cpp=.o)

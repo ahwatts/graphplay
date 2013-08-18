@@ -14,9 +14,11 @@
 *.d
 *.o
 *.blend1
-/gmon.out
+gmon.out
 /graphplay/graphplay
 /graphplay/graphplay.exe
+/graphplay-test/graphplay-test
+/graphplay-test/graphplay-test.exe
 
 !/glew.dll
 !/glfw3.dll
