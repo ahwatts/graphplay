@@ -94,6 +94,29 @@ namespace graphplay {
         ASSERT_EQ(1, num);
     }
 
+    TEST(Geometry, AddVertexMultipleAttributesCannotChangeAttributes) {
+        Geometry g;
+
+        g.vertex3f(1.0, 2.0, 3.0);
+        g.vertex3f(4.0, 5.0, 6.0);
+        g.color4f(1.0, 0.0, 0.0, 1.0);
+        g.commitNewVertex();
+
+        ASSERT_EQ(2, g.getNumVertices());
+        ASSERT_EQ(3, g.getStride());
+        ASSERT_EQ(0, g.getPositionOffset());
+        ASSERT_GT(0, g.getNormalOffset());
+        ASSERT_GT(0, g.getColorOffset());
+        ASSERT_GT(0, g.getTexCoordOffset());
+
+        unsigned int num = 0;
+        for (auto v : g) {
+            ASSERT_EQ(3, v.size());
+            ++num;
+        }
+        ASSERT_EQ(2, num);
+    }
+
     TEST(OctohedronGeometry, DefaultConstructor) {
         OctohedronGeometry g;
 
