@@ -24,7 +24,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 find_path(GLFW_INCLUDE_PATH GL/glfw3.h)
+if(MSVC)
+find_library(GLFW_LIBRARY NAMES glfw3dll)
+else()
 find_library(GLFW_LIBRARY NAMES glfw3 glfw)
+endif(MSVC)
 set(GLFW_INCLUDE_DIRS ${GLFW_INCLUDE_DIR})
 set(GLFW_LIBRARIES ${GLFW_LIBRARY})
 
@@ -32,8 +36,15 @@ find_path(GLM_INCLUDE_PATH glm/glm.hpp)
 set(GLM_INCLUDE_DIRS ${GLM_INCLUDE_PATH})
 
 find_path(GTEST_INCLUDE_PATH gtest/gtest.h)
+
+if(MSVC)
+find_library(GTEST_LIBRARY NAMES gtestd)
+find_library(GTEST_MAIN_LIBRARY gtest_main-mdd)
+else()
 find_library(GTEST_LIBRARY NAMES gtest)
 find_library(GTEST_MAIN_LIBRARY gtest_main)
+endif(MSVC)
+
 set(GTEST_INCLUDE_DIRS ${GTEST_INCLUDE_PATH})
 set(GTEST_LIBRARIES ${GTEST_LIBRARY})
 set(GTEST_MAIN_LIBRARIES ${GTEST_MAIN_LIBRARY})

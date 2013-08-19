@@ -12,7 +12,3 @@ target_link_libraries(graphplay-test ${GTEST_LIBRARIES}
 if(MSVC AND CMAKE_CXX_COMPILER_VERSION STRLESS "18.0")
   set_target_properties(graphplay-test PROPERTIES COMPILE_DEFINITIONS _VARIADIC_MAX=10)
 endif(MSVC AND CMAKE_CXX_COMPILER_VERSION STRLESS "18.0")
-
-if(MSVC)
-  set_target_properties(graphplay-test PROPERTIES COMPILE_FLAGS /MTd)
-endif(MSVC)
