@@ -146,13 +146,13 @@ namespace graphplay {
         OctohedronGeometry octohedron;
         octohedron.generateBuffers();
 
-        ASSERT_TRUE(glIsBuffer(octohedron.getArrayBuffer()));
-        ASSERT_TRUE(glIsBuffer(octohedron.getElementArrayBuffer()));
+        ASSERT_EQ(GL_TRUE, glIsBuffer(octohedron.getArrayBuffer()));
+        ASSERT_EQ(GL_TRUE, glIsBuffer(octohedron.getElementArrayBuffer()));
 
         octohedron.destroyBuffers();
 
-        ASSERT_FALSE(glIsBuffer(octohedron.getArrayBuffer()));
-        ASSERT_FALSE(glIsBuffer(octohedron.getElementArrayBuffer()));
+        ASSERT_EQ(GL_FALSE, glIsBuffer(octohedron.getArrayBuffer()));
+        ASSERT_EQ(GL_FALSE, glIsBuffer(octohedron.getElementArrayBuffer()));
     }
 
     TEST_F(GeometryTest, Destructor) {
@@ -163,7 +163,7 @@ namespace graphplay {
         delete g;
         g = nullptr;
 
-        ASSERT_FALSE(glIsBuffer(ab));
-        ASSERT_FALSE(glIsBuffer(eab));
+        ASSERT_EQ(GL_FALSE, glIsBuffer(ab));
+        ASSERT_EQ(GL_FALSE, glIsBuffer(eab));
     }
 };
