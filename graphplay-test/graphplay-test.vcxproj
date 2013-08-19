@@ -10,10 +10,13 @@
     <ClCompile Include="..\graphplay\Geometry.cpp" />
     <ClCompile Include="..\graphplay\Material.cpp" />
     <ClCompile Include="GeometryTest.cpp" />
+    <ClCompile Include="MaterialTest.cpp" />
+    <ClCompile Include="TestOpenGLContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\graphplay\Geometry.h" />
     <ClInclude Include="..\graphplay\Material.h" />
+    <ClInclude Include="TestOpenGLContext.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7D124B1F-1A07-4A2A-BC74-700AB077BB11}</ProjectGuid>
@@ -45,12 +48,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_VARIADIC_MAX=10;_GRAPHPLAY_TEST_;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\andrew\Projects\graphplay-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gtest.lib;gtest_main.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gtest.lib;gtest_main.lib;glfw3.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\andrew\Projects\graphplay-deps\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
