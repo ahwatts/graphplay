@@ -1,5 +1,12 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <GL/glew.h>
+#include <GL/glfw3.h>
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <gtest/gtest.h>
 
 #include "../graphplay/Geometry.h"
@@ -137,5 +144,49 @@ namespace graphplay {
             ++num;
         }
         ASSERT_EQ(8*3, num);
+    }
+
+    class GeometryOpenGLTest : public testing::Test {
+    protected:
+        OctohedronGeometry octohedron;
+        GLFWwindow *window;
+
+        void bailout(const std::string &msg) {
+            std::cerr << msg << std::endl;
+            glfwTerminate();
+            std::exit(1);
+        }
+
+        virtual void SetUp() {
+            if (!glfwInit()) {
+                bailout("Could not initialize GLFW!");
+            }
+
+            window = glfwCreateWindow(640, 480, "Graphplay Test Window", NULL, NULL);
+
+            if (!window) {
+                bailout("Could not create window!");
+            }
+
+            glfwMakeContextCurrent(window);
+
+            GLenum glew_err = glewInit();
+            if (glew_err != GLEW_OK) {
+                std::ostringstream msg;
+                msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
+                bailout(msg.str());
+            }
+        }
+
+        virtual void TearDown() {
+            glfwTerminate();
+        }
+    };
+
+    TEST_F(GeometryOpenGLTest, GenerateBuffers) {
+        octohedron.generateBuffers();
+
+        ASSERT_TRUE(glIsBuffer(octohedron.getArrayBuffer()));
+        ASSERT_TRUE(glIsBuffer(octohedron.getElementArrayBuffer()));
     }
 };

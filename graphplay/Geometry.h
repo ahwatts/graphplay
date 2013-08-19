@@ -20,6 +20,9 @@ namespace graphplay {
         void generateBuffers();
         void destroyBuffers();
 
+        inline GLuint getArrayBuffer() const { return m_data_buffer; }
+        inline GLuint getElementArrayBuffer() const { return m_element_buffer; }
+
         // Renders the geometry.
         void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const Material &material) const;
 
