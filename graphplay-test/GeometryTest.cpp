@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <gtest/gtest.h>
@@ -183,18 +184,27 @@ namespace graphplay {
         }
     };
 
-    TEST_F(GeometryOpenGLTest, GenerateBuffers) {
+    TEST_F(GeometryOpenGLTest, BufferLifecycle) {
         octohedron.generateBuffers();
 
         ASSERT_TRUE(glIsBuffer(octohedron.getArrayBuffer()));
         ASSERT_TRUE(glIsBuffer(octohedron.getElementArrayBuffer()));
-    }
 
-    TEST_F(GeometryOpenGLTest, DestroyBuffers) {
-        octohedron.generateBuffers();
         octohedron.destroyBuffers();
 
         ASSERT_FALSE(glIsBuffer(octohedron.getArrayBuffer()));
         ASSERT_FALSE(glIsBuffer(octohedron.getElementArrayBuffer()));
+    }
+
+    TEST_F(GeometryOpenGLTest, Destructor) {
+        Geometry *g = new OctohedronGeometry();
+        g->generateBuffers();
+        GLuint ab = g->getArrayBuffer();
+        GLuint eab = g->getElementArrayBuffer();
+        delete g;
+        g = nullptr;
+
+        ASSERT_FALSE(glIsBuffer(ab));
+        ASSERT_FALSE(glIsBuffer(eab));
     }
 };
