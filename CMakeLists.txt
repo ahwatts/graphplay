@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.10)
 project(graphplay)
 
+message(STATUS "Configuring for build type: " ${CMAKE_BUILD_TYPE})
+
 set(CMAKE_PREFIX_PATH ../graphplay-deps)
 
 find_package(OpenGL REQUIRED)
