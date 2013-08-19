@@ -15,6 +15,7 @@ namespace graphplay {
     {
     public:
         Geometry();
+        ~Geometry();
 
         // These control the data on the GPU.
         void generateBuffers();
@@ -89,6 +90,7 @@ namespace graphplay {
 
         GLuint m_data_buffer;
         GLuint m_element_buffer;
+        bool m_buffers_created;
     };
 
     typedef std::unique_ptr<Geometry> up_Geometry;

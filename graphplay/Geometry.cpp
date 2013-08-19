@@ -18,7 +18,14 @@ namespace graphplay {
           m_new_vertex(),
           m_new_vertex_started(false),
           m_data_buffer(0),
-          m_element_buffer(0) { }
+          m_element_buffer(0),
+          m_buffers_created(false) { }
+
+    Geometry::~Geometry() {
+        if (m_buffers_created) {
+            destroyBuffers();
+        }
+    }
 
     /*Geometry::Geometry(const collada::MeshGeometry &mesh_geo)
         : m_vertex_attrs(),
@@ -189,6 +196,20 @@ namespace graphplay {
                      m_vertex_elems.size() * sizeof(GLuint),
                      m_vertex_elems.data(),
                      GL_STATIC_DRAW);
+
+        m_buffers_created = true;
+    }
+
+    void Geometry::destroyBuffers() {
+        if (m_buffers_created) {
+            if (glIsBuffer(m_data_buffer)) {
+                glDeleteBuffers(1, &m_data_buffer);
+            }
+
+            if (glIsBuffer(m_element_buffer)) {
+                glDeleteBuffers(1, &m_element_buffer);
+            }
+        }
     }
 
     void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {

@@ -189,4 +189,12 @@ namespace graphplay {
         ASSERT_TRUE(glIsBuffer(octohedron.getArrayBuffer()));
         ASSERT_TRUE(glIsBuffer(octohedron.getElementArrayBuffer()));
     }
+
+    TEST_F(GeometryOpenGLTest, DestroyBuffers) {
+        octohedron.generateBuffers();
+        octohedron.destroyBuffers();
+
+        ASSERT_FALSE(glIsBuffer(octohedron.getArrayBuffer()));
+        ASSERT_FALSE(glIsBuffer(octohedron.getElementArrayBuffer()));
+    }
 };
