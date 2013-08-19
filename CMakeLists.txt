@@ -20,7 +20,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   else()
     set(CMAKE_CXX_FLAGS "-Wall")
   endif(CMAKE_CXX_COMPILER_VERSION STRLESS "4.8")
+
   set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -pg")
+  set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 find_path(GLFW_INCLUDE_PATH GL/glfw3.h)
