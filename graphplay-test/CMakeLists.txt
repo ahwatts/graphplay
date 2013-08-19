@@ -1,4 +1,6 @@
 add_executable(graphplay-test GeometryTest.cpp
+                              MaterialTest.cpp
+                              TestOpenGLContext.cpp
                               ../graphplay/Geometry.cpp
                               ../graphplay/Material.cpp)
 target_link_libraries(graphplay-test ${GTEST_LIBRARIES}

@@ -1,15 +1,8 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <GL/glew.h>
-#include <GL/glfw3.h>
-
-#include <cstdlib>
-#include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
 #include <gtest/gtest.h>
 
+#include "TestOpenGLContext.h"
 #include "../graphplay/Geometry.h"
 
 namespace graphplay {
@@ -147,44 +140,10 @@ namespace graphplay {
         ASSERT_EQ(8*3, num);
     }
 
-    class GeometryOpenGLTest : public testing::Test {
-    protected:
+    class GeometryTest : public TestOpenGLContext { };
+
+    TEST_F(GeometryTest, BufferLifecycle) {
         OctohedronGeometry octohedron;
-        GLFWwindow *window;
-
-        void bailout(const std::string &msg) {
-            std::cerr << msg << std::endl;
-            glfwTerminate();
-            std::exit(1);
-        }
-
-        virtual void SetUp() {
-            if (!glfwInit()) {
-                bailout("Could not initialize GLFW!");
-            }
-
-            window = glfwCreateWindow(640, 480, "Graphplay Test Window", NULL, NULL);
-
-            if (!window) {
-                bailout("Could not create window!");
-            }
-
-            glfwMakeContextCurrent(window);
-
-            GLenum glew_err = glewInit();
-            if (glew_err != GLEW_OK) {
-                std::ostringstream msg;
-                msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
-                bailout(msg.str());
-            }
-        }
-
-        virtual void TearDown() {
-            glfwTerminate();
-        }
-    };
-
-    TEST_F(GeometryOpenGLTest, BufferLifecycle) {
         octohedron.generateBuffers();
 
         ASSERT_TRUE(glIsBuffer(octohedron.getArrayBuffer()));
@@ -196,7 +155,7 @@ namespace graphplay {
         ASSERT_FALSE(glIsBuffer(octohedron.getElementArrayBuffer()));
     }
 
-    TEST_F(GeometryOpenGLTest, Destructor) {
+    TEST_F(GeometryTest, Destructor) {
         Geometry *g = new OctohedronGeometry();
         g->generateBuffers();
         GLuint ab = g->getArrayBuffer();
