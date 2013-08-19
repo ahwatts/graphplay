@@ -6,7 +6,7 @@
 #include "../graphplay/Geometry.h"
 
 namespace graphplay {
-    TEST(Geometry, DefaultConstructor) {
+    TEST(GeometryTest, DefaultConstructor) {
         Geometry g;
 
         ASSERT_EQ(0, g.getNumVertices());
@@ -18,7 +18,7 @@ namespace graphplay {
         ASSERT_EQ(g.begin(), g.end());
     }
 
-    TEST(Geometry, AddVertex) {
+    TEST(GeometryTest, AddVertex) {
         Geometry g;
 
         g.vertex3f(1.0, 2.0, 3.0);
@@ -42,7 +42,7 @@ namespace graphplay {
         ASSERT_EQ(1, num);
     }
 
-    TEST(Geometry, AddVertexCommitsPreviousVertex) {
+    TEST(GeometryTest, AddVertexCommitsPreviousVertex) {
         Geometry g;
 
         g.vertex3f(1.0, 2.0, 3.0);
@@ -66,7 +66,7 @@ namespace graphplay {
         ASSERT_EQ(1, num);
     }
 
-    TEST(Geometry, AddVertexMultipleAttributesPositionNotFirst) {
+    TEST(GeometryTest, AddVertexMultipleAttributesPositionNotFirst) {
         Geometry g;
 
         g.color4f(1.0, 0.5, 1.0, 1.0);
@@ -95,7 +95,7 @@ namespace graphplay {
         ASSERT_EQ(1, num);
     }
 
-    TEST(Geometry, AddVertexMultipleAttributesCannotChangeAttributes) {
+    TEST(GeometryTest, AddVertexMultipleAttributesCannotChangeAttributes) {
         Geometry g;
 
         g.vertex3f(1.0, 2.0, 3.0);
@@ -118,7 +118,7 @@ namespace graphplay {
         ASSERT_EQ(2, num);
     }
 
-    TEST(OctohedronGeometry, DefaultConstructor) {
+    TEST(GeometryTest, OctohedronGeometryDefaultConstructor) {
         OctohedronGeometry g;
 
         ASSERT_EQ(8*3, g.getNumVertices());
@@ -140,9 +140,9 @@ namespace graphplay {
         ASSERT_EQ(8*3, num);
     }
 
-    class GeometryTest : public TestOpenGLContext { };
+    class GeometryTestWithContext : public TestOpenGLContext { };
 
-    TEST_F(GeometryTest, BufferLifecycle) {
+    TEST_F(GeometryTestWithContext, BufferLifecycle) {
         OctohedronGeometry octohedron;
         octohedron.generateBuffers();
 
@@ -155,7 +155,7 @@ namespace graphplay {
         ASSERT_EQ(GL_FALSE, glIsBuffer(octohedron.getElementArrayBuffer()));
     }
 
-    TEST_F(GeometryTest, Destructor) {
+    TEST_F(GeometryTestWithContext, Destructor) {
         Geometry *g = new OctohedronGeometry();
         g->generateBuffers();
         GLuint ab = g->getArrayBuffer();
