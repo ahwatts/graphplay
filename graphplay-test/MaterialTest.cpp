@@ -14,6 +14,14 @@ namespace graphplay {
         ASSERT_EQ(GL_FALSE, glIsProgram(mat.getProgram()));
         ASSERT_EQ(GL_FALSE, glIsShader(mat.getVertexShader()));
         ASSERT_EQ(GL_FALSE, glIsShader(mat.getFragmentShader()));
+
+        ASSERT_GT(0, mat.getPositionLocation());
+        ASSERT_GT(0, mat.getNormalLocation());
+        ASSERT_GT(0, mat.getColorLocation());
+        ASSERT_GT(0, mat.getTexCoordLocation());
+
+        ASSERT_GT(0, mat.getProjectionLocation());
+        ASSERT_GT(0, mat.getModelViewLocation());
     }
 
     TEST_F(MaterialTest, CreateProgram) {
@@ -23,6 +31,14 @@ namespace graphplay {
         ASSERT_EQ(GL_TRUE, glIsProgram(mat.getProgram()));
         ASSERT_EQ(GL_TRUE, glIsShader(mat.getVertexShader()));
         ASSERT_EQ(GL_TRUE, glIsShader(mat.getFragmentShader()));
+
+        ASSERT_LE(0, mat.getPositionLocation());
+        ASSERT_GT(0, mat.getNormalLocation());
+        ASSERT_LE(0, mat.getColorLocation());
+        ASSERT_GT(0, mat.getTexCoordLocation());
+
+        ASSERT_LE(0, mat.getProjectionLocation());
+        ASSERT_LE(0, mat.getModelViewLocation());
     }
 
     TEST_F(MaterialTest, MaterialLifecycle) {
@@ -48,20 +64,5 @@ namespace graphplay {
         ASSERT_EQ(GL_FALSE, glIsProgram(p));
         ASSERT_EQ(GL_FALSE, glIsShader(s1));
         ASSERT_EQ(GL_FALSE, glIsShader(s2));
-    }
-
-    TEST_F(MaterialTest, GouraudMaterialAttributeAndUniformPositions) {
-        GouraudMaterial mat;
-        GLuint max = mat.getMaxVertexAttribs();
-
-        mat.createProgram();
-
-        ASSERT_GT(max, mat.getPositionLocation());
-        ASSERT_GT(max, mat.getColorLocation());
-        ASSERT_EQ(max, mat.getNormalLocation());
-        ASSERT_EQ(max, mat.getTexCoordLocation());
-
-        ASSERT_GT(max, mat.getProjectionLocation());
-        ASSERT_GT(max, mat.getModelViewLocation());
     }
 };

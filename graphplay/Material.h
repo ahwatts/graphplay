@@ -20,19 +20,16 @@ namespace graphplay {
         GLuint getFragmentShader() const;
         GLuint getProgram() const;
 
-        virtual GLuint getPositionLocation() const { return m_max_vertex_attribs; }
-        virtual GLuint getNormalLocation() const { return m_max_vertex_attribs; }
-        virtual GLuint getColorLocation() const { return m_max_vertex_attribs; }
-        virtual GLuint getTexCoordLocation() const { return m_max_vertex_attribs; }
+        virtual GLint getPositionLocation() const { return -1; }
+        virtual GLint getNormalLocation() const { return -1; }
+        virtual GLint getColorLocation() const { return -1; }
+        virtual GLint getTexCoordLocation() const { return -1; }
 
-        virtual GLuint getProjectionLocation() const { return m_max_vertex_attribs; }
-        virtual GLuint getModelViewLocation() const { return m_max_vertex_attribs; }
-
-        GLuint getMaxVertexAttribs() const { return m_max_vertex_attribs; }
+        virtual GLint getProjectionLocation() const { return -1; }
+        virtual GLint getModelViewLocation() const { return -1; }
 
     protected:
         GLuint m_program;
-        GLuint m_max_vertex_attribs;
     };
 
     typedef std::unique_ptr<Material> up_Material;
@@ -46,18 +43,18 @@ namespace graphplay {
 
         virtual void createProgram();
 
-        virtual GLuint getPositionLocation() const { return m_position_loc; }
-        virtual GLuint getColorLocation() const { return m_color_loc; }
+        virtual GLint getPositionLocation() const { return (GLint)m_position_loc; }
+        virtual GLint getColorLocation() const { return (GLint)m_color_loc; }
 
-        virtual GLuint getProjectionLocation() const { return m_projection_loc; }
-        virtual GLuint getModelViewLocation() const { return m_model_view_loc; }
+        virtual GLint getProjectionLocation() const { return m_projection_loc; }
+        virtual GLint getModelViewLocation() const { return m_model_view_loc; }
 
     protected:
         GLuint m_position_loc;
         GLuint m_color_loc;
 
-        GLuint m_projection_loc;
-        GLuint m_model_view_loc;
+        GLint m_projection_loc;
+        GLint m_model_view_loc;
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };

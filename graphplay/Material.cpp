@@ -48,15 +48,7 @@ namespace graphplay {
     }
 
     // Class Material.
-    Material::Material()
-        : m_program(0),
-          m_max_vertex_attribs(0) {
-        int max_vertex_attribs;
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &max_vertex_attribs);
-        if (max_vertex_attribs >= 0) {
-            m_max_vertex_attribs = (GLuint)max_vertex_attribs;
-        }
-    }
+    Material::Material() : m_program(0) { }
 
     Material::~Material() {
         destroyProgram();
@@ -143,10 +135,10 @@ namespace graphplay {
 
     GouraudMaterial::GouraudMaterial()
         : Material(),
-          m_position_loc(0),
-          m_color_loc(0),
-          m_projection_loc(0),
-          m_model_view_loc(0) { }
+          m_position_loc(-1),
+          m_color_loc(-1),
+          m_projection_loc(-1),
+          m_model_view_loc(-1) { }
 
     GouraudMaterial::~GouraudMaterial() { }
 
@@ -173,8 +165,17 @@ namespace graphplay {
             std::exit(1);
         }
 
-        m_position_loc = glGetAttribLocation(m_program, "aPosition");
-        m_color_loc = glGetAttribLocation(m_program, "aColor");
+        GLint pos_loc = glGetAttribLocation(m_program, "aPosition");
+        GLint color_loc = glGetAttribLocation(m_program, "aColor");
+
+        if (pos_loc < 0 || color_loc < 0) {
+            std::cerr << "aPosition or aColor could not be found in the shader program. "
+                      << "Something is seriously wrong." << std::endl;
+            std::exit(1);
+        }
+
+        m_position_loc = (GLuint)pos_loc;
+        m_color_loc = (GLuint)color_loc;
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
     }

@@ -213,15 +213,13 @@ namespace graphplay {
     }
 
     void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
-        GLuint max_attribs = material.getMaxVertexAttribs();
+        GLint pos_loc = material.getPositionLocation();
+        GLint norm_loc = material.getNormalLocation();
+        GLint color_loc = material.getColorLocation();
+        GLint tc_loc = material.getTexCoordLocation();
 
-        GLuint pos_loc = material.getPositionLocation();
-        GLuint norm_loc = material.getNormalLocation();
-        GLuint color_loc = material.getColorLocation();
-        GLuint tc_loc = material.getTexCoordLocation();
-
-        GLuint proj_loc = material.getProjectionLocation();
-        GLuint mv_loc = material.getModelViewLocation();
+        GLint proj_loc = material.getProjectionLocation();
+        GLint mv_loc = material.getModelViewLocation();
 
         GLsizeiptr vertex_size = m_stride * sizeof(float);
 
@@ -229,22 +227,22 @@ namespace graphplay {
 
         glBindBuffer(GL_ARRAY_BUFFER, m_data_buffer);
 
-        if (m_position_offset >= 0 && pos_loc != max_attribs) {
+        if (m_position_offset >= 0 && pos_loc >= 0) {
             glEnableVertexAttribArray(pos_loc);
             glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET_BYTES(m_position_offset*sizeof(float)));
         }
 
-        if (m_normal_offset >= 0 && norm_loc != max_attribs) {
+        if (m_normal_offset >= 0 && norm_loc >= 0) {
             glEnableVertexAttribArray(norm_loc);
             glVertexAttribPointer(norm_loc, 3, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET_BYTES(m_normal_offset*sizeof(float)));
         }
 
-        if (m_color_offset >= 0 && color_loc != max_attribs) {
+        if (m_color_offset >= 0 && color_loc >= 0) {
             glEnableVertexAttribArray(color_loc);
             glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_color_offset*sizeof(float)));
         }
 
-        if (m_tex_coord_offset >= 0 && tc_loc != max_attribs) {
+        if (m_tex_coord_offset >= 0 && tc_loc >= 0) {
             glEnableVertexAttribArray(tc_loc);
             glVertexAttribPointer(tc_loc, 2, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_tex_coord_offset*sizeof(float)));
         }
