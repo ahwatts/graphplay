@@ -9,13 +9,19 @@
   <ItemGroup>
     <ClCompile Include="..\graphplay\Geometry.cpp" />
     <ClCompile Include="..\graphplay\Material.cpp" />
+    <ClCompile Include="..\graphplay\Mesh.cpp" />
+    <ClCompile Include="..\graphplay\Scene.cpp" />
     <ClCompile Include="GeometryTest.cpp" />
     <ClCompile Include="MaterialTest.cpp" />
+    <ClCompile Include="MeshTest.cpp" />
+    <ClCompile Include="SceneTest.cpp" />
     <ClCompile Include="TestOpenGLContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\graphplay\Geometry.h" />
     <ClInclude Include="..\graphplay\Material.h" />
+    <ClInclude Include="..\graphplay\Mesh.h" />
+    <ClInclude Include="..\graphplay\Scene.h" />
     <ClInclude Include="TestOpenGLContext.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

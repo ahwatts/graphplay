@@ -1,8 +1,12 @@
 add_executable(graphplay-test GeometryTest.cpp
                               MaterialTest.cpp
+                              MeshTest.cpp
+                              SceneTest.cpp
                               TestOpenGLContext.cpp
                               ../graphplay/Geometry.cpp
-                              ../graphplay/Material.cpp)
+                              ../graphplay/Material.cpp
+                              ../graphplay/Mesh.cpp
+                              ../graphplay/Scene.cpp)
 target_link_libraries(graphplay-test ${GTEST_LIBRARIES}
                                      ${GTEST_MAIN_LIBRARIES}
                                      ${GLFW_LIBRARIES}
