@@ -55,4 +55,39 @@ namespace graphplay {
             }
         }
     }
+
+    Scene::MeshIterator Scene::begin() const {
+        return Scene::MeshIterator(*this, 0);
+    }
+
+    Scene::MeshIterator Scene::end() const {
+        return Scene::MeshIterator(*this, m_meshes.size());
+    }
+
+    Scene::MeshIterator::MeshIterator(const Scene &scene, unsigned int init_loc)
+        : m_scene(scene),
+          m_loc(init_loc) { }
+
+    bool Scene::MeshIterator::operator==(const Scene::MeshIterator &other) const {
+        return !(*this != other);
+    }
+
+    bool Scene::MeshIterator::operator!=(const Scene::MeshIterator &other) const {
+        return &m_scene != &other.m_scene || m_loc != other.m_loc;
+    }
+
+    Scene::value_type Scene::MeshIterator::operator*() {
+        return wp_Mesh(m_scene.m_meshes[m_loc]);
+    }
+
+    Scene::MeshIterator &Scene::MeshIterator::operator++() {
+        ++m_loc;
+        return *this;
+    }
+
+    Scene::MeshIterator Scene::MeshIterator::operator++(int) {
+        Scene::MeshIterator clone(*this);
+        ++m_loc;
+        return clone;
+    }
 };

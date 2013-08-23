@@ -7,7 +7,6 @@
 namespace graphplay {
     TEST(SceneTest, DefaultConstructor) {
         Scene s(640, 480);
-
-        ASSERT_TRUE(false);
+        ASSERT_EQ(0, s.getNumMeshes());
     }
 };
