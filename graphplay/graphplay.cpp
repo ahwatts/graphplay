@@ -1,12 +1,17 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <ctime>
 #include <GL/glew.h>
 #include <GL/glfw3.h>
+
 #include <string>
 #include <iostream>
 #include <memory>
 #include <sstream>
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Geometry.h"
 #include "Material.h"
@@ -45,7 +50,17 @@ int main(int argc, char **argv) {
 
     glfwSetKeyCallback(window, keypress);
 
+    std::clock_t start_time = std::clock();
+    glm::mat4x4 mv;
+    glm::vec3 yhat = glm::vec3(0.0, 1.0, 0.0);
+    float rotation = 0.0;
+
     while (!glfwWindowShouldClose(window)) {
+        float time = (float)(std::clock() - start_time) / (float)CLOCKS_PER_SEC;
+        rotation = 180.0 * time;
+        mv = glm::mat4x4();
+        mv = glm::rotate(mv, rotation, yhat);
+        octo->setTransform(mv);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.render();
         glfwSwapBuffers(window);
