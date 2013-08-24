@@ -24,7 +24,7 @@ namespace graphplay {
         m_meshes.push_back(mesh);
     }
 
-    wp_Mesh Scene::removeMesh(wp_Mesh &mesh) {
+    wp_Mesh Scene::removeMesh(wp_Mesh mesh) {
         wp_Mesh rv;
 
         for (auto mi = m_meshes.begin(); mi != m_meshes.end(); ++mi) {

@@ -19,7 +19,7 @@ namespace graphplay {
         void setViewport(unsigned int new_width, unsigned int new_height);
 
         void addMesh(wp_Mesh mesh);
-        wp_Mesh removeMesh(wp_Mesh &mesh);
+        wp_Mesh removeMesh(wp_Mesh mesh);
         inline unsigned int getNumMeshes() const { return m_meshes.size(); }
 
         void render();
