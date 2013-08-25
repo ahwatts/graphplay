@@ -99,6 +99,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Body.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collada.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="graphplay.cpp" />
@@ -109,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="graphplay.h" />
     <ClInclude Include="Collada.h" />

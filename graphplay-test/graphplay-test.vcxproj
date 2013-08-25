@@ -7,10 +7,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\graphplay\Camera.cpp" />
     <ClCompile Include="..\graphplay\Geometry.cpp" />
     <ClCompile Include="..\graphplay\Material.cpp" />
     <ClCompile Include="..\graphplay\Mesh.cpp" />
     <ClCompile Include="..\graphplay\Scene.cpp" />
+    <ClCompile Include="CameraTest.cpp" />
     <ClCompile Include="GeometryTest.cpp" />
     <ClCompile Include="MaterialTest.cpp" />
     <ClCompile Include="MeshTest.cpp" />
@@ -18,6 +20,7 @@
     <ClCompile Include="TestOpenGLContext.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\graphplay\Camera.h" />
     <ClInclude Include="..\graphplay\Geometry.h" />
     <ClInclude Include="..\graphplay\Material.h" />
     <ClInclude Include="..\graphplay\Mesh.h" />
