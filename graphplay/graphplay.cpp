@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         ctime = std::clock();
         float dtime = (float)(ctime - pctime) / (float)CLOCKS_PER_SEC;
         pctime = ctime;
-        rotation += 90.0 * dtime;
+        rotation += 90.0f * dtime;
         if (rotation >= 360.0) { rotation -= 360.0; }
 
         mv = glm::mat4x4();
