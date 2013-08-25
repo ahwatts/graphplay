@@ -50,14 +50,18 @@ int main(int argc, char **argv) {
 
     glfwSetKeyCallback(window, keypress);
 
-    std::clock_t start_time = std::clock();
+    std::clock_t pctime = std::clock(), ctime;
     glm::mat4x4 mv;
     glm::vec3 yhat = glm::vec3(0.0, 1.0, 0.0);
     float rotation = 0.0;
 
     while (!glfwWindowShouldClose(window)) {
-        float time = (float)(std::clock() - start_time) / (float)CLOCKS_PER_SEC;
-        rotation = 180.0 * time;
+        ctime = std::clock();
+        float dtime = (float)(ctime - pctime) / (float)CLOCKS_PER_SEC;
+        pctime = ctime;
+        rotation += 90.0 * dtime;
+        if (rotation >= 360.0) { rotation -= 360.0; }
+
         mv = glm::mat4x4();
         mv = glm::rotate(mv, rotation, yhat);
         octo->setTransform(mv);
