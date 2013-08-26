@@ -11,6 +11,7 @@ namespace graphplay {
           m_model_view(),
           m_vp_width(vp_width),
           m_vp_height(vp_height),
+          m_camera(),
           m_meshes() { }
 
     Scene::~Scene(void) { }
@@ -44,10 +45,7 @@ namespace graphplay {
             (float)m_vp_width / (float)m_vp_height, 
             0.1f, 100);
 
-        m_model_view = glm::lookAt<float>(
-            glm::vec3(  0,  0,  3),
-            glm::vec3(  0,  0,  0),
-            glm::vec3(  0,  1,  0));
+        m_model_view = m_camera.getViewTransform();
 
         for (auto wm : m_meshes) {
             if (auto sm = wm.lock()) {

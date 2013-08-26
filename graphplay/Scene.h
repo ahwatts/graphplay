@@ -3,10 +3,11 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_WORLD_H_
 #define _GRAPHPLAY_GRAPHPLAY_WORLD_H_
 
-#include <glm/glm.hpp>
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
 
+#include "Camera.h"
 #include "Mesh.h"
 
 namespace graphplay {
@@ -22,8 +23,19 @@ namespace graphplay {
         wp_Mesh removeMesh(wp_Mesh mesh);
         inline unsigned int getNumMeshes() const { return m_meshes.size(); }
 
+        Camera &getCamera() { return m_camera; }
+
         void render();
 
+    private:
+        glm::mat4x4 m_perspective;
+        glm::mat4x4 m_model_view;
+        unsigned int m_vp_width, m_vp_height;
+
+        Camera m_camera;
+        std::vector<wp_Mesh> m_meshes;
+
+    public:
         // Iterator mumbo-jumbo so that we can walk the mesh list.
         class MeshIterator;
 
@@ -54,13 +66,6 @@ namespace graphplay {
             const Scene &m_scene;
             unsigned int m_loc;
         };
-
-    private:
-        glm::mat4x4 m_perspective;
-        glm::mat4x4 m_model_view;
-        unsigned int m_vp_width, m_vp_height;
-
-        std::vector<wp_Mesh> m_meshes;
     };
 
     typedef std::unique_ptr<Scene> up_Scene;

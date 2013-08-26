@@ -1,5 +1,9 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#ifndef _GRAPHPLAY_GRAPHPLAY_CAMERA_H_
+#define _GRAPHPLAY_GRAPHPLAY_CAMERA_H_
+
+#include <memory>
 #include <glm/glm.hpp>
 
 namespace graphplay {
@@ -17,4 +21,10 @@ namespace graphplay {
     private:
         glm::vec3 m_location, m_direction, m_up;
     };
+
+    typedef std::unique_ptr<Camera> up_Camera;
+    typedef std::shared_ptr<Camera> sp_Camera;
+    typedef std::weak_ptr<Camera> wp_Camera;
 };
+
+#endif

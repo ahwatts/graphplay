@@ -13,6 +13,7 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Camera.h"
 #include "Geometry.h"
 #include "Material.h"
 #include "Mesh.h"
@@ -44,6 +45,11 @@ int main(int argc, char **argv) {
 
     graphplay::Scene scene(width, height);
     scene.addMesh(octo);
+
+    graphplay::Camera &camera = scene.getCamera();
+    camera.setLocation(glm::vec3(0, 0, 3));
+    camera.setDirection(glm::vec3(0, 0, 0));
+    camera.setUpDirection(glm::vec3(0, 1, 0));
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);
