@@ -10,9 +10,9 @@ namespace graphplay {
 
         glm::mat4x4 getViewTransform() const;
 
-        void setLocation(const glm::vec3 &new_location);
-        void setDirection(const glm::vec3 &new_direction);
-        void setUpDirection(const glm::vec3 &new_up);
+        inline void setLocation(const glm::vec3 &new_location) { m_location = new_location; }
+        inline void setDirection(const glm::vec3 &new_direction) { m_direction = new_direction; }
+        inline void setUpDirection(const glm::vec3 &new_up) { m_up = new_up; }
 
     private:
         glm::vec3 m_location, m_direction, m_up;
