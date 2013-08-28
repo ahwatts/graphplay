@@ -44,7 +44,24 @@ namespace graphplay {
         inline int getNormalOffset() const { return m_normal_offset; }
         inline int getColorOffset() const { return m_color_offset; }
         inline int getTexCoordOffset() const { return m_tex_coord_offset; }
+        
+    protected:
+        unsigned int findVertex(std::vector<float> &vdata);
 
+    private:
+        std::vector<float> m_vertex_attrs;
+        std::vector<GLuint> m_vertex_elems;
+        int m_position_offset, m_normal_offset, m_color_offset, m_tex_coord_offset;
+        unsigned int m_stride;
+
+        std::vector<float> m_new_vertex;
+        bool m_new_vertex_started;
+
+        GLuint m_data_buffer;
+        GLuint m_element_buffer;
+        bool m_buffers_created;
+
+    public:
         // Iterator mumbo-jumbo so that we can walk the vertex list.
         class VertexIterator;
 
@@ -75,33 +92,14 @@ namespace graphplay {
             const Geometry &m_geo;
             unsigned int m_loc;
         };
-        
-    protected:
-        unsigned int findVertex(std::vector<float> &vdata);
-
-    private:
-        std::vector<float> m_vertex_attrs;
-        std::vector<GLuint> m_vertex_elems;
-        int m_position_offset, m_normal_offset, m_color_offset, m_tex_coord_offset;
-        unsigned int m_stride;
-
-        std::vector<float> m_new_vertex;
-        bool m_new_vertex_started;
-
-        GLuint m_data_buffer;
-        GLuint m_element_buffer;
-        bool m_buffers_created;
     };
 
     typedef std::unique_ptr<Geometry> up_Geometry;
     typedef std::shared_ptr<Geometry> sp_Geometry;
     typedef std::weak_ptr<Geometry> wp_Geometry;
 
-    class OctohedronGeometry : public Geometry
-    {
-    public:
-        OctohedronGeometry();
-    };
+    class OctohedronGeometry : public Geometry { public: OctohedronGeometry(); };
+    class CubeGeometry : public Geometry { public: CubeGeometry(); };
 };
 
 #endif

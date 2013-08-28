@@ -332,4 +332,60 @@ namespace graphplay {
 
         commitNewVertex();
     }
+
+    CubeGeometry::CubeGeometry() : Geometry() {
+        // Bottom face.
+        vertex3f(0, 0, 0); color4f(0, 0, 0, 1);
+        vertex3f(0, 1, 0); color4f(0, 1, 0, 1);
+        vertex3f(1, 1, 0); color4f(1, 1, 0, 1);
+
+        vertex3f(0, 0, 0); color4f(0, 0, 0, 1);
+        vertex3f(1, 1, 0); color4f(1, 1, 0, 1);
+        vertex3f(1, 0, 0); color4f(1, 0, 0, 1);
+
+        // Top face.
+        vertex3f(0, 0, 1); color4f(0, 0, 1, 1);
+        vertex3f(1, 1, 1); color4f(1, 1, 1, 1);
+        vertex3f(0, 1, 1); color4f(0, 1, 1, 1);
+
+        vertex3f(0, 0, 1); color4f(0, 0, 1, 1);
+        vertex3f(1, 0, 1); color4f(1, 0, 1, 1);
+        vertex3f(1, 1, 1); color4f(1, 1, 1, 1);
+
+        // Front face.
+        vertex3f(0, 0, 0); color4f(0, 0, 0, 1);
+        vertex3f(0, 0, 1); color4f(0, 0, 1, 1);
+        vertex3f(0, 1, 1); color4f(0, 1, 1, 1);
+
+        vertex3f(0, 0, 0); color4f(0, 0, 0, 1);
+        vertex3f(0, 1, 1); color4f(0, 1, 1, 1);
+        vertex3f(0, 1, 0); color4f(0, 1, 0, 1);
+
+        // Back face.
+        vertex3f(1, 0, 0); color4f(1, 0, 0, 1);
+        vertex3f(1, 1, 0); color4f(1, 1, 0, 1);
+        vertex3f(1, 1, 1); color4f(1, 1, 1, 1);
+
+        vertex3f(1, 0, 0); color4f(1, 0, 0, 1);
+        vertex3f(1, 1, 1); color4f(1, 1, 1, 1);
+        vertex3f(1, 0, 1); color4f(1, 0, 1, 1);
+
+        // Right face.
+        vertex3f(0, 0, 0); color4f(0, 0, 0, 1);
+        vertex3f(1, 0, 0); color4f(1, 0, 0, 1);
+        vertex3f(1, 0, 1); color4f(1, 0, 1, 1);
+
+        vertex3f(0, 0, 0); color4f(0, 0, 0, 1);
+        vertex3f(1, 0, 1); color4f(1, 0, 1, 1);
+        vertex3f(0, 0, 1); color4f(0, 0, 1, 1);
+
+        // Left face.
+        vertex3f(0, 1, 0); color4f(0, 1, 0, 1);
+        vertex3f(1, 1, 0); color4f(1, 1, 0, 1);
+        vertex3f(1, 1, 1); color4f(1, 1, 1, 1);
+
+        vertex3f(0, 1, 0); color4f(0, 1, 0, 1);
+        vertex3f(1, 1, 1); color4f(1, 1, 1, 1);
+        vertex3f(0, 1, 1); color4f(0, 1, 1, 1);
+    }
 };

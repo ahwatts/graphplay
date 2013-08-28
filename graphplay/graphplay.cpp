@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     initGLFW(width, height, "Graphplay", &window);
     initGLEW();
 
-    graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
+    graphplay::sp_Geometry octo_geo(new graphplay::CubeGeometry());
     graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
     octo_geo->generateBuffers();
     gour_mat->createProgram();
@@ -58,18 +58,28 @@ int main(int argc, char **argv) {
 
     std::clock_t pctime = std::clock(), ctime;
     glm::mat4x4 mv;
-    glm::vec3 yhat = glm::vec3(0.0, 1.0, 0.0);
-    float rotation = 0.0;
+    glm::vec3 yhat = glm::vec3(0, 1, 0);
+    glm::vec3 xhat = glm::vec3(1, 0, 0);
+    glm::vec3 offset = glm::vec3(-1, -1, -1);
+    glm::vec3 scale = glm::vec3(2, 2, 2);
+    float yrot = 0, xrot = 0;
 
     while (!glfwWindowShouldClose(window)) {
         ctime = std::clock();
         float dtime = (float)(ctime - pctime) / (float)CLOCKS_PER_SEC;
         pctime = ctime;
-        rotation += 90.0f * dtime;
-        if (rotation >= 360.0) { rotation -= 360.0; }
+
+        yrot += 90.0f * dtime;
+        if (yrot >= 360.0) { yrot -= 360.0; }
+
+        xrot += 45.0f * dtime;
+        if (xrot >= 360.0) { xrot -= 360.0; }
 
         mv = glm::mat4x4();
-        mv = glm::rotate(mv, rotation, yhat);
+        mv = glm::rotate(mv, yrot, yhat);
+        mv = glm::rotate(mv, xrot, xhat);
+        mv = glm::translate(mv, offset);
+        mv = glm::scale(mv, scale);
         octo->setTransform(mv);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.render();
