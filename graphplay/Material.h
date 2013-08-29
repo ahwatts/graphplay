@@ -58,6 +58,29 @@ namespace graphplay {
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };
+
+    class PhongMaterial : public Material {
+    public:
+        PhongMaterial();
+        virtual ~PhongMaterial();
+
+        virtual void createProgram();
+
+        virtual GLint getPositionLocation() const { return (GLint)m_position_loc; }
+        virtual GLint getNormalLocation() const { return (GLint)m_normal_loc; }
+
+        virtual GLint getProjectionLocation() const { return m_projection_loc; }
+        virtual GLint getModelViewLocation() const { return m_model_view_loc; }
+
+    protected:
+        GLuint m_position_loc;
+        GLuint m_normal_loc;
+
+        GLint m_projection_loc;
+        GLint m_model_view_loc;
+
+        static const char *vertex_shader_src, *fragment_shader_src;
+    };
 };
 
 #endif

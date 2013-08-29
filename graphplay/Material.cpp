@@ -47,6 +47,29 @@ namespace graphplay {
         return shader;
     }
 
+    GLuint createProgramFromShaders(GLuint vertex_shader, GLuint fragment_shader) {
+        GLuint program = glCreateProgram();
+        glAttachShader(program, vertex_shader);
+        glAttachShader(program, fragment_shader);
+        glLinkProgram(program);
+
+        GLint status;
+        glGetProgramiv(program, GL_LINK_STATUS, &status);
+        if (!status) {
+            GLint errlen;
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &errlen);
+
+            char *err = new char[errlen];
+            glGetProgramInfoLog(program, errlen, NULL, err);
+            std::cerr << "Could not link shader program: " << err << std::endl;
+            delete [] err;
+
+            std::exit(1);
+        }
+
+        return program;
+    }
+
     // Class Material.
     Material::Material() : m_program(0) { }
 
@@ -145,25 +168,7 @@ namespace graphplay {
     void GouraudMaterial::createProgram() {
         GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, GouraudMaterial::vertex_shader_src);
         GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, GouraudMaterial::fragment_shader_src);
-
-        m_program = glCreateProgram();
-        glAttachShader(m_program, vertex_shader);
-        glAttachShader(m_program, fragment_shader);
-        glLinkProgram(m_program);
-
-        GLint status;
-        glGetProgramiv(m_program, GL_LINK_STATUS, &status);
-        if (!status) {
-            GLint errlen;
-            glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &errlen);
-
-            char *err = new char[errlen];
-            glGetProgramInfoLog(m_program, errlen, NULL, err);
-            std::cerr << "Could not link shader program: " << err << std::endl;
-            delete [] err;
-
-            std::exit(1);
-        }
+        m_program = createProgramFromShaders(vertex_shader, fragment_shader);
 
         GLint pos_loc = glGetAttribLocation(m_program, "aPosition");
         GLint color_loc = glGetAttribLocation(m_program, "aColor");
@@ -176,6 +181,38 @@ namespace graphplay {
 
         m_position_loc = (GLuint)pos_loc;
         m_color_loc = (GLuint)color_loc;
+        m_projection_loc = glGetUniformLocation(m_program, "uProjection");
+        m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
+    }
+
+    const char *PhongMaterial::vertex_shader_src = "";
+    const char *PhongMaterial::fragment_shader_src = "";
+
+    PhongMaterial::PhongMaterial()
+        : Material(),
+          m_position_loc(-1),
+          m_normal_loc(-1),
+          m_projection_loc(-1),
+          m_model_view_loc(-1) { }
+
+    PhongMaterial::~PhongMaterial() { }
+
+    void PhongMaterial::createProgram() {
+        GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, PhongMaterial::vertex_shader_src);
+        GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, PhongMaterial::fragment_shader_src);
+        m_program = createProgramFromShaders(vertex_shader, fragment_shader);
+
+        GLint pos_loc = glGetAttribLocation(m_program, "aPosition");
+        GLint normal_loc = glGetAttribLocation(m_program, "aNormal");
+
+        if (pos_loc < 0 || normal_loc < 0) {
+            std::cerr << "aPosition or aNormal could not be found in the shader program. "
+                      << "Something is seriously wrong." << std::endl;
+            std::exit(1);
+        }
+
+        m_position_loc = (GLuint)pos_loc;
+        m_normal_loc = (GLuint)normal_loc;
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
     }
