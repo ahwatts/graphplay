@@ -62,5 +62,5 @@ add_subdirectory(graphplay-test)
 
 enable_testing()
 add_test(NAME graphplay-test
-         WORKING_DIRECTORY .
-         COMMAND graphplay-test)
+  WORKING_DIRECTORY .
+  COMMAND graphplay-test)
