@@ -36,14 +36,15 @@ namespace graphplay {
     typedef std::shared_ptr<Material> sp_Material;
     typedef std::weak_ptr<Material> wp_Material;
 
-    class GouraudMaterial : public Material {
+    class LambertMaterial : public Material {
     public:
-        GouraudMaterial();
-        virtual ~GouraudMaterial();
+        LambertMaterial();
+        virtual ~LambertMaterial();
 
         virtual void createProgram();
 
         virtual GLint getPositionLocation() const { return (GLint)m_position_loc; }
+        virtual GLint getNormalLocation() const { return (GLint)m_normal_loc; }
         virtual GLint getColorLocation() const { return (GLint)m_color_loc; }
 
         virtual GLint getProjectionLocation() const { return m_projection_loc; }
@@ -51,6 +52,7 @@ namespace graphplay {
 
     protected:
         GLuint m_position_loc;
+        GLuint m_normal_loc;
         GLuint m_color_loc;
 
         GLint m_projection_loc;

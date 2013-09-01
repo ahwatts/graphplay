@@ -160,6 +160,22 @@ namespace graphplay {
         m_new_vertex_started = true;
     }
 
+    void Geometry::normal3f(float x, float y, float z) {
+        if (m_normal_offset < 0 && m_vertex_elems.size() == 0) {
+            m_normal_offset = m_stride;
+            m_stride += 3;
+        }
+
+        if (m_normal_offset < 0) { return; }
+
+        while (m_stride > m_new_vertex.size()) { m_new_vertex.push_back(0); }
+
+        m_new_vertex[m_normal_offset]     = x;
+        m_new_vertex[m_normal_offset + 1] = y;
+        m_new_vertex[m_normal_offset + 2] = z;
+        m_new_vertex_started = true;
+    }
+
     void Geometry::color4f(float r, float g, float b, float a) {
         if (m_color_offset < 0 && m_vertex_elems.size() == 0) {
             m_color_offset = m_stride;
@@ -298,37 +314,37 @@ namespace graphplay {
     }
 
     OctohedronGeometry::OctohedronGeometry() : Geometry() {
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f( 0.577f,  0.577f,  0.577f);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f,  0.577f,  0.577f);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f,  0.577f,  0.577f);
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f(-0.577f,  0.577f,  0.577f);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f,  0.577f,  0.577f);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f,  0.577f,  0.577f);
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f,  0.577f);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
         
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f,  0.577f);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
         
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f,  0.577f, -0.577f);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
         
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1);
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f,  0.577f, -0.577f);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
+        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
         
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1);
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f, -0.577f);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
+        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
         
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1);
+        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f, -0.577f);
+        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);
+        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);
 
         commitNewVertex();
     }

@@ -138,9 +138,10 @@ namespace graphplay {
         return 0;
     }
 
-    // Class GouraudMaterial.
-    const char* GouraudMaterial::vertex_shader_src =
+    // Class LambertMaterial.
+    const char* LambertMaterial::vertex_shader_src =
         "attribute vec3 aPosition;\n"
+        "attribute vec3 aNormal;\n"
         "attribute vec4 aColor;\n"
         "uniform mat4 uModelView;\n"
         "uniform mat4 uProjection;\n"
@@ -150,24 +151,24 @@ namespace graphplay {
         "    vColor = aColor;\n"
         "}\n";
 
-    const char* GouraudMaterial::fragment_shader_src =
+    const char* LambertMaterial::fragment_shader_src =
         "varying vec4 vColor;\n"
         "void main(void) {\n"
         "    gl_FragColor = vColor;\n"
         "}\n";
 
-    GouraudMaterial::GouraudMaterial()
+    LambertMaterial::LambertMaterial()
         : Material(),
           m_position_loc(-1),
           m_color_loc(-1),
           m_projection_loc(-1),
           m_model_view_loc(-1) { }
 
-    GouraudMaterial::~GouraudMaterial() { }
+    LambertMaterial::~LambertMaterial() { }
 
-    void GouraudMaterial::createProgram() {
-        GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, GouraudMaterial::vertex_shader_src);
-        GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, GouraudMaterial::fragment_shader_src);
+    void LambertMaterial::createProgram() {
+        GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, LambertMaterial::vertex_shader_src);
+        GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, LambertMaterial::fragment_shader_src);
         m_program = createProgramFromShaders(vertex_shader, fragment_shader);
 
         GLint pos_loc = glGetAttribLocation(m_program, "aPosition");
