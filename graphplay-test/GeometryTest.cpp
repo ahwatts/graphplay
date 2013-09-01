@@ -122,19 +122,20 @@ namespace graphplay {
         OctohedronGeometry g;
 
         ASSERT_EQ(8*3, g.getNumVertices());
-        ASSERT_EQ(7, g.getStride());
+        ASSERT_EQ(10, g.getStride());
 
         ASSERT_LE(0, g.getPositionOffset());
-        ASSERT_GT(7, g.getPositionOffset());
+        ASSERT_GT(10, g.getPositionOffset());
+        ASSERT_LE(0, g.getNormalOffset());
+        ASSERT_GT(10, g.getNormalOffset());
         ASSERT_LE(0, g.getColorOffset());
-        ASSERT_GT(7, g.getColorOffset());
+        ASSERT_GT(10, g.getColorOffset());
 
-        ASSERT_GT(0, g.getNormalOffset());
         ASSERT_GT(0, g.getTexCoordOffset());
 
         unsigned int num = 0;
         for (auto v : g) {
-            ASSERT_EQ(7, v.size());
+            ASSERT_EQ(10, v.size());
             ++num;
         }
         ASSERT_EQ(8*3, num);

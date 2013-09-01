@@ -143,12 +143,19 @@ namespace graphplay {
         "attribute vec3 aPosition;\n"
         "attribute vec3 aNormal;\n"
         "attribute vec4 aColor;\n"
+
         "uniform mat4 uModelView;\n"
         "uniform mat4 uProjection;\n"
+
         "varying vec4 vColor;\n"
+
         "void main(void) {\n"
-        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
-        "    vColor = aColor;\n"
+        "    vec4 transformed_pos = uModelView * vec4(aPosition, 1.0);\n"
+        "    vec3 transformed_pos3 = transformed_pos.xyz / transformed_pos.w;"
+        "    vec3 light_direction = normalize(-1*transformed_pos3);\n"
+        "    vec4 transformed_color = dot(light_direction, aNormal) * aColor;\n"
+        "    gl_Position = uProjection * transformed_pos;\n"
+        "    vColor = transformed_color;\n"
         "}\n";
 
     const char* LambertMaterial::fragment_shader_src =
@@ -160,6 +167,7 @@ namespace graphplay {
     LambertMaterial::LambertMaterial()
         : Material(),
           m_position_loc(-1),
+          m_normal_loc(-1),
           m_color_loc(-1),
           m_projection_loc(-1),
           m_model_view_loc(-1) { }
@@ -172,15 +180,17 @@ namespace graphplay {
         m_program = createProgramFromShaders(vertex_shader, fragment_shader);
 
         GLint pos_loc = glGetAttribLocation(m_program, "aPosition");
+        GLint norm_loc = glGetAttribLocation(m_program, "aNormal");
         GLint color_loc = glGetAttribLocation(m_program, "aColor");
 
-        if (pos_loc < 0 || color_loc < 0) {
+        if (pos_loc < 0 || color_loc < 0 || norm_loc < 0) {
             std::cerr << "aPosition or aColor could not be found in the shader program. "
                       << "Something is seriously wrong." << std::endl;
             std::exit(1);
         }
 
         m_position_loc = (GLuint)pos_loc;
+        m_normal_loc = (GLuint)norm_loc;
         m_color_loc = (GLuint)color_loc;
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");

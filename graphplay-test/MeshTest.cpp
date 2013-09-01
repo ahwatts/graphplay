@@ -32,7 +32,7 @@ namespace graphplay {
 
     TEST_F(MeshTest, SetMaterial) {
         Mesh m;
-        sp_Material mat(new GouraudMaterial());
+        sp_Material mat(new LambertMaterial());
         m.setMaterial(mat);
         ASSERT_EQ(mat, m.getMaterial().lock());
     }

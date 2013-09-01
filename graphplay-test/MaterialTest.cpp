@@ -9,7 +9,7 @@ namespace graphplay {
     class MaterialTest : public TestOpenGLContext { };
 
     TEST_F(MaterialTest, DefaultConstructor) {
-        GouraudMaterial mat;
+        LambertMaterial mat;
 
         ASSERT_EQ(GL_FALSE, glIsProgram(mat.getProgram()));
         ASSERT_EQ(GL_FALSE, glIsShader(mat.getVertexShader()));
@@ -25,7 +25,7 @@ namespace graphplay {
     }
 
     TEST_F(MaterialTest, CreateProgram) {
-        GouraudMaterial mat;
+        LambertMaterial mat;
 
         mat.createProgram();
         ASSERT_EQ(GL_TRUE, glIsProgram(mat.getProgram()));
@@ -33,7 +33,7 @@ namespace graphplay {
         ASSERT_EQ(GL_TRUE, glIsShader(mat.getFragmentShader()));
 
         ASSERT_LE(0, mat.getPositionLocation());
-        ASSERT_GT(0, mat.getNormalLocation());
+        ASSERT_LE(0, mat.getNormalLocation());
         ASSERT_LE(0, mat.getColorLocation());
         ASSERT_GT(0, mat.getTexCoordLocation());
 
@@ -42,7 +42,7 @@ namespace graphplay {
     }
 
     TEST_F(MaterialTest, MaterialLifecycle) {
-        GouraudMaterial mat;
+        LambertMaterial mat;
 
         mat.createProgram();
         mat.destroyProgram();
@@ -53,7 +53,7 @@ namespace graphplay {
     }
 
     TEST_F(MaterialTest, Destructor) {
-        Material *mat = new GouraudMaterial();
+        Material *mat = new LambertMaterial();
         mat->createProgram();
         GLuint p = mat->getProgram();
         GLuint s1 = mat->getVertexShader();
