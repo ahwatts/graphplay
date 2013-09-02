@@ -140,28 +140,39 @@ namespace graphplay {
 
     // Class LambertMaterial.
     const char* LambertMaterial::vertex_shader_src =
-        "attribute vec3 aPosition;\n"
-        "attribute vec3 aNormal;\n"
-        "attribute vec4 aColor;\n"
+        "#version 430 core\n"
 
-        "uniform mat4 uModelView;\n"
-        "uniform mat4 uProjection;\n"
+        "in vec3 aPosition;\n"
+        "in vec3 aNormal;\n"
+        "in vec4 aColor;\n"
 
-        "varying vec4 vColor;\n"
+        "uniform mat4x4 uModelView;\n"
+        "uniform mat3x3 uModelViewInverse;\n"
+        "uniform mat4x4 uProjection;\n"
+
+        "out vec4 vAmbientColor;\n"
+        "out vec4 vReflectedColor;\n"
 
         "void main(void) {\n"
-        "    vec4 transformed_pos = uModelView * vec4(aPosition, 1.0);\n"
-        "    vec3 transformed_pos3 = transformed_pos.xyz / transformed_pos.w;"
-        "    vec3 light_direction = normalize(-1*transformed_pos3);\n"
-        "    vec4 transformed_color = dot(light_direction, aNormal) * aColor;\n"
-        "    gl_Position = uProjection * transformed_pos;\n"
-        "    vColor = transformed_color;\n"
+        "    vec3 eye_position = (uModelView * vec4(aPosition, 1.0)).xyz;\n"
+        "    vec3 eye_normal = normalize(uModelViewInverse * aNormal);\n"
+        "    vec3 eye_light_pos = vec3(0.0, 0.0, 10.0);\n"
+        "    vec3 eye_light_dir = normalize(eye_light_pos - eye_position);\n"
+        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
+        "    //vAmbientColor = 0.05 * aColor;\n"
+        "    vReflectedColor = dot(eye_light_dir, eye_normal) * aColor;\n"
         "}\n";
 
     const char* LambertMaterial::fragment_shader_src =
-        "varying vec4 vColor;\n"
+        "#version 430 core\n"
+
+        "in vec4 vAmbientColor;\n"
+        "in vec4 vReflectedColor;\n"
+
+        "out vec4 FragColor;\n"
+
         "void main(void) {\n"
-        "    gl_FragColor = vColor;\n"
+        "    FragColor = vReflectedColor;\n"
         "}\n";
 
     LambertMaterial::LambertMaterial()
@@ -170,7 +181,8 @@ namespace graphplay {
           m_normal_loc(-1),
           m_color_loc(-1),
           m_projection_loc(-1),
-          m_model_view_loc(-1) { }
+          m_model_view_loc(-1),
+          m_model_view_inv_loc(-1) { }
 
     LambertMaterial::~LambertMaterial() { }
 
@@ -183,7 +195,7 @@ namespace graphplay {
         GLint norm_loc = glGetAttribLocation(m_program, "aNormal");
         GLint color_loc = glGetAttribLocation(m_program, "aColor");
 
-        if (pos_loc < 0 || color_loc < 0 || norm_loc < 0) {
+        if (pos_loc < 0 || color_loc < 0) {
             std::cerr << "aPosition or aColor could not be found in the shader program. "
                       << "Something is seriously wrong." << std::endl;
             std::exit(1);
@@ -194,9 +206,10 @@ namespace graphplay {
         m_color_loc = (GLuint)color_loc;
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
+        m_model_view_inv_loc = glGetUniformLocation(m_program, "uModelViewInverse");
     }
 
-    const char *PhongMaterial::vertex_shader_src = "";
+    /* const char *PhongMaterial::vertex_shader_src = "";
     const char *PhongMaterial::fragment_shader_src = "";
 
     PhongMaterial::PhongMaterial()
@@ -226,5 +239,5 @@ namespace graphplay {
         m_normal_loc = (GLuint)normal_loc;
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
-    }
+    }*/
 };

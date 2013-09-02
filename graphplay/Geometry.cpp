@@ -1,6 +1,8 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 #include "Geometry.h"
 #include "Material.h"
@@ -229,6 +231,8 @@ namespace graphplay {
     }
 
     void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
+        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
+
         GLint pos_loc = material.getPositionLocation();
         GLint norm_loc = material.getNormalLocation();
         GLint color_loc = material.getColorLocation();
@@ -236,6 +240,7 @@ namespace graphplay {
 
         GLint proj_loc = material.getProjectionLocation();
         GLint mv_loc = material.getModelViewLocation();
+        GLint mvi_loc = material.getModelViewInverseLocation();
 
         GLsizeiptr vertex_size = m_stride * sizeof(float);
 
@@ -265,6 +270,7 @@ namespace graphplay {
 
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
+        glUniformMatrix3fv(mvi_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
         glDrawElements(GL_TRIANGLES, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);

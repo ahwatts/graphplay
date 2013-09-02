@@ -22,6 +22,7 @@ namespace graphplay {
 
         ASSERT_GT(0, mat.getProjectionLocation());
         ASSERT_GT(0, mat.getModelViewLocation());
+        ASSERT_GT(0, mat.getModelViewInverseLocation());
     }
 
     TEST_F(MaterialTest, CreateProgram) {
@@ -39,6 +40,7 @@ namespace graphplay {
 
         ASSERT_LE(0, mat.getProjectionLocation());
         ASSERT_LE(0, mat.getModelViewLocation());
+        ASSERT_LE(0, mat.getModelViewInverseLocation());
     }
 
     TEST_F(MaterialTest, MaterialLifecycle) {
