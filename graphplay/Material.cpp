@@ -159,7 +159,7 @@ namespace graphplay {
         "    vec3 eye_light_pos = vec3(0.0, 0.0, 10.0);\n"
         "    vec3 eye_light_dir = normalize(eye_light_pos - eye_position);\n"
         "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
-        "    //vAmbientColor = 0.05 * aColor;\n"
+        "    vAmbientColor = 0.05 * aColor;\n"
         "    vReflectedColor = dot(eye_light_dir, eye_normal) * aColor;\n"
         "}\n";
 
@@ -172,7 +172,7 @@ namespace graphplay {
         "out vec4 FragColor;\n"
 
         "void main(void) {\n"
-        "    FragColor = vReflectedColor;\n"
+        "    FragColor = clamp(vAmbientColor + vReflectedColor, 0.0, 1.0);\n"
         "}\n";
 
     LambertMaterial::LambertMaterial()
