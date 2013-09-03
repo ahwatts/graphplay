@@ -149,18 +149,19 @@ namespace graphplay {
         "uniform mat4x4 uModelView;\n"
         "uniform mat3x3 uModelViewInverse;\n"
         "uniform mat4x4 uProjection;\n"
+        "uniform vec3 uLightPosition;\n"
+        "uniform vec4 uLightColor;\n"
 
         "out vec4 vAmbientColor;\n"
         "out vec4 vReflectedColor;\n"
 
         "void main(void) {\n"
-        "    vec3 eye_position = (uModelView * vec4(aPosition, 1.0)).xyz;\n"
-        "    vec3 eye_normal = normalize(uModelViewInverse * aNormal);\n"
-        "    vec3 eye_light_pos = vec3(0.0, 0.0, 10.0);\n"
-        "    vec3 eye_light_dir = normalize(eye_light_pos - eye_position);\n"
+        "    vec3 eye_vert_pos = (uModelView * vec4(aPosition, 1.0)).xyz;\n"
+        "    vec3 eye_vert_norm = normalize(uModelViewInverse * aNormal);\n"
+        "    vec3 eye_light_dir = normalize(uLightPosition - eye_vert_pos);\n"
         "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
         "    vAmbientColor = 0.05 * aColor;\n"
-        "    vReflectedColor = dot(eye_light_dir, eye_normal) * aColor;\n"
+        "    vReflectedColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;\n"
         "}\n";
 
     const char* LambertMaterial::fragment_shader_src =
@@ -182,7 +183,9 @@ namespace graphplay {
           m_color_loc(-1),
           m_projection_loc(-1),
           m_model_view_loc(-1),
-          m_model_view_inv_loc(-1) { }
+          m_model_view_inv_loc(-1),
+          m_light_position_loc(-1),
+          m_light_color_loc(-1) { }
 
     LambertMaterial::~LambertMaterial() { }
 
@@ -195,8 +198,8 @@ namespace graphplay {
         GLint norm_loc = glGetAttribLocation(m_program, "aNormal");
         GLint color_loc = glGetAttribLocation(m_program, "aColor");
 
-        if (pos_loc < 0 || color_loc < 0) {
-            std::cerr << "aPosition or aColor could not be found in the shader program. "
+        if (pos_loc < 0 || color_loc < 0 || norm_loc < 0) {
+            std::cerr << "aPosition, aColor, or aNormal could not be found in the shader program. "
                       << "Something is seriously wrong." << std::endl;
             std::exit(1);
         }
@@ -207,6 +210,8 @@ namespace graphplay {
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
         m_model_view_inv_loc = glGetUniformLocation(m_program, "uModelViewInverse");
+        m_light_position_loc = glGetUniformLocation(m_program, "uLightPosition");
+        m_light_color_loc = glGetUniformLocation(m_program, "uLightColor");
     }
 
     /* const char *PhongMaterial::vertex_shader_src = "";

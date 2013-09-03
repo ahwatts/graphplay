@@ -28,6 +28,8 @@ namespace graphplay {
         virtual GLint getProjectionLocation() const { return -1; }
         virtual GLint getModelViewLocation() const { return -1; }
         virtual GLint getModelViewInverseLocation() const { return -1; }
+        virtual GLint getLightPositionLocation() const { return -1; }
+        virtual GLint getLightColorLocation() const { return -1; }
 
     protected:
         GLuint m_program;
@@ -51,6 +53,8 @@ namespace graphplay {
         virtual GLint getProjectionLocation() const { return m_projection_loc; }
         virtual GLint getModelViewLocation() const { return m_model_view_loc; }
         virtual GLint getModelViewInverseLocation() const { return m_model_view_inv_loc; }
+        virtual GLint getLightPositionLocation() const { return m_light_position_loc; }
+        virtual GLint getLightColorLocation() const { return m_light_color_loc; }
 
     protected:
         GLuint m_position_loc;
@@ -60,6 +64,8 @@ namespace graphplay {
         GLint m_projection_loc;
         GLint m_model_view_loc;
         GLint m_model_view_inv_loc;
+        GLint m_light_position_loc;
+        GLint m_light_color_loc;
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };
