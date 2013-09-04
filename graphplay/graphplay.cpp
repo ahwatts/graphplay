@@ -29,6 +29,9 @@ void keypress(GLFWwindow *wnd, int key, int action);
 void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
 #endif
 
+typedef enum { OCTOHEDRON, CUBE } view_state_t;
+static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
+
 int main(int argc, char **argv) {
     int width = 800, height = 600;
     GLFWwindow *window;
@@ -36,15 +39,20 @@ int main(int argc, char **argv) {
     initGLFW(width, height, "Graphplay", &window);
     initGLEW();
 
-    graphplay::sp_Geometry octo_geo(new graphplay::CubeGeometry());
+    graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
+    graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
     graphplay::sp_Material gour_mat(new graphplay::LambertMaterial());
     octo_geo->generateBuffers();
+    cube_geo->generateBuffers();
     gour_mat->createProgram();
 
     graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, gour_mat));
+    graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, gour_mat));
 
     graphplay::Scene scene(width, height);
     scene.addMesh(octo);
+    view_state = new_view_state = OCTOHEDRON;
+    graphplay::Mesh *current_mesh = octo.get();
 
     graphplay::Camera &camera = scene.getCamera();
     camera.setLocation(glm::vec3(0, 0, 3));
@@ -75,12 +83,33 @@ int main(int argc, char **argv) {
         xrot += 45.0f * dtime;
         if (xrot >= 360.0) { xrot -= 360.0; }
 
+        if (new_view_state != view_state) {
+            if (view_state == OCTOHEDRON) {
+                scene.removeMesh(octo);
+            } else if (view_state == CUBE) {
+                scene.removeMesh(cube);
+            }
+
+            if (new_view_state == OCTOHEDRON) {
+                scene.addMesh(octo);
+                current_mesh = octo.get();
+            } else if (new_view_state == CUBE) {
+                scene.addMesh(cube);
+                current_mesh = cube.get();
+            }
+            view_state = new_view_state;
+        }
+
         mv = glm::mat4x4();
         mv = glm::rotate(mv, yrot, yhat);
         mv = glm::rotate(mv, xrot, xhat);
-        mv = glm::translate(mv, offset);
-        mv = glm::scale(mv, scale);
-        octo->setTransform(mv);
+
+        if (view_state == CUBE) {
+            mv = glm::translate(mv, offset);
+            mv = glm::scale(mv, scale);
+        }
+
+        current_mesh->setTransform(mv);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.render();
         glfwSwapBuffers(window);
@@ -127,5 +156,15 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
 #endif
     if (key == GLFW_KEY_ESCAPE) {
         glfwSetWindowShouldClose(wnd, true);
+    } else if (key == 83 && action == 1) {
+        if (view_state == OCTOHEDRON) {
+            new_view_state = CUBE;
+        } else if (view_state == CUBE) {
+            new_view_state = OCTOHEDRON;
+        }
+    // } else {
+    //     std::cout << "key: " << key
+    //               << " action: " << action
+    //               << std::endl;
     }
 }
