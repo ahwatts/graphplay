@@ -70,7 +70,6 @@ namespace graphplay {
         static const char *vertex_shader_src, *fragment_shader_src;
     };
 
-    /*
     class PhongMaterial : public Material {
     public:
         PhongMaterial();
@@ -80,20 +79,27 @@ namespace graphplay {
 
         virtual GLint getPositionLocation() const { return (GLint)m_position_loc; }
         virtual GLint getNormalLocation() const { return (GLint)m_normal_loc; }
+        virtual GLint getColorLocation() const { return (GLint)m_color_loc; }
 
         virtual GLint getProjectionLocation() const { return m_projection_loc; }
         virtual GLint getModelViewLocation() const { return m_model_view_loc; }
+        virtual GLint getModelViewInverseLocation() const { return m_model_view_inv_loc; }
+        virtual GLint getLightPositionLocation() const { return m_light_position_loc; }
+        virtual GLint getLightColorLocation() const { return m_light_color_loc; }
 
     protected:
         GLuint m_position_loc;
         GLuint m_normal_loc;
+        GLuint m_color_loc;
 
         GLint m_projection_loc;
         GLint m_model_view_loc;
+        GLint m_model_view_inv_loc;
+        GLint m_light_position_loc;
+        GLint m_light_color_loc;
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };
-    */
 };
 
 #endif

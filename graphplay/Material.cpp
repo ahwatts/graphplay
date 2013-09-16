@@ -153,7 +153,7 @@ namespace graphplay {
         "uniform vec4 uLightColor;\n"
 
         "out vec4 vAmbientColor;\n"
-        "out vec4 vReflectedColor;\n"
+        "out vec4 vDiffuseColor;\n"
 
         "void main(void) {\n"
         "    vec3 eye_vert_pos = (uModelView * vec4(aPosition, 1.0)).xyz;\n"
@@ -161,19 +161,19 @@ namespace graphplay {
         "    vec3 eye_light_dir = normalize(uLightPosition - eye_vert_pos);\n"
         "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
         "    vAmbientColor = 0.05 * aColor;\n"
-        "    vReflectedColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;\n"
+        "    vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;\n"
         "}\n";
 
     const char* LambertMaterial::fragment_shader_src =
         "#version 430 core\n"
 
         "in vec4 vAmbientColor;\n"
-        "in vec4 vReflectedColor;\n"
+        "in vec4 vDiffuseColor;\n"
 
         "out vec4 FragColor;\n"
 
         "void main(void) {\n"
-        "    FragColor = clamp(vAmbientColor + vReflectedColor, 0.0, 1.0);\n"
+        "    FragColor = clamp(vAmbientColor + vDiffuseColor, 0.0, 1.0);\n"
         "}\n";
 
     LambertMaterial::LambertMaterial()
@@ -214,15 +214,59 @@ namespace graphplay {
         m_light_color_loc = glGetUniformLocation(m_program, "uLightColor");
     }
 
-    /* const char *PhongMaterial::vertex_shader_src = "";
-    const char *PhongMaterial::fragment_shader_src = "";
+    const char *PhongMaterial::vertex_shader_src =
+        "#version 430 core\n"
+
+        "in vec3 aPosition;\n"
+        "in vec3 aNormal;\n"
+        "in vec4 aColor;\n"
+
+        "uniform mat4x4 uModelView;\n"
+        "uniform mat3x3 uModelViewInverse;\n"
+        "uniform mat4x4 uProjection;\n"
+        "uniform vec3 uLightPosition;\n"
+        "uniform vec4 uLightColor;\n"
+
+        "out vec4 vColor;\n"
+        "out vec3 vEyeDir;\n"
+        "out vec3 vNormal;\n"
+
+        "void main(void) {\n"
+        "    vec3 eye_vert_pos = (uModelView * vec4(aPosition, 1.0)).xyz;\n"
+
+        "    vEyeDir = normalize(uLightPosition - eye_vert_pos);\n"
+        "    vNormal = normalize(uModelViewInverse * aNormal);\n"
+        "    vColor = aColor;\n"
+        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
+        "}\n";
+
+    const char *PhongMaterial::fragment_shader_src = 
+        "#version 430 core\n"
+
+        "in vec3 vEyeDir;\n"
+        "in vec3 vNormal;\n"
+        "in vec4 vColor;\n"
+
+        "uniform vec4 uLightColor;\n"
+
+        "out vec4 FragColor;\n"
+
+        "void main(void) {\n"
+        "    vec4 ambient_color = 0.05 * vColor;\n"
+        "    vec4 diffuse_color = dot(vEyeDir, vNormal) * uLightColor * vColor;\n"
+        "    FragColor = clamp(ambient_color + diffuse_color, 0.0, 1.0);\n"
+        "}\n";
 
     PhongMaterial::PhongMaterial()
         : Material(),
           m_position_loc(-1),
           m_normal_loc(-1),
+          m_color_loc(-1),
           m_projection_loc(-1),
-          m_model_view_loc(-1) { }
+          m_model_view_loc(-1),
+          m_model_view_inv_loc(-1),
+          m_light_position_loc(-1),
+          m_light_color_loc(-1) { }
 
     PhongMaterial::~PhongMaterial() { }
 
@@ -244,5 +288,5 @@ namespace graphplay {
         m_normal_loc = (GLuint)normal_loc;
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
-    }*/
+    }
 };
