@@ -59,7 +59,7 @@ namespace graphplay {
                     GLint light_color_loc = mat->getLightColorLocation();
                     GLuint program = mat->getProgram();
 
-                    if (glIsProgram(program) && (light_pos_loc >= 0 || light_color_loc >= 0)) {
+                    if (light_pos_loc >= 0 || light_color_loc >= 0) {
                         glUseProgram(program);
                         if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
                         if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
