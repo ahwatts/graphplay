@@ -50,6 +50,7 @@ namespace graphplay {
 
         glm::vec3 light_pos(0, 0, 10);
         glm::vec4 light_color(1, 0.5, 0.25, 1);
+        unsigned int specular_exponent = 2;
 
         for (auto wm : m_meshes) {
             if (auto sm = wm.lock()) {
@@ -57,13 +58,13 @@ namespace graphplay {
                 if (mat) {
                     GLint light_pos_loc = mat->getLightPositionLocation();
                     GLint light_color_loc = mat->getLightColorLocation();
+                    GLint specular_exp_loc = mat->getSpecularExponentLocation();
                     GLuint program = mat->getProgram();
 
-                    if (light_pos_loc >= 0 || light_color_loc >= 0) {
-                        glUseProgram(program);
-                        if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
-                        if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
-                    }
+                    glUseProgram(program);
+                    if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
+                    if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
+                    if (specular_exp_loc >= 0) glUniform1ui(specular_exp_loc, specular_exponent);
                 }
                 sm->render(m_perspective, m_model_view);
             }

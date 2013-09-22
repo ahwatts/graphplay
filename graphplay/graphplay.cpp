@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 
     graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
     graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
-    graphplay::sp_Material gour_mat(new graphplay::PhongMaterial());
+    graphplay::sp_Material gour_mat(new graphplay::LambertMaterial());
     octo_geo->generateBuffers();
     cube_geo->generateBuffers();
     gour_mat->createProgram();
