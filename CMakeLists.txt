@@ -57,7 +57,9 @@ message(STATUS "Found gtest include: " ${GTEST_INCLUDE_DIRS})
 message(STATUS "Found gtest libs: " ${GTEST_LIBRARIES})
 message(STATUS "Found gtest_main libs: " ${GTEST_MAIN_LIBRARIES})
 
-include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
+configure_file(config.h.in config.h)
+
+include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)
