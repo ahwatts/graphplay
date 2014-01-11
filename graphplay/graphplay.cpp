@@ -1,8 +1,10 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "config.h"
+
 #include <ctime>
 #include <GL/glew.h>
-#include <GL/glfw3.h>
+#include GLFW_HEADER
 
 #include <string>
 #include <iostream>

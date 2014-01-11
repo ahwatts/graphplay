@@ -1,0 +1,8 @@
+// -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
+
+#ifndef _GRAPHPLAY_GRAPHPLAY_CONFIG_H_
+#define _GRAPHPLAY_GRAPHPLAY_CONFIG_H_
+
+#define GLFW_HEADER <@GLFW_HEADER_PATH@>
+
+#endif

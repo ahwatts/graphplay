@@ -1,3 +1,6 @@
+configure_file(config.h.in config.h)
+include_directories(${graphplay_BINARY_DIR})
+
 add_executable(graphplay-test
   CameraTest.cpp
   GeometryTest.cpp
