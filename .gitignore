@@ -26,3 +26,12 @@ gmon.out
 
 !/glew.dll
 !/glfw3.dll
+
+# Eclipse / CMake garbage.
+.project
+.cproject
+CMakeFiles
+Makefile
+*.cmake
+CMakeCache.txt
+config.h
