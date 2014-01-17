@@ -288,5 +288,8 @@ namespace graphplay {
         m_normal_loc = (GLuint)normal_loc;
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
         m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
+        m_model_view_inv_loc = glGetUniformLocation(m_program, "uModelViewInverse");
+        m_light_position_loc = glGetUniformLocation(m_program, "uLightPosition");
+        m_light_color_loc = glGetUniformLocation(m_program, "uLightColor");
     }
 };
