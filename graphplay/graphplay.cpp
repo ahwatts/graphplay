@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include <ctime>
+#include <sys/time.h>
 #include <GL/glew.h>
 #include GLFW_HEADER
 
@@ -66,18 +66,20 @@ int main(int argc, char **argv) {
 
     glfwSetKeyCallback(window, keypress);
 
-    std::clock_t pctime = std::clock(), ctime;
+    struct timeval tod, ptod;
     glm::mat4x4 mv;
     glm::vec3 yhat = glm::vec3(0, 1, 0);
     glm::vec3 xhat = glm::vec3(1, 0, 0);
     glm::vec3 offset = glm::vec3(-1, -1, -1);
     glm::vec3 scale = glm::vec3(2, 2, 2);
     float yrot = 0, xrot = 0;
+    gettimeofday(&ptod, NULL);
 
     while (!glfwWindowShouldClose(window)) {
-        ctime = std::clock();
-        float dtime = (float)(ctime - pctime) / (float)CLOCKS_PER_SEC;
-        pctime = ctime;
+        gettimeofday(&tod, NULL);
+        auto delta = tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec;
+        float dtime = delta / 1e6f;
+        ptod = tod;
 
         yrot += 90.0f * dtime;
         if (yrot >= 360.0) { yrot -= 360.0; }
