@@ -266,6 +266,7 @@ namespace graphplay {
                 glEnableVertexAttribArray(color_loc);
                 glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_color_offset*sizeof(float)));
             } else {
+                glDisableVertexAttribArray(color_loc);
                 glVertexAttrib4f(color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
