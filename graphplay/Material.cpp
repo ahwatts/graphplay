@@ -7,6 +7,8 @@
 
 #include "Material.h"
 
+#define GLSL(src) "#version 430 core\n" #src
+
 namespace graphplay {
     // Helper functions.
 
@@ -139,49 +141,47 @@ namespace graphplay {
     }
 
     // Class LambertMaterial.
-    const char* LambertMaterial::vertex_shader_src =
-        "#version 430 core\n"
+    const char* LambertMaterial::vertex_shader_src = GLSL(
+        in vec3 aPosition;
+        in vec3 aNormal;
+        in vec4 aColor;
 
-        "in vec3 aPosition;\n"
-        "in vec3 aNormal;\n"
-        "in vec4 aColor;\n"
+        uniform mat4x4 uModelView;
+        uniform mat3x3 uModelViewInverse;
+        uniform mat4x4 uProjection;
+        uniform vec3 uLightPosition;
+        uniform vec4 uLightColor;
+        uniform uint uSpecularExponent;
 
-        "uniform mat4x4 uModelView;\n"
-        "uniform mat3x3 uModelViewInverse;\n"
-        "uniform mat4x4 uProjection;\n"
-        "uniform vec3 uLightPosition;\n"
-        "uniform vec4 uLightColor;\n"
-        "uniform uint uSpecularExponent;\n"
+        out vec4 vAmbientColor;
+        out vec4 vDiffuseColor;
+        out vec4 vSpecularColor;
 
-        "out vec4 vAmbientColor;\n"
-        "out vec4 vDiffuseColor;\n"
-        "out vec4 vSpecularColor;\n"
+        void main(void) {
+            vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));
+            vec3 eye_vert_norm = normalize(uModelViewInverse * aNormal);
+            vec3 eye_light_dir = normalize(uLightPosition - eye_vert_pos);
+            vec3 eye_eye_dir = normalize(eye_vert_pos);
+            vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);
 
-        "void main(void) {\n"
-        "    vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));\n"
-        "    vec3 eye_vert_norm = normalize(uModelViewInverse * aNormal);\n"
-        "    vec3 eye_light_dir = normalize(uLightPosition - eye_vert_pos);\n"
-        "    vec3 eye_eye_dir = normalize(eye_vert_pos);\n"
-        "    vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);\n"
+            gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
+            vAmbientColor = 0.05 * aColor;
+            vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;
+            vSpecularColor = pow(dot(eye_reflected_dir, eye_eye_dir), uSpecularExponent) * uLightColor * aColor;
+        }
+    );
 
-        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
-        "    vAmbientColor = 0.05 * aColor;\n"
-        "    vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;\n"
-        "    vSpecularColor = pow(dot(eye_reflected_dir, eye_eye_dir), uSpecularExponent) * uLightColor * aColor;\n"
-        "}\n";
+    const char* LambertMaterial::fragment_shader_src = GLSL(
+        in vec4 vAmbientColor;
+        in vec4 vDiffuseColor;
+        in vec4 vSpecularColor;
 
-    const char* LambertMaterial::fragment_shader_src =
-        "#version 430 core\n"
+        out vec4 FragColor;
 
-        "in vec4 vAmbientColor;\n"
-        "in vec4 vDiffuseColor;\n"
-        "in vec4 vSpecularColor;\n"
-
-        "out vec4 FragColor;\n"
-
-        "void main(void) {\n"
-        "    FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);\n"
-        "}\n";
+        void main(void) {
+            FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
+        }
+    );
 
     LambertMaterial::LambertMaterial()
         : Material(),
@@ -214,48 +214,47 @@ namespace graphplay {
         m_specular_exponent_loc = glGetUniformLocation(m_program, "uSpecularExponent");
     }
 
-    const char *PhongMaterial::vertex_shader_src =
-        "#version 430 core\n"
+    const char *PhongMaterial::vertex_shader_src = GLSL(
+        in vec3 aPosition;
+        in vec3 aNormal;
+        in vec4 aColor;
 
-        "in vec3 aPosition;\n"
-        "in vec3 aNormal;\n"
-        "in vec4 aColor;\n"
+        uniform mat4x4 uModelView;
+        uniform mat3x3 uModelViewInverse;
+        uniform mat4x4 uProjection;
+        uniform vec3 uLightPosition;
+        uniform vec4 uLightColor;
 
-        "uniform mat4x4 uModelView;\n"
-        "uniform mat3x3 uModelViewInverse;\n"
-        "uniform mat4x4 uProjection;\n"
-        "uniform vec3 uLightPosition;\n"
-        "uniform vec4 uLightColor;\n"
+        out vec4 vColor;
+        out vec3 vEyeDir;
+        out vec3 vNormal;
 
-        "out vec4 vColor;\n"
-        "out vec3 vEyeDir;\n"
-        "out vec3 vNormal;\n"
+        void main(void) {
+            vec4 position = vec4(aPosition, 1.0);
+            vec3 eye_vert_pos = (uModelView * position).xyz;
 
-        "void main(void) {\n"
-        "    vec3 eye_vert_pos = (uModelView * vec4(aPosition, 1.0)).xyz;\n"
+            vEyeDir = normalize(uLightPosition - eye_vert_pos);
+            vNormal = normalize(uModelViewInverse * aNormal);
+            vColor = aColor;
+            gl_Position = uProjection * uModelView * position;
+        }
+    );
 
-        "    vEyeDir = normalize(uLightPosition - eye_vert_pos);\n"
-        "    vNormal = normalize(uModelViewInverse * aNormal);\n"
-        "    vColor = aColor;\n"
-        "    gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
-        "}\n";
+    const char *PhongMaterial::fragment_shader_src = GLSL(
+        in vec4 vColor;
+        in vec3 vEyeDir;
+        in vec3 vNormal;
 
-    const char *PhongMaterial::fragment_shader_src = 
-        "#version 430 core\n"
-        
-        "in vec4 vColor;\n"
-        "in vec3 vEyeDir;\n"
-        "in vec3 vNormal;\n"
+        uniform vec4 uLightColor;
 
-        "uniform vec4 uLightColor;\n"
+        out vec4 FragColor;
 
-        "out vec4 FragColor;\n"
-
-        "void main(void) {\n"
-        "    vec4 ambient_color = 0.05 * vColor;\n"
-        "    vec4 diffuse_color = dot(vEyeDir, vNormal) * uLightColor * vColor;\n"
-        "    FragColor = clamp(ambient_color + diffuse_color, 0.0, 1.0);\n"
-        "}\n";
+        void main(void) {
+            vec4 ambient_color = 0.05 * vColor;
+            vec4 diffuse_color = dot(vEyeDir, vNormal) * uLightColor * vColor;
+            FragColor = clamp(ambient_color + diffuse_color, 0.0, 1.0);
+        }
+    );
 
     PhongMaterial::PhongMaterial()
         : Material(),
