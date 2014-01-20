@@ -47,6 +47,7 @@ namespace graphplay {
         
     protected:
         unsigned int findVertex(std::vector<float> &vdata);
+        GLenum m_draw_type;
 
     private:
         std::vector<float> m_vertex_attrs;
@@ -98,8 +99,10 @@ namespace graphplay {
     typedef std::shared_ptr<Geometry> sp_Geometry;
     typedef std::weak_ptr<Geometry> wp_Geometry;
 
+    // Subclasses with specific kinds of geometries.
     class OctohedronGeometry : public Geometry { public: OctohedronGeometry(); };
     class CubeGeometry : public Geometry { public: CubeGeometry(); };
+    class NormalGeometry : public Geometry { public: NormalGeometry(const Geometry& base); };
 };
 
 #endif

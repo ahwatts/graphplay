@@ -42,17 +42,21 @@ int main(int argc, char **argv) {
     initGLEW();
 
     graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
-    graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
+    graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
+    // graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
     graphplay::sp_Material gour_mat(new graphplay::LambertMaterial());
     octo_geo->generateBuffers();
-    cube_geo->generateBuffers();
+    octo_normals_geo->generateBuffers();
+    // cube_geo->generateBuffers();
     gour_mat->createProgram();
 
     graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, gour_mat));
-    graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, gour_mat));
+    graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
+    // graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, gour_mat));
 
     graphplay::Scene scene(width, height);
     scene.addMesh(octo);
+    scene.addMesh(octo_normals);
     view_state = new_view_state = OCTOHEDRON;
     graphplay::Mesh *current_mesh = octo.get();
 
@@ -87,6 +91,7 @@ int main(int argc, char **argv) {
         xrot += 45.0f * dtime;
         if (xrot >= 360.0) { xrot -= 360.0; }
 
+        /*
         if (new_view_state != view_state) {
             if (view_state == OCTOHEDRON) {
                 scene.removeMesh(octo);
@@ -103,17 +108,21 @@ int main(int argc, char **argv) {
             }
             view_state = new_view_state;
         }
+        */
 
         mv = glm::mat4x4();
         mv = glm::rotate(mv, yrot, yhat);
         mv = glm::rotate(mv, xrot, xhat);
 
+        /*
         if (view_state == CUBE) {
             mv = glm::translate(mv, offset);
             mv = glm::scale(mv, scale);
         }
+        */
 
         current_mesh->setTransform(mv);
+        octo_normals->setTransform(mv);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.render();
         glfwSwapBuffers(window);

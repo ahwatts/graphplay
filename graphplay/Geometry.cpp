@@ -8,9 +8,12 @@
 #include "Material.h"
 #include "graphplay.h"
 
+#include <iostream>
+
 namespace graphplay {
     Geometry::Geometry()
-        : m_vertex_attrs(),
+        : m_draw_type(GL_TRIANGLES),
+          m_vertex_attrs(),
           m_vertex_elems(),
           m_position_offset(-1),
           m_normal_offset(-1),
@@ -258,9 +261,13 @@ namespace graphplay {
             glVertexAttribPointer(norm_loc, 3, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET_BYTES(m_normal_offset*sizeof(float)));
         }
 
-        if (m_color_offset >= 0 && color_loc >= 0) {
-            glEnableVertexAttribArray(color_loc);
-            glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_color_offset*sizeof(float)));
+        if (color_loc >= 0) {
+            if (m_color_offset >= 0) {
+                glEnableVertexAttribArray(color_loc);
+                glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_color_offset*sizeof(float)));
+            } else {
+                glVertexAttrib4f(color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
+            }
         }
 
         if (m_tex_coord_offset >= 0 && tc_loc >= 0) {
@@ -273,7 +280,7 @@ namespace graphplay {
         glUniformMatrix3fv(mvi_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
-        glDrawElements(GL_TRIANGLES, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(m_draw_type, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
     }
 
     Geometry::VertexIterator Geometry::begin() const {
@@ -409,5 +416,22 @@ namespace graphplay {
         vertex3f(0, 1, 0); color4f(0, 1, 0, 1); normal3f( 0,  1,  0);
         vertex3f(1, 1, 1); color4f(1, 1, 1, 1); normal3f( 0,  1,  0);
         vertex3f(0, 1, 1); color4f(0, 1, 1, 1); normal3f( 0,  1,  0);
+    }
+
+    NormalGeometry::NormalGeometry(const Geometry &base) {
+        m_draw_type = GL_LINES;
+        int poff = base.getPositionOffset();
+        int noff = base.getNormalOffset();
+
+        for (auto v : base) {
+            glm::vec3 norm(v[noff], v[noff + 1], v[noff + 2]);
+            glm::vec3 pos(v[poff], v[poff + 1], v[poff + 2]);
+            glm::vec3 pos2;
+
+            norm = glm::normalize(norm);
+            pos2 = pos + (norm * 0.5f);
+            vertex3f(pos.x, pos.y, pos.z);
+            vertex3f(pos2.x, pos2.y, pos2.z);
+        }
     }
 };
