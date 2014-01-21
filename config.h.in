@@ -5,4 +5,8 @@
 
 #define GLFW_HEADER <@GLFW_HEADER_PATH@>
 
+#ifdef _MSC_VER
+#define MSVC
+#endif
+
 #endif

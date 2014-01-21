@@ -25,6 +25,7 @@
     <ClInclude Include="..\graphplay\Material.h" />
     <ClInclude Include="..\graphplay\Mesh.h" />
     <ClInclude Include="..\graphplay\Scene.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="TestOpenGLContext.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

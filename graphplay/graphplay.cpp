@@ -2,7 +2,13 @@
 
 #include "config.h"
 
+#ifdef MSVC
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#else
 #include <sys/time.h>
+#endif
+
 #include <GL/glew.h>
 #include GLFW_HEADER
 
@@ -77,21 +83,37 @@ int main(int argc, char **argv) {
 
     glfwSetKeyCallback(window, keypress);
 
-    struct timeval tod, ptod;
     glm::mat4x4 mv;
     glm::vec3 yhat = glm::vec3(0, 1, 0);
     glm::vec3 xhat = glm::vec3(1, 0, 0);
     // glm::vec3 offset = glm::vec3(-1, -1, -1);
     // glm::vec3 scale = glm::vec3(2, 2, 2);
     float yrot = 0, xrot = 0;
+    
+#ifdef MSVC
+    SYSTEMTIME stime, pstime;
+    GetSystemTime(&pstime);
+#else
+    struct timeval tod, ptod;
     gettimeofday(&ptod, NULL);
+#endif
 
     while (!glfwWindowShouldClose(window)) {
+
         // Calculate the time delta.
+#ifdef MSVC
+        GetSystemTime(&stime);
+        int msec = stime.wMilliseconds - pstime.wMilliseconds;
+        if (msec < 0) msec = 1000 + msec;
+        int delta = msec * 1000;
+        pstime = stime;
+#else
         gettimeofday(&tod, NULL);
         auto delta = tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec;
-        float dtime = delta / 1e6f;
         ptod = tod;
+#endif
+
+        float dtime = delta / 1e6f;
 
         // Update the rotation based on the time delta.
         yrot += 90.0f * dtime;

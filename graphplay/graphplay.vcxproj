@@ -111,6 +111,7 @@
   <ItemGroup>
     <ClInclude Include="Body.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="graphplay.h" />
     <ClInclude Include="Collada.h" />
