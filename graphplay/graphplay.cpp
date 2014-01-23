@@ -51,10 +51,10 @@ int main(int argc, char **argv) {
     initGLEW();
 
     graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
-    graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
+    // graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
     // graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
     octo_geo->generateBuffers();
-    octo_normals_geo->generateBuffers();
+    // octo_normals_geo->generateBuffers();
     // cube_geo->generateBuffers();
 
     graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
@@ -65,12 +65,12 @@ int main(int argc, char **argv) {
     phong_mat->createProgram();
 
     graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
-    graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
+    // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
     // graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, lamb_mat));
 
     graphplay::Scene scene(width, height);
     scene.addMesh(octo);
-    scene.addMesh(octo_normals);
+    // scene.addMesh(octo_normals);
     // scene.addMesh(cube);
 
     graphplay::Camera &camera = scene.getCamera();
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 
         // Make the meshes use the modelview matrix.
         octo->setTransform(mv);
-        octo_normals->setTransform(mv);
+        // octo_normals->setTransform(mv);
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
