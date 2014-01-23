@@ -8,8 +8,6 @@
 #include "Material.h"
 #include "graphplay.h"
 
-#include <iostream>
-
 namespace graphplay {
     Geometry::Geometry()
         : m_draw_type(GL_TRIANGLES),
@@ -339,23 +337,23 @@ namespace graphplay {
         vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f,  0.577f);
         vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
         vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
-        
+
         vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f,  0.577f);
         vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
         vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
-        
+
         vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f,  0.577f, -0.577f);
         vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
         vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
-        
+
         vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f,  0.577f, -0.577f);
         vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
         vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
-        
+
         vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f, -0.577f);
         vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
         vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
-        
+
         vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f, -0.577f);
         vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);
         vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);

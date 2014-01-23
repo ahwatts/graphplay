@@ -6,8 +6,7 @@
 #include <vector>
 
 #include "Material.h"
-
-#define GLSL(src) "#version 430 core\n" #src
+#include "graphplay.h"
 
 namespace graphplay {
     // Helper functions.

@@ -7,4 +7,8 @@
 #define BUFFER_OFFSET_BYTES(n) ((GLvoid*)(n))
 #endif
 
+#ifndef GLSL
+#define GLSL(src) "#version 430 core\n" #src
+#endif
+
 #endif
