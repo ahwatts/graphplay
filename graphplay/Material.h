@@ -128,6 +128,11 @@ namespace graphplay {
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };
+
+    // Helper functions.
+    void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders);
+    GLuint createAndCompileShader(GLenum shader_type, const char* shader_src);
+    GLuint createProgramFromShaders(GLuint vertex_shader, GLuint fragment_shader);
 };
 
 #endif

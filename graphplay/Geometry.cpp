@@ -231,7 +231,9 @@ namespace graphplay {
         }
     }
 
-    void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
+    void Geometry::render(const glm::mat4x4 &projection,
+                          const glm::mat4x4 &model_view,
+                          const  Material &material) const {
         glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
 
         GLint pos_loc = material.getPositionLocation();
@@ -251,18 +253,21 @@ namespace graphplay {
 
         if (m_position_offset >= 0 && pos_loc >= 0) {
             glEnableVertexAttribArray(pos_loc);
-            glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET_BYTES(m_position_offset*sizeof(float)));
+            glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, vertex_size,
+                                  BUFFER_OFFSET_BYTES(m_position_offset*sizeof(float)));
         }
 
         if (m_normal_offset >= 0 && norm_loc >= 0) {
             glEnableVertexAttribArray(norm_loc);
-            glVertexAttribPointer(norm_loc, 3, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET_BYTES(m_normal_offset*sizeof(float)));
+            glVertexAttribPointer(norm_loc, 3, GL_FLOAT, GL_FALSE, vertex_size,
+                                  BUFFER_OFFSET_BYTES(m_normal_offset*sizeof(float)));
         }
 
         if (color_loc >= 0) {
             if (m_color_offset >= 0) {
                 glEnableVertexAttribArray(color_loc);
-                glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_color_offset*sizeof(float)));
+                glVertexAttribPointer(color_loc, 4, GL_FLOAT, GL_TRUE, vertex_size,
+                                      BUFFER_OFFSET_BYTES(m_color_offset*sizeof(float)));
             } else {
                 glDisableVertexAttribArray(color_loc);
                 glVertexAttrib4f(color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -271,7 +276,8 @@ namespace graphplay {
 
         if (m_tex_coord_offset >= 0 && tc_loc >= 0) {
             glEnableVertexAttribArray(tc_loc);
-            glVertexAttribPointer(tc_loc, 2, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_tex_coord_offset*sizeof(float)));
+            glVertexAttribPointer(tc_loc, 2, GL_FLOAT, GL_TRUE, vertex_size,
+                                  BUFFER_OFFSET_BYTES(m_tex_coord_offset*sizeof(float)));
         }
 
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
