@@ -43,8 +43,13 @@ namespace graphplay {
 
         virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const;
 
+        void printTransformFeedback() const;
+
     protected:
         GLuint m_program;
+        GLuint m_transform_feedback;
+
+        GLuint m_feedback_buffer;
 
         GLuint m_position_loc;
         GLuint m_normal_loc;

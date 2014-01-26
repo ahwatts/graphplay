@@ -57,16 +57,18 @@ int main(int argc, char **argv) {
     // octo_normals_geo->generateBuffers();
     // cube_geo->generateBuffers();
 
-    graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
-    graphplay::sp_Material lamb_mat(new graphplay::LambertMaterial());
-    graphplay::sp_Material phong_mat(new graphplay::PhongMaterial());
-    gour_mat->createProgram();
-    lamb_mat->createProgram();
-    phong_mat->createProgram();
+    // graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
+    // graphplay::sp_Material lamb_mat(new graphplay::LambertMaterial());
+    // graphplay::sp_Material phong_mat(new graphplay::PhongMaterial());
+    // gour_mat->createProgram();
+    // lamb_mat->createProgram();
+    // phong_mat->createProgram();
 
-    graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
+    // graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
     // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
     // graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, lamb_mat));
+
+    graphplay::sp_Mesh octo(new graphplay::DebugMesh(octo_geo));
 
     graphplay::Scene scene(width, height);
     scene.addMesh(octo);
@@ -123,14 +125,14 @@ int main(int argc, char **argv) {
         if (xrot >= 360.0) { xrot -= 360.0; }
 
         // Handle input.
-        if (new_light_state != light_state) {
-            light_state = new_light_state;
-            switch (new_light_state) {
-            case GOURAUD: octo->setMaterial(gour_mat); break;
-            case LAMBERT: octo->setMaterial(lamb_mat); break;
-            case PHONG: octo->setMaterial(phong_mat); break;
-            }
-        }
+        //if (new_light_state != light_state) {
+        //    light_state = new_light_state;
+        //    switch (new_light_state) {
+        //    case GOURAUD: octo->setMaterial(gour_mat); break;
+        //    case LAMBERT: octo->setMaterial(lamb_mat); break;
+        //    case PHONG: octo->setMaterial(phong_mat); break;
+        //    }
+        //}
 
         // Create the modelview matrix.
         mv = glm::mat4x4();
@@ -146,6 +148,8 @@ int main(int argc, char **argv) {
         scene.render();
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        ((graphplay::DebugMesh *)octo.get())->printTransformFeedback();
     }
 
     glfwTerminate();
