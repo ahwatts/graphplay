@@ -41,7 +41,7 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
 // static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
 
 typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
-static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
+// static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
 
 int main(int argc, char **argv) {
     int width = 800, height = 600;
@@ -203,18 +203,18 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
         //         view_state = OCTOHEDRON;
         //     }
         //     break;
-        case 'Q':
-        case 'q':
-            new_light_state = GOURAUD;
-            break;
-        case 'W':
-        case 'w':
-            new_light_state = LAMBERT;
-            break;
-        case 'E':
-        case 'e':
-            new_light_state = PHONG;
-            break;
+        // case 'Q':
+        // case 'q':
+        //     new_light_state = GOURAUD;
+        //     break;
+        // case 'W':
+        // case 'w':
+        //     new_light_state = LAMBERT;
+        //     break;
+        // case 'E':
+        // case 'e':
+        //     new_light_state = PHONG;
+        //     break;
         default:
             std::cout << "key: " << key
                       << " action: " << action
