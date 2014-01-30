@@ -39,15 +39,15 @@ namespace graphplay {
         uniform vec4 uLightColor;
         uniform uint uSpecularExponent;
 
-        // For the transform feedback.
-        out vec3 eye_light_dir;
-        out vec3 eye_eye_dir;
-        out vec3 eye_reflected_dir;
-
         // For the fragment shader.
         out vec4 vAmbientColor;
         out vec4 vDiffuseColor;
         out vec4 vSpecularColor;
+
+        // For the transform feedback.
+        out vec3 eye_light_dir;
+        out vec3 eye_eye_dir;
+        out vec3 eye_reflected_dir;
 
         void main(void) {
             vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));
