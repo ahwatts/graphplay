@@ -39,14 +39,15 @@ namespace graphplay {
         uniform vec4 uLightColor;
         uniform uint uSpecularExponent;
 
-        out vec4 vAmbientColor;
-        out vec4 vDiffuseColor;
-        out vec4 vSpecularColor;
-
         // For the transform feedback.
         out vec3 eye_light_dir;
         out vec3 eye_eye_dir;
         out vec3 eye_reflected_dir;
+
+        // For the fragment shader.
+        out vec4 vAmbientColor;
+        out vec4 vDiffuseColor;
+        out vec4 vSpecularColor;
 
         void main(void) {
             vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));
@@ -74,31 +75,29 @@ namespace graphplay {
         }
     );
 
-    DebugMesh::DebugMesh(sp_Geometry geo)
-        : Mesh(),
-          m_transform_feedback(0),
-          m_feedback_buffer(0) {
+    DebugMesh::DebugMesh(sp_Geometry geo) : Mesh() {
         m_geometry = geo;
+
         GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_src);
         GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, DebugMesh::fragment_shader_src);
         const char *varying_names[] = {
             "eye_light_dir", "eye_eye_dir", "eye_reflected_dir"
         };
 
-        GLuint program = glCreateProgram();
-        glAttachShader(program, vertex_shader);
-        glAttachShader(program, fragment_shader);
-        glTransformFeedbackVaryings(program, 3, varying_names, GL_INTERLEAVED_ATTRIBS);
-        glLinkProgram(program);
+        m_program = glCreateProgram();
+        glAttachShader(m_program, vertex_shader);
+        glAttachShader(m_program, fragment_shader);
+        glTransformFeedbackVaryings(m_program, 3, varying_names, GL_INTERLEAVED_ATTRIBS);
+        glLinkProgram(m_program);
 
         GLint status;
-        glGetProgramiv(program, GL_LINK_STATUS, &status);
+        glGetProgramiv(m_program, GL_LINK_STATUS, &status);
         if (!status) {
             GLint errlen;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &errlen);
+            glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &errlen);
 
             char *err = new char[errlen];
-            glGetProgramInfoLog(program, errlen, NULL, err);
+            glGetProgramInfoLog(m_program, errlen, NULL, err);
             std::cerr << "Could not link shader program: " << err << std::endl;
             delete [] err;
 
@@ -117,14 +116,11 @@ namespace graphplay {
         m_specular_exponent_loc = glGetUniformLocation(m_program, "uSpecularExponent");
 
         // Create the transform feedback stuff.
-        glGenTransformFeedbacks(1, &m_transform_feedback);
-        glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transform_feedback);
         glGenBuffers(1, &m_feedback_buffer);
         glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_feedback_buffer);
         glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER,
             3*3*sizeof(float)*m_geometry->getNumVertices(),
             NULL, GL_DYNAMIC_COPY);
-        glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_feedback_buffer);
     }
 
     void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
@@ -133,9 +129,13 @@ namespace graphplay {
 
         GLsizeiptr vertex_size = m_geometry->getStride() * sizeof(float);
 
+        // Use our special shader program.
         glUseProgram(m_program);
+
+        // Use our geometry's data buffer.
         glBindBuffer(GL_ARRAY_BUFFER, m_geometry->getArrayBuffer());
 
+        // Use the data buffer to the various shader inputs.
         glEnableVertexAttribArray(m_position_loc);
         glVertexAttribPointer(m_position_loc, 3, GL_FLOAT, GL_FALSE, vertex_size,
             BUFFER_OFFSET_BYTES(m_geometry->getPositionOffset()*sizeof(float)));
@@ -148,12 +148,18 @@ namespace graphplay {
         glVertexAttribPointer(m_color_loc, 4, GL_FLOAT, GL_FALSE, vertex_size,
             BUFFER_OFFSET_BYTES(m_geometry->getColorOffset()*sizeof(float)));
 
+        // Set the inputs for the uniforms.
         glUniformMatrix4fv(m_projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(m_model_view_loc, 1, GL_FALSE, glm::value_ptr(full_mv));
         glUniformMatrix3fv(m_model_view_inv_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
 
+        // Set the element array buffer.
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_geometry->getElementArrayBuffer());
 
+        // Set the transform feedback buffer.
+        glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_feedback_buffer);
+
+        // Render with transform feedback.
         glBeginTransformFeedback(m_geometry->getDrawType());
         glDrawElements(m_geometry->getDrawType(), m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
         glEndTransformFeedback();
@@ -162,9 +168,14 @@ namespace graphplay {
     void DebugMesh::printTransformFeedback() const {
         float *feedback = NULL;
         
-        glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_transform_feedback);
+        glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_feedback_buffer);
         feedback = (float*)glMapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, GL_READ_ONLY);
 
+        if (!feedback) {
+            std::cout << "Could not map feedback buffer!" << std::endl;
+            return;
+        }
+        
         for (unsigned int i = 0; i < m_geometry->getNumVertices(); ++i) {
             //out vec3 eye_light_dir;
             //out vec3 eye_eye_dir;

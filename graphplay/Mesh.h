@@ -47,7 +47,6 @@ namespace graphplay {
 
     protected:
         GLuint m_program;
-        GLuint m_transform_feedback;
 
         GLuint m_feedback_buffer;
 
