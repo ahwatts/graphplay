@@ -46,9 +46,10 @@ namespace graphplay {
         void printTransformFeedback() const;
 
     protected:
-        GLuint m_program;
+        GLuint m_program_1, m_program_2;
 
         GLuint m_feedback_buffer;
+        GLuint m_feedback_element_buffer;
 
         GLuint m_position_loc;
         GLuint m_normal_loc;
@@ -61,7 +62,16 @@ namespace graphplay {
         GLint m_light_color_loc;
         GLint m_specular_exponent_loc;
 
-        static const char *vertex_shader_src, *fragment_shader_src;
+        GLuint m_position_loc_2;
+        GLuint m_direction_loc_2;
+        GLint m_projection_loc_2;
+        GLint m_model_view_loc_2;
+
+        // The shaders for the first run.
+        static const char *vertex_shader_1_src, *fragment_shader_1_src;
+
+        // The shaders for the second run, with the transform feedback.
+        static const char *vertex_shader_2_src, *fragment_shader_2_src;
     };
 };
 

@@ -27,7 +27,7 @@ namespace graphplay {
     }
 
     // Class DebugMesh.
-    const char *DebugMesh::vertex_shader_src = GLSL(
+    const char *DebugMesh::vertex_shader_1_src = GLSL(
         in vec3 aPosition;
         in vec3 aNormal;
         in vec4 aColor;
@@ -63,7 +63,7 @@ namespace graphplay {
         }
     );
 
-    const char *DebugMesh::fragment_shader_src = GLSL(
+    const char *DebugMesh::fragment_shader_1_src = GLSL(
         in vec4 vAmbientColor;
         in vec4 vDiffuseColor;
         in vec4 vSpecularColor;
@@ -75,52 +75,98 @@ namespace graphplay {
         }
     );
 
+    const char *DebugMesh::vertex_shader_2_src = GLSL(
+        in vec3 aPosition;
+        in vec3 aDirection;
+
+        uniform mat4x4 uModelView;
+        uniform mat4x4 uProjection;
+
+        void main(void) {
+            if (gl_VertexID % 2 == 0) {
+                gl_Position = uProjection * uModelView * vec4(aPosition);
+            } else {
+                gl_Position = uProjection * uModelView * vec4(aPosition + 0.5*normalize(aDirection));
+            }
+        }
+    );
+
+    const char *DebugMesh::fragment_shader_2_src = GLSL(
+        out vec4 FragColor;
+
+        void main(void) {
+            FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        }
+    );
+
     DebugMesh::DebugMesh(sp_Geometry geo) : Mesh() {
         m_geometry = geo;
 
-        GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_src);
-        GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, DebugMesh::fragment_shader_src);
-        const char *varying_names[] = {
-            "eye_light_dir", "eye_eye_dir", "eye_reflected_dir"
-        };
+        // Build the first-pass shader program.
+        GLuint vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_1_src);
+        GLuint fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, DebugMesh::fragment_shader_1_src);
+        m_program_1 = createProgramFromShaders(vertex_shader, fragment_shader);
 
-        m_program = glCreateProgram();
-        glAttachShader(m_program, vertex_shader);
-        glAttachShader(m_program, fragment_shader);
-        glTransformFeedbackVaryings(m_program, 3, varying_names, GL_INTERLEAVED_ATTRIBS);
-        glLinkProgram(m_program);
+        // Re-link it with the varying names.
+        const char *varying_names[] = { "eye_light_dir", "eye_eye_dir", "eye_reflected_dir" };
+        glTransformFeedbackVaryings(m_program_1, 3, varying_names, GL_INTERLEAVED_ATTRIBS);
+        glLinkProgram(m_program_1);
+        checkProgramLinkStatus(m_program_1);
 
-        GLint status;
-        glGetProgramiv(m_program, GL_LINK_STATUS, &status);
-        if (!status) {
-            GLint errlen;
-            glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &errlen);
+        m_position_loc = (GLuint)glGetAttribLocation(m_program_1, "aPosition");
+        m_normal_loc = (GLuint)glGetAttribLocation(m_program_1, "aNormal");
+        m_color_loc = (GLuint)glGetAttribLocation(m_program_1, "aColor");
 
-            char *err = new char[errlen];
-            glGetProgramInfoLog(m_program, errlen, NULL, err);
-            std::cerr << "Could not link shader program: " << err << std::endl;
-            delete [] err;
+        m_projection_loc = glGetUniformLocation(m_program_1, "uProjection");
+        m_model_view_loc = glGetUniformLocation(m_program_1, "uModelView");
+        m_model_view_inv_loc = glGetUniformLocation(m_program_1, "uModelViewInverse");
+        m_light_position_loc = glGetUniformLocation(m_program_1, "uLightPosition");
+        m_light_color_loc = glGetUniformLocation(m_program_1, "uLightColor");
+        m_specular_exponent_loc = glGetUniformLocation(m_program_1, "uSpecularExponent");
 
-            std::exit(1);
-        }
-
-        m_position_loc = (GLuint)glGetAttribLocation(m_program, "aPosition");
-        m_normal_loc = (GLuint)glGetAttribLocation(m_program, "aNormal");
-        m_color_loc = (GLuint)glGetAttribLocation(m_program, "aColor");
-
-        m_projection_loc = glGetUniformLocation(m_program, "uProjection");
-        m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
-        m_model_view_inv_loc = glGetUniformLocation(m_program, "uModelViewInverse");
-        m_light_position_loc = glGetUniformLocation(m_program, "uLightPosition");
-        m_light_color_loc = glGetUniformLocation(m_program, "uLightColor");
-        m_specular_exponent_loc = glGetUniformLocation(m_program, "uSpecularExponent");
-
-        // Create the transform feedback stuff.
+        // Create the buffer to receive the transform feedback.
         glGenBuffers(1, &m_feedback_buffer);
         glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_feedback_buffer);
         glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER,
             3*3*sizeof(float)*m_geometry->getNumVertices(),
             NULL, GL_DYNAMIC_COPY);
+
+        // Build a new element array for rendering the transform
+        // feedback.
+        GLuint *feedback_elements = new GLuint[m_geometry->getNumVertices()*2];
+        GLuint *geometry_elements = NULL;
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_geometry->getElementArrayBuffer());
+        geometry_elements = (GLuint *)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_READ_ONLY);
+        for (unsigned int i = 0; i < m_geometry->getNumVertices(); ++i) {
+            // Add each vertex twice, once for each endpoint of
+            // the line we'll draw.
+            feedback_elements[2*i] = geometry_elements[i];
+            feedback_elements[2*i+1] = geometry_elements[i];            
+        }
+        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+        // Create an element array buffer for rendering the transform
+        // feedback.
+        glGenBuffers(1, &m_feedback_element_buffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+            m_geometry->getNumVertices()*2*sizeof(GLuint),
+            feedback_elements,
+            GL_STATIC_DRAW);
+
+        // All that data's now on the GPU; we don't need it here any more.
+        delete [] feedback_elements;
+
+        // Build the second-pass shader program.
+        vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_2_src);
+        fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, DebugMesh::fragment_shader_2_src);
+        m_program_2 = createProgramFromShaders(vertex_shader, fragment_shader);
+
+        m_position_loc_2 = (GLuint)glGetAttribLocation(m_program_2, "aPosition");
+        m_direction_loc_2 = (GLuint)glGetAttribLocation(m_program_2, "aDirection");
+        m_projection_loc_2 = glGetUniformLocation(m_program_2, "uProjection");
+        m_model_view_loc_2 = glGetUniformLocation(m_program_2, "uModelView");
     }
 
     void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
@@ -130,7 +176,7 @@ namespace graphplay {
         GLsizeiptr vertex_size = m_geometry->getStride() * sizeof(float);
 
         // Use our special shader program.
-        glUseProgram(m_program);
+        glUseProgram(m_program_1);
 
         // Use our geometry's data buffer.
         glBindBuffer(GL_ARRAY_BUFFER, m_geometry->getArrayBuffer());

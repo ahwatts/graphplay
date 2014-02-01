@@ -132,7 +132,9 @@ namespace graphplay {
     // Helper functions.
     void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders);
     GLuint createAndCompileShader(GLenum shader_type, const char* shader_src);
+    void checkShaderCompileStatus(GLuint shader);
     GLuint createProgramFromShaders(GLuint vertex_shader, GLuint fragment_shader);
+    void checkProgramLinkStatus(GLuint program);
 };
 
 #endif

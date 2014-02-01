@@ -27,24 +27,46 @@ namespace graphplay {
         delete [] shader_return;
     }
 
-    GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
-        GLuint shader = glCreateShader(shader_type);
-        GLint errlen, status, src_length = std::strlen(shader_src);
-
-        glShaderSource(shader, 1, &shader_src, &src_length);
-        glCompileShader(shader);
+    void checkShaderCompileStatus(GLuint shader) {
+        GLint status, len;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
         if (!status) {
-            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &errlen);
-            char *err = new char[errlen];
-            glGetShaderInfoLog(shader, errlen, NULL, err);
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
+            char *err = new char[len];
+            glGetShaderInfoLog(shader, len, NULL, err);
+
+            glGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, &len);
+            char *src = new char[len];
+            glGetShaderSource(shader, len, NULL, src);
+
             std::cerr << "Could not compile shader!" << std::endl;
             std::cerr << "  error: " << err << std::endl;
-            std::cerr << "  source:" << std::endl << shader_src << std::endl;
+            std::cerr << "  source:" << std::endl << src << std::endl;
+            delete [] err;
+            delete [] src;
+            std::exit(1);
+        }
+    }
+
+    void checkProgramLinkStatus(GLuint program) {
+        GLint status, errlen;
+        glGetProgramiv(program, GL_LINK_STATUS, &status);
+        if (!status) {
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &errlen);
+            char *err = new char[errlen];
+            glGetProgramInfoLog(program, errlen, NULL, err);
+            std::cerr << "Could not link shader program: " << err << std::endl;
             delete [] err;
             std::exit(1);
         }
+    }
 
+    GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
+        GLuint shader = glCreateShader(shader_type);
+        GLint src_length = std::strlen(shader_src);
+        glShaderSource(shader, 1, &shader_src, &src_length);
+        glCompileShader(shader);
+        checkShaderCompileStatus(shader);
         return shader;
     }
 
@@ -53,21 +75,7 @@ namespace graphplay {
         glAttachShader(program, vertex_shader);
         glAttachShader(program, fragment_shader);
         glLinkProgram(program);
-
-        GLint status;
-        glGetProgramiv(program, GL_LINK_STATUS, &status);
-        if (!status) {
-            GLint errlen;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &errlen);
-
-            char *err = new char[errlen];
-            glGetProgramInfoLog(program, errlen, NULL, err);
-            std::cerr << "Could not link shader program: " << err << std::endl;
-            delete [] err;
-
-            std::exit(1);
-        }
-
+        checkProgramLinkStatus(program);
         return program;
     }
 
