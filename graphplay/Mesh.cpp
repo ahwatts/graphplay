@@ -84,12 +84,26 @@ namespace graphplay {
 
         void main(void) {
             if (gl_VertexID % 2 == 0) {
-                gl_Position = uProjection * uModelView * vec4(aPosition);
+                gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
             } else {
-                gl_Position = uProjection * uModelView * vec4(aPosition + 0.5*normalize(aDirection));
+                gl_Position = uProjection * uModelView * vec4(aPosition + 0.5*normalize(aDirection), 1.0);
             }
         }
     );
+
+    // const char *DebugMesh::vertex_shader_2_src =
+    //     "#version 430 core\n"
+    //     "in vec3 aPosition;\n"
+    //     "in vec3 aDirection;\n"
+    //     "uniform mat4x4 uModelView;\n"
+    //     "uniform mat4x4 uProjection;\n"
+    //     "void main(void) {\n"
+    //     "    if (gl_VertexID % 2 == 0) {\n"
+    //     "        gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);\n"
+    //     "    } else {\n"
+    //     "        gl_Position = uProjection * uModelView * vec4(aPosition + 0.5*normalize(aDirection), 1.0);\n"
+    //     "    }\n"
+    //     "}\n";
 
     const char *DebugMesh::fragment_shader_2_src = GLSL(
         out vec4 FragColor;

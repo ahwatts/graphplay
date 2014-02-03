@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        ((graphplay::DebugMesh *)octo.get())->printTransformFeedback();
+        // ((graphplay::DebugMesh *)octo.get())->printTransformFeedback();
     }
 
     glfwTerminate();
