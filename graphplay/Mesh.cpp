@@ -223,6 +223,23 @@ namespace graphplay {
         glBeginTransformFeedback(m_geometry->getDrawType());
         glDrawElements(m_geometry->getDrawType(), m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
         glEndTransformFeedback();
+
+		// Render the feedback.
+		glUseProgram(m_program_2);
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_geometry->getArrayBuffer());
+		glEnableVertexAttribArray(m_position_loc_2);
+		glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, vertex_size,
+			BUFFER_OFFSET_BYTES(m_position_loc*sizeof(float)));
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_feedback_buffer);
+		glEnableVertexAttribArray(m_direction_loc_2);
+		glVertexAttribPointer(m_direction_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
+			BUFFER_OFFSET_BYTES(0));
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
+
+		glDrawElements(GL_LINES, m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
     }
 
     void DebugMesh::printTransformFeedback() const {
