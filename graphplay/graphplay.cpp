@@ -105,6 +105,8 @@ int main(int argc, char **argv) {
         // Calculate the time delta.
 #ifdef MSVC
         GetSystemTime(&stime);
+        // We're kind of assuming that this won't go for more than a second
+        // without an update.
         int msec = stime.wMilliseconds - pstime.wMilliseconds;
         if (msec < 0) msec = 1000 + msec;
         int delta = msec * 1000;

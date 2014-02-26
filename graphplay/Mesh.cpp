@@ -186,6 +186,9 @@ namespace graphplay {
     void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
         glm::mat4x4 full_mv = model_view * m_model_transform;
         glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(full_mv));
+        glm::vec3 light_pos(0, 0, 10);
+        glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
+        unsigned int specular_exponent = 2;
 
         GLsizeiptr vertex_size = m_geometry->getStride() * sizeof(float);
 
@@ -212,6 +215,9 @@ namespace graphplay {
         glUniformMatrix4fv(m_projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(m_model_view_loc, 1, GL_FALSE, glm::value_ptr(full_mv));
         glUniformMatrix3fv(m_model_view_inv_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
+        glUniform3fv(m_light_position_loc, 1, glm::value_ptr(light_pos));
+        glUniform4fv(m_light_color_loc, 1, glm::value_ptr(light_color));
+        glUniform1ui(m_specular_exponent_loc, specular_exponent);
 
         // Set the element array buffer.
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_geometry->getElementArrayBuffer());
