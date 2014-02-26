@@ -296,6 +296,18 @@ namespace graphplay {
         return Geometry::VertexIterator(*this, this->getNumVertices());
     }
 
+    Geometry::value_type Geometry::get(unsigned int index) const {
+        std::vector<float> rv(m_stride);
+        unsigned int vindex = m_vertex_elems[index];
+        unsigned int base_offset = vindex*m_stride;
+
+        for (unsigned int i = 0; i < m_stride; ++i) {
+            rv[i] = m_vertex_attrs[base_offset + i];
+        }
+
+        return rv;
+    }
+
     Geometry::VertexIterator::VertexIterator(const Geometry &geo, unsigned int init_loc)
         : m_geo(geo),
           m_loc(init_loc) { }
@@ -309,15 +321,7 @@ namespace graphplay {
     }
 
     Geometry::value_type Geometry::VertexIterator::operator*() {
-        std::vector<float> rv(m_geo.m_stride);
-        unsigned int vindex = m_geo.m_vertex_elems[m_loc];
-        unsigned int base_offset = vindex*m_geo.m_stride;
-
-        for (unsigned int i = 0; i < m_geo.m_stride; ++i) {
-            rv[i] = m_geo.m_vertex_attrs[base_offset + i];
-        }
-
-        return rv;
+        return m_geo.get(m_loc);
     }
 
     Geometry::VertexIterator &Geometry::VertexIterator::operator++() {

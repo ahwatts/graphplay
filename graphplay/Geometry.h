@@ -14,8 +14,23 @@ namespace graphplay {
     class Geometry
     {
     public:
+        // Iterator mumbo-jumbo so that we can walk the vertex list.
+        class VertexIterator;
+        friend class VertexIterator;
+        typedef VertexIterator iterator;
+        typedef std::ptrdiff_t difference_type;
+        typedef std::size_t size_type;
+        typedef std::vector<float> value_type;
+        typedef value_type* pointer;
+        typedef value_type& reference;
+
         Geometry();
         ~Geometry();
+
+        // Iterator functions.
+        iterator begin() const;
+        iterator end() const;
+        value_type get(unsigned int index) const;
 
         // These control the data on the GPU.
         void generateBuffers();
@@ -64,20 +79,6 @@ namespace graphplay {
         bool m_buffers_created;
 
     public:
-        // Iterator mumbo-jumbo so that we can walk the vertex list.
-        class VertexIterator;
-
-        friend class VertexIterator;
-        typedef VertexIterator iterator;
-        typedef std::ptrdiff_t difference_type;
-        typedef std::size_t size_type;
-        typedef std::vector<float> value_type;
-        typedef value_type* pointer;
-        typedef value_type& reference;
-
-        iterator begin() const;
-        iterator end() const;
-
         class VertexIterator {
         public:
             VertexIterator(const Geometry &geo, unsigned int init_loc);
