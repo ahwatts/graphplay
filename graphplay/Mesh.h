@@ -63,9 +63,7 @@ namespace graphplay {
         GLint m_specular_exponent_loc;
 
         GLuint m_position_loc_2;
-        GLuint m_direction_loc_2;
         GLint m_projection_loc_2;
-        GLint m_model_view_loc_2;
 
         // The shaders for the first run.
         static const char *vertex_shader_1_src, *fragment_shader_1_src;

@@ -45,12 +45,12 @@ namespace graphplay {
         out vec4 vSpecularColor;
 
         // For the transform feedback.
-        struct fb_vert {
-            vec3 light;
-            vec3 eye;
-            vec3 reflected;
-        };
-        out fb_vert arrow_verts[2];
+        out vec3 light_src;
+        out vec3 light_dst;
+        out vec3 eye_src;
+        out vec3 eye_dst;
+        out vec3 reflected_src;
+        out vec3 reflected_dst;
 
         void main(void) {
             vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));
@@ -59,14 +59,14 @@ namespace graphplay {
             vec3 eye_eye_dir = normalize(eye_vert_pos);
             vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);
 
-            arrow_verts[0].light = eye_vert_pos;
-            arrow_verts[1].light = eye_vert_pos + 0.5*eye_light_dir;
+            light_src = eye_vert_pos;
+            light_dst = eye_vert_pos + 0.5*eye_light_dir;
 
-            arrow_verts[0].eye = eye_vert_pos;
-            arrow_verts[1].eye = eye_vert_pos + 0.5*eye_eye_dir;
+            eye_src = eye_vert_pos;
+            eye_dst = eye_vert_pos + 0.5*eye_eye_dir;
 
-            arrow_verts[0].reflected = eye_vert_pos;
-            arrow_verts[1].reflected = eye_vert_pos + 0.5*eye_reflected_dir;
+            reflected_src = eye_vert_pos;
+            reflected_dst = eye_vert_pos + 0.5*eye_reflected_dir;
 
             gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
             vAmbientColor = 0.05 * aColor;
@@ -114,8 +114,8 @@ namespace graphplay {
         m_program_1 = createProgramFromShaders(vertex_shader, fragment_shader);
 
         // Re-link it with the varying names.
-        const char *varying_names[] = { "arrow_verts[]" };
-        glTransformFeedbackVaryings(m_program_1, 1, varying_names, GL_INTERLEAVED_ATTRIBS);
+        const char *varying_names[] = { "light_src", "eye_src", "reflected_src", "light_dst", "eye_dst", "reflected_dst" };
+        glTransformFeedbackVaryings(m_program_1, 6, varying_names, GL_INTERLEAVED_ATTRIBS);
         glLinkProgram(m_program_1);
         checkProgramLinkStatus(m_program_1);
 
@@ -136,16 +136,16 @@ namespace graphplay {
         // Create the buffer to receive the transform feedback. It will contain six vec3's per vertex.
         glGenBuffers(1, &m_feedback_buffer);
         glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_feedback_buffer);
-        glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, 6*3*sizeof(float)*num_geo_verts, NULL, GL_DYNAMIC_COPY);
+        glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, 6*3*num_geo_verts*sizeof(float), NULL, GL_DYNAMIC_COPY);
 
-        // Create an element array buffer for rendering the transform
-        // feedback.
-        GLuint *feedback_elements = new GLuint[num_fb_verts];
-        for (unsigned int i = 0; i < num_fb_verts; ++i) { feedback_elements[i] = i; }
-        glGenBuffers(1, &m_feedback_element_buffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_fb_verts*sizeof(GLuint), feedback_elements, GL_STATIC_DRAW);
-        delete [] feedback_elements;
+        //// Create an element array buffer for rendering the transform
+        //// feedback.
+        //GLuint *feedback_elements = new GLuint[num_fb_verts];
+        //for (unsigned int i = 0; i < num_fb_verts; ++i) { feedback_elements[i] = i; }
+        //glGenBuffers(1, &m_feedback_element_buffer);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
+        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_fb_verts*sizeof(GLuint), feedback_elements, GL_STATIC_DRAW);
+        //delete [] feedback_elements;
 
         // Build the second-pass shader program.
         vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_2_src);
@@ -203,15 +203,18 @@ namespace graphplay {
         glDrawElements(m_geometry->getDrawType(), m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
         glEndTransformFeedback();
 
-		// Render the feedback.
-		glUseProgram(m_program_2);
+        // Render the feedback.
+        glUseProgram(m_program_2);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_feedback_buffer);
-		glEnableVertexAttribArray(m_position_loc_2);
-		glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), BUFFER_OFFSET_BYTES(0));
+        glEnableVertexAttribArray(m_position_loc_2);
+        glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), BUFFER_OFFSET_BYTES(6*sizeof(float)));
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
-        glDrawElements(GL_LINES, 2*m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
+        glUniformMatrix4fv(m_projection_loc_2, 1, GL_FALSE, glm::value_ptr(projection));
+
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
+        //glDrawElements(GL_LINES, 2*m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_LINES, 0, 2 * m_geometry->getNumVertices());
     }
 
     void DebugMesh::printTransformFeedback() const {
