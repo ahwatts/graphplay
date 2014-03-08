@@ -120,10 +120,10 @@ int main(int argc, char **argv) {
         float dtime = delta / 1e6f;
 
         // Update the rotation based on the time delta.
-        yrot += 90.0f * dtime;
+        yrot += 30.0f * dtime;
         if (yrot >= 360.0) { yrot -= 360.0; }
 
-        xrot += 45.0f * dtime;
+        xrot += 10.0f * dtime;
         if (xrot >= 360.0) { xrot -= 360.0; }
 
         // Handle input.

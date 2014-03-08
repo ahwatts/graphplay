@@ -54,8 +54,9 @@ namespace graphplay {
 
         void main(void) {
             vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));
+            vec3 eye_light_pos = uLightPosition;
             vec3 eye_vert_norm = normalize(uModelViewInverse * aNormal);
-            vec3 eye_light_dir = normalize(uLightPosition - eye_vert_pos);
+            vec3 eye_light_dir = normalize(eye_light_pos - eye_vert_pos);
             vec3 eye_eye_dir = normalize(eye_vert_pos);
             vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);
 
@@ -137,15 +138,6 @@ namespace graphplay {
         glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_feedback_buffer);
         glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, 6*3*num_geo_verts*sizeof(float), NULL, GL_DYNAMIC_COPY);
 
-        //// Create an element array buffer for rendering the transform
-        //// feedback.
-        //GLuint *feedback_elements = new GLuint[num_fb_verts];
-        //for (unsigned int i = 0; i < num_fb_verts; ++i) { feedback_elements[i] = i; }
-        //glGenBuffers(1, &m_feedback_element_buffer);
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
-        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_fb_verts*sizeof(GLuint), feedback_elements, GL_STATIC_DRAW);
-        //delete [] feedback_elements;
-
         // Build the second-pass shader program.
         vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_2_src);
         fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, DebugMesh::fragment_shader_2_src);
@@ -158,7 +150,7 @@ namespace graphplay {
     void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
         glm::mat4x4 full_mv = model_view * m_model_transform;
         glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(full_mv));
-        glm::vec3 light_pos(0, 0, 10);
+        glm::vec3 light_pos(2, 2, 10);
         glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
         unsigned int specular_exponent = 2;
 
@@ -207,13 +199,11 @@ namespace graphplay {
 
         glBindBuffer(GL_ARRAY_BUFFER, m_feedback_buffer);
         glEnableVertexAttribArray(m_position_loc_2);
-        glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), BUFFER_OFFSET_BYTES(6*sizeof(float)));
+        glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), BUFFER_OFFSET_BYTES(0*sizeof(float)));
 
         glUniformMatrix4fv(m_projection_loc_2, 1, GL_FALSE, glm::value_ptr(projection));
 
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_feedback_element_buffer);
-        //glDrawElements(GL_LINES, 2*m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_LINES, 0, 2 * m_geometry->getNumVertices());
+        glDrawArrays(GL_LINES, 0, 2*m_geometry->getNumVertices());
     }
 
     void DebugMesh::printTransformFeedback() const {
