@@ -27,7 +27,7 @@ namespace graphplay {
     }
 
     // Class DebugMesh.
-    const char *DebugMesh::vertex_shader_1_src = GLSL(
+    const char *DebugMesh::vertex_shader_1_src = GLSL("130",
         in vec3 aPosition;
         in vec3 aNormal;
         in vec4 aColor;
@@ -75,7 +75,7 @@ namespace graphplay {
         }
     );
 
-    const char *DebugMesh::fragment_shader_1_src = GLSL(
+    const char *DebugMesh::fragment_shader_1_src = GLSL("130",
         in vec4 vAmbientColor;
         in vec4 vDiffuseColor;
         in vec4 vSpecularColor;
@@ -87,7 +87,7 @@ namespace graphplay {
         }
     );
 
-    const char *DebugMesh::vertex_shader_2_src = GLSL(
+    const char *DebugMesh::vertex_shader_2_src = GLSL("130",
         in vec3 aPosition;
 
         uniform mat4x4 uProjection;
@@ -97,7 +97,7 @@ namespace graphplay {
         }
     );
 
-    const char *DebugMesh::fragment_shader_2_src = GLSL(
+    const char *DebugMesh::fragment_shader_2_src = GLSL("130",
         out vec4 FragColor;
 
         void main(void) {
@@ -131,7 +131,6 @@ namespace graphplay {
         m_specular_exponent_loc = glGetUniformLocation(m_program_1, "uSpecularExponent");
 
         unsigned int num_geo_verts = m_geometry->getNumVertices();
-        unsigned int num_fb_verts = 2*num_geo_verts;
 
         // Create the buffer to receive the transform feedback. It will contain six vec3's per vertex.
         glGenBuffers(1, &m_feedback_buffer);

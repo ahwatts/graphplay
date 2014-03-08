@@ -148,7 +148,7 @@ namespace graphplay {
     }
 
     // Class GouraudMaterial.
-    const char *GouraudMaterial::vertex_shader_src = GLSL(
+    const char *GouraudMaterial::vertex_shader_src = GLSL("130",
         in vec3 aPosition;
         in vec4 aColor;
 
@@ -163,7 +163,7 @@ namespace graphplay {
         }
     );
 
-    const char *GouraudMaterial::fragment_shader_src = GLSL(
+    const char *GouraudMaterial::fragment_shader_src = GLSL("130",
         in vec4 vColor;
 
         out vec4 FragColor;
@@ -195,7 +195,7 @@ namespace graphplay {
     }
 
     // Class LambertMaterial.
-    const char* LambertMaterial::vertex_shader_src = GLSL(
+    const char* LambertMaterial::vertex_shader_src = GLSL("130",
         in vec3 aPosition;
         in vec3 aNormal;
         in vec4 aColor;
@@ -225,7 +225,7 @@ namespace graphplay {
         }
     );
 
-    const char* LambertMaterial::fragment_shader_src = GLSL(
+    const char* LambertMaterial::fragment_shader_src = GLSL("130",
         in vec4 vAmbientColor;
         in vec4 vDiffuseColor;
         in vec4 vSpecularColor;
@@ -268,7 +268,7 @@ namespace graphplay {
         m_specular_exponent_loc = glGetUniformLocation(m_program, "uSpecularExponent");
     }
 
-    const char *PhongMaterial::vertex_shader_src = GLSL(
+    const char *PhongMaterial::vertex_shader_src = GLSL("130",
         in vec3 aPosition;
         in vec3 aNormal;
         in vec4 aColor;
@@ -294,7 +294,7 @@ namespace graphplay {
         }
     );
 
-    const char *PhongMaterial::fragment_shader_src = GLSL(
+    const char *PhongMaterial::fragment_shader_src = GLSL("130",
         in vec4 vColor;
         in vec3 vEyeDir;
         in vec3 vNormal;
