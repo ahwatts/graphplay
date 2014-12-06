@@ -20,6 +20,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
   set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -pg")
   set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 find_package(OpenGL REQUIRED)
