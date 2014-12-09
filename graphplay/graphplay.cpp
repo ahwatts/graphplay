@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
         GetSystemTime(&stime);
         int msec = stime.wMilliseconds - pstime.wMilliseconds;
         if (msec < 0) msec = 1000 + msec;
-        int delta = msec * 1000;
+        int delta = msec * 10;
         pstime = stime;
 #else
         gettimeofday(&tod, NULL);
