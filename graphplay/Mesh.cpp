@@ -165,7 +165,8 @@ namespace graphplay {
     }
 
     void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
-        glm::mat4x4 full_mv = model_view * m_model_transform;
+        glm::mat4x4 model_transform = glm::make_mat4x4(m_model_transform);
+        glm::mat4x4 full_mv = model_view * model_transform;
         glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(full_mv));
         glm::vec3 light_pos(2, 2, 10);
         glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
