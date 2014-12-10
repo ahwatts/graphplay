@@ -20,6 +20,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
   set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -pg")
   set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 find_package(OpenGL REQUIRED)
@@ -42,27 +44,13 @@ find_path(GLM_INCLUDE_PATH glm/glm.hpp)
 set(GLM_INCLUDE_DIRS ${GLM_INCLUDE_PATH})
 message(STATUS "Found glm include: " ${GLM_INCLUDE_DIRS})
 
-find_path(GTEST_INCLUDE_PATH gtest/gtest.h)
-if(MSVC)
-  find_library(GTEST_LIBRARY NAMES gtestd)
-  find_library(GTEST_MAIN_LIBRARY gtest_main-mdd)
-else()
-  find_library(GTEST_LIBRARY NAMES gtest)
-  find_library(GTEST_MAIN_LIBRARY gtest_main)
-endif(MSVC)
-set(GTEST_INCLUDE_DIRS ${GTEST_INCLUDE_PATH})
-set(GTEST_LIBRARIES ${GTEST_LIBRARY})
-set(GTEST_MAIN_LIBRARIES ${GTEST_MAIN_LIBRARY})
-message(STATUS "Found gtest include: " ${GTEST_INCLUDE_DIRS})
-message(STATUS "Found gtest libs: " ${GTEST_LIBRARIES})
-message(STATUS "Found gtest_main libs: " ${GTEST_MAIN_LIBRARIES})
-
 configure_file(config.h.in config.h)
 
-include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
+include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)
+add_subdirectory(vendor/gtest)
 
 enable_testing()
 add_test(NAME graphplay-test

@@ -11,12 +11,13 @@ add_executable(graphplay-test
   ../graphplay/Mesh.cpp
   ../graphplay/Scene.cpp)
 
+include_directories(AFTER SYSTEM ../vendor/gtest/include)
+
 target_link_libraries(graphplay-test
-  ${GTEST_LIBRARIES}
-  ${GTEST_MAIN_LIBRARIES}
   ${GLFW_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${OPENGL_LIBRARIES})
+  ${OPENGL_LIBRARIES}
+  gtest gtest_main)
 
 if(MSVC AND CMAKE_CXX_COMPILER_VERSION STRLESS "18.0")
   set_target_properties(graphplay-test PROPERTIES COMPILE_DEFINITIONS _VARIADIC_MAX=10)

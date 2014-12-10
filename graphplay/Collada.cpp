@@ -353,19 +353,19 @@ namespace collada {
     float Accessor::getValue(accessor_type_t type, unsigned int index, unsigned int pass) const {
         switch (type) {
         case XYZ:
-            if (index < 0 || index > 2) {
+            if (index > 2) {
                 return 0;
             } else {
                 return source->float_array[offset + pass*stride + xyz.offsets[index]];
             }
         case ST:
-            if (index < 0 || index > 1) {
+            if (index > 1) {
                 return 0;
             } else {
                 return source->float_array[offset + pass*stride + st.offsets[index]];
             }
         case RGB:
-            if (index < 0 || index > 2) {
+            if (index > 2) {
                 return 0;
             } else {
                 return source->float_array[offset + pass*stride + rgb.offsets[index]];
@@ -595,7 +595,7 @@ namespace collada {
 
     // Utility functions.
     void handleError(const char *message) {
-        fprintf(stderr, message);
+        fprintf(stderr, "%s", message);
         exit(1);
     }
 };

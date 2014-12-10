@@ -1,12 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphplay", "graphplay\graphplay.vcxproj", "{A4F233BE-5353-43D2-A6E8-3737A8B9E41C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphplay-test", "graphplay-test\graphplay-test.vcxproj", "{7D124B1F-1A07-4A2A-BC74-700AB077BB11}"
 	ProjectSection(ProjectDependencies) = postProject
-		{A4F233BE-5353-43D2-A6E8-3737A8B9E41C} = {A4F233BE-5353-43D2-A6E8-3737A8B9E41C}
+		{AC00D515-FFCE-44E5-ADB7-99626A62562D} = {AC00D515-FFCE-44E5-ADB7-99626A62562D}
+		{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF} = {C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest", "vendor\gtest\gtest\gtest.vcxproj", "{AC00D515-FFCE-44E5-ADB7-99626A62562D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest_main", "vendor\gtest\gtest_main\gtest_main.vcxproj", "{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +34,18 @@ Global
 		{7D124B1F-1A07-4A2A-BC74-700AB077BB11}.Debug|Win32.Build.0 = Debug|Win32
 		{7D124B1F-1A07-4A2A-BC74-700AB077BB11}.Release|Win32.ActiveCfg = Debug|Win32
 		{7D124B1F-1A07-4A2A-BC74-700AB077BB11}.Release|Win32.Build.0 = Debug|Win32
+		{AC00D515-FFCE-44E5-ADB7-99626A62562D}.Debug - Console|Win32.ActiveCfg = Debug|Win32
+		{AC00D515-FFCE-44E5-ADB7-99626A62562D}.Debug - Console|Win32.Build.0 = Debug|Win32
+		{AC00D515-FFCE-44E5-ADB7-99626A62562D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AC00D515-FFCE-44E5-ADB7-99626A62562D}.Debug|Win32.Build.0 = Debug|Win32
+		{AC00D515-FFCE-44E5-ADB7-99626A62562D}.Release|Win32.ActiveCfg = Release|Win32
+		{AC00D515-FFCE-44E5-ADB7-99626A62562D}.Release|Win32.Build.0 = Release|Win32
+		{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}.Debug - Console|Win32.ActiveCfg = Debug|Win32
+		{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}.Debug - Console|Win32.Build.0 = Debug|Win32
+		{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}.Debug|Win32.Build.0 = Debug|Win32
+		{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}.Release|Win32.ActiveCfg = Release|Win32
+		{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

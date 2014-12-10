@@ -19,15 +19,17 @@ namespace graphplay {
         void setGeometry(sp_Geometry geo);
         void setMaterial(sp_Material mat);
 
-        inline const glm::mat4x4 &getTransform() const { return m_model_transform; }
+        inline const float* getTransform() const { return m_model_transform; }
         void setTransform(const glm::mat4x4 &new_transform);
 
         virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const;
 
         inline const wp_Geometry getGeometry() const { return wp_Geometry(m_geometry); }
         inline const wp_Material getMaterial() const { return wp_Material(m_material); }
+
     protected:
-        glm::mat4x4 m_model_transform;
+        // glm::mat4x4 m_model_transform;
+        float m_model_transform[16];
         sp_Geometry m_geometry;
         sp_Material m_material;
     };

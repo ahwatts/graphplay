@@ -9,20 +9,37 @@
 #include "graphplay.h"
 
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace graphplay {
-    Mesh::Mesh() : m_model_transform(), m_geometry(), m_material() { }
-    Mesh::Mesh(sp_Geometry geo, sp_Material mat) : m_model_transform(), m_geometry(geo), m_material(mat) { }
+    void copy_mat4x4_to_array(float *arr, const glm::mat4x4 &mat) {
+        const float *ptr = glm::value_ptr(mat);
+        unsigned int i = 0;
+        for (i = 0; i < 16; ++i) {
+            arr[i] = ptr[i];
+        }
+    }
+
+    Mesh::Mesh() : m_geometry(), m_material()
+    {
+        copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
+    }
+    
+    Mesh::Mesh(sp_Geometry geo, sp_Material mat) : m_geometry(geo), m_material(mat)
+    {
+        copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
+    }
 
     void Mesh::setGeometry(sp_Geometry geo) { m_geometry = geo; }
     void Mesh::setMaterial(sp_Material mat) { m_material = mat; }
 
     void Mesh::setTransform(const glm::mat4x4 &new_transform) {
-        m_model_transform = new_transform;
+        copy_mat4x4_to_array(m_model_transform, new_transform);
     }
 
     void Mesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
-        glm::mat4x4 full_mv = model_view * m_model_transform;
+        glm::mat4x4 transform_mat = glm::make_mat4x4(m_model_transform);
+        glm::mat4x4 full_mv = model_view * transform_mat;
         m_geometry->render(projection, full_mv, *m_material);
     }
 

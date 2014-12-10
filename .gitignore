@@ -8,6 +8,9 @@
 
 /graphplay-test/Debug
 
+/vendor/gtest/gtest/Debug
+/vendor/gtest/gtest_main/Debug
+
 /build
 /msvc
 /mingw
