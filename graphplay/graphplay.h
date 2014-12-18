@@ -8,7 +8,7 @@
 #endif
 
 #ifndef GLSL
-#define GLSL(src) "#version 430 core\n" #src
+#define GLSL(version, src) "#version " version "\n" #src
 #endif
 
 #endif

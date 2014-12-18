@@ -29,6 +29,7 @@
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window);
 void initGLEW();
+void handle_glfw_error(int code, const char *desc);
 void bailout(const std::string &msg);
 
 #if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0
@@ -153,10 +154,16 @@ int main(int argc, char **argv) {
 }
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window) {
+    glfwSetErrorCallback(handle_glfw_error);
     if (!glfwInit()) {
         bailout("Could not initialize GLFW!");
     }
 
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     *window = glfwCreateWindow(width, height, title, NULL, NULL);
 
     if (!*window) {
@@ -173,6 +180,11 @@ void initGLEW() {
         msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
         bailout(msg.str());
     }
+}
+
+void handle_glfw_error(int code, const char *desc) {
+    std::cerr << "GLFW Error Code " << code << std::endl
+              << desc << std::endl;
 }
 
 void bailout(const std::string &msg) {
