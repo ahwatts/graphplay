@@ -38,3 +38,6 @@ Makefile
 *.cmake
 CMakeCache.txt
 config.h
+
+# Mac garbage.
+.DS_Store
