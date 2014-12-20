@@ -140,7 +140,9 @@ namespace graphplay {
     }
 
     // Class GouraudMaterial.
-    const char *GouraudMaterial::vertex_shader_src = GLSL("410 core",
+    const char *GouraudMaterial::vertex_shader_src = R"glsl(
+        #version 410 core
+
         in vec3 aPosition;
         in vec4 aColor;
 
@@ -153,9 +155,11 @@ namespace graphplay {
             gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
             vColor = aColor;
         }
-    );
+    )glsl";
 
-    const char *GouraudMaterial::fragment_shader_src = GLSL("410 core",
+    const char *GouraudMaterial::fragment_shader_src = R"glsl(
+        #version 410 core
+
         in vec4 vColor;
 
         out vec4 FragColor;
@@ -163,7 +167,7 @@ namespace graphplay {
         void main(void) {
             FragColor = vColor;
         }
-    );
+    )glsl";
 
     GouraudMaterial::GouraudMaterial()
         : Material(),
@@ -187,7 +191,9 @@ namespace graphplay {
     }
 
     // Class LambertMaterial.
-    const char* LambertMaterial::vertex_shader_src = GLSL("410 core",
+    const char* LambertMaterial::vertex_shader_src = R"glsl(
+        #version 410 core
+
         in vec3 aPosition;
         in vec3 aNormal;
         in vec4 aColor;
@@ -215,9 +221,11 @@ namespace graphplay {
             vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;
             vSpecularColor = pow(dot(eye_reflected_dir, eye_eye_dir), uSpecularExponent) * uLightColor * aColor;
         }
-    );
+    )glsl";
 
-    const char* LambertMaterial::fragment_shader_src = GLSL("410 core",
+    const char* LambertMaterial::fragment_shader_src = R"glsl(
+        #version 410 core
+
         in vec4 vAmbientColor;
         in vec4 vDiffuseColor;
         in vec4 vSpecularColor;
@@ -227,7 +235,7 @@ namespace graphplay {
         void main(void) {
             FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
         }
-    );
+    )glsl";
 
     LambertMaterial::LambertMaterial()
         : Material(),
@@ -260,7 +268,9 @@ namespace graphplay {
         m_specular_exponent_loc = glGetUniformLocation(m_program, "uSpecularExponent");
     }
 
-    const char *PhongMaterial::vertex_shader_src = GLSL("410 core",
+    const char *PhongMaterial::vertex_shader_src = R"glsl(
+        #version 410 core
+
         in vec3 aPosition;
         in vec3 aNormal;
         in vec4 aColor;
@@ -284,9 +294,11 @@ namespace graphplay {
             vColor = aColor;
             gl_Position = uProjection * uModelView * position;
         }
-    );
+    )glsl";
 
-    const char *PhongMaterial::fragment_shader_src = GLSL("410 core",
+    const char *PhongMaterial::fragment_shader_src = R"glsl(
+        #version 410 core
+
         in vec4 vColor;
         in vec3 vEyeDir;
         in vec3 vNormal;
@@ -300,7 +312,7 @@ namespace graphplay {
             vec4 diffuse_color = dot(vEyeDir, vNormal) * uLightColor * vColor;
             FragColor = clamp(ambient_color + diffuse_color, 0.0, 1.0);
         }
-    );
+    )glsl";
 
     PhongMaterial::PhongMaterial()
         : Material(),
