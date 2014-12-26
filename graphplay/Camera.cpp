@@ -1,9 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "Camera.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace graphplay {
     Camera::Camera()

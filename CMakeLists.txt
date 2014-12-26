@@ -25,7 +25,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
+# find_package(GLEW REQUIRED)
 
 find_path(GLFW_INCLUDE_DIRS NAMES GL/glfw3.h GLFW/glfw3.h)
 find_file(GLFW_FULL_HEADER_PATH NAMES GL/glfw3.h GLFW/glfw3.h)
@@ -46,7 +46,7 @@ message(STATUS "Found glm include: " ${GLM_INCLUDE_DIRS})
 
 configure_file(config.h.in config.h)
 
-include_directories(AFTER SYSTEM ${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
+include_directories(AFTER SYSTEM ${GLFW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)

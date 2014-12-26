@@ -9,26 +9,17 @@
 #include <sys/time.h>
 #endif
 
-#include <GL/glew.h>
-#include GLFW_HEADER
-
 #include <string>
 #include <iostream>
-#include <memory>
-#include <sstream>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+#include GLFW_HEADER
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Camera.h"
 #include "Geometry.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "Scene.h"
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window);
-void initGLEW();
 void handle_glfw_error(int code, const char *desc);
 void bailout(const std::string &msg);
 
@@ -49,7 +40,6 @@ int main(int argc, char **argv) {
     GLFWwindow *window;
 
     initGLFW(width, height, "Graphplay", &window);
-    initGLEW();
 
     graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
     // graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
@@ -171,15 +161,6 @@ void initGLFW(int width, int height, const char *title, GLFWwindow **window) {
     }
 
     glfwMakeContextCurrent(*window);
-}
-
-void initGLEW() {
-    GLenum glew_err = glewInit();
-    if (glew_err != GLEW_OK) {
-        std::ostringstream msg;
-        msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
-        bailout(msg.str());
-    }
 }
 
 void handle_glfw_error(int code, const char *desc) {

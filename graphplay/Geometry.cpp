@@ -1,10 +1,13 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
+// #include <glm/glm.hpp>
+// #include <glm/gtc/type_ptr.hpp>
 
 #include "Geometry.h"
+
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Material.h"
 #include "graphplay.h"
 

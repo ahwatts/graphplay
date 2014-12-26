@@ -2,13 +2,12 @@
 
 #include "config.h"
 
-#include <GL/glew.h>
-#include GLFW_HEADER
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <gtest/gtest.h>
+#include GLFW_HEADER
 
 #include "TestOpenGLContext.h"
 
@@ -31,13 +30,6 @@ namespace graphplay {
         }
 
         glfwMakeContextCurrent(window);
-
-        GLenum glew_err = glewInit();
-        if (glew_err != GLEW_OK) {
-            std::ostringstream msg;
-            msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
-            bailout(msg.str());
-        }
     }
 
     void TestOpenGLContext::TearDown() {

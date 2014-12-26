@@ -3,8 +3,10 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_MATERIAL_H_
 #define _GRAPHPLAY_GRAPHPLAY_MATERIAL_H_
 
-#include <GL/glew.h>
+#include "config.h"
+
 #include <memory>
+#include GLFW_HEADER
 
 namespace graphplay {
     class Material

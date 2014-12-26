@@ -5,7 +5,6 @@
 
 #include <memory>
 #include <vector>
-#include <glm/glm.hpp>
 
 #include "Camera.h"
 #include "Mesh.h"

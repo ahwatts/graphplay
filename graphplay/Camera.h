@@ -4,7 +4,8 @@
 #define _GRAPHPLAY_GRAPHPLAY_CAMERA_H_
 
 #include <memory>
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace graphplay {
     class Camera {
