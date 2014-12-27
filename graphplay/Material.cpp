@@ -7,6 +7,7 @@
 
 #include "Material.h"
 #include "graphplay.h"
+#include "opengl.h"
 
 namespace graphplay {
     // Helper functions.

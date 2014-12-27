@@ -1,15 +1,14 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "config.h"
-
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <gtest/gtest.h>
-#include GLFW_HEADER
 
 #include "TestOpenGLContext.h"
+
+#include "../graphplay/opengl.h"
 
 namespace graphplay {
     void TestOpenGLContext::SetUp() {
@@ -30,6 +29,16 @@ namespace graphplay {
         }
 
         glfwMakeContextCurrent(window);
+
+#ifndef __APPLE_CC__
+        GLenum glew_err = glewInit();
+        if (glew_err != GLEW_OK) {
+            std::ostringstream msg;
+            msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
+            bailout(msg.str());
+        }
+#endif
+
     }
 
     void TestOpenGLContext::TearDown() {

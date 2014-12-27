@@ -117,6 +117,7 @@
     <ClInclude Include="Collada.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="opengl.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Scene.h" />
   </ItemGroup>

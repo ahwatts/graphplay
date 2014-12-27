@@ -3,12 +3,11 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
 
-#include "config.h"
-
 #include <memory>
 #include <vector>
-#include GLFW_HEADER
 #include <glm/mat4x4.hpp>
+
+#include "opengl.h"
 
 namespace graphplay {
     class Material;
