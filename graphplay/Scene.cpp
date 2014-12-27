@@ -17,9 +17,9 @@ namespace graphplay {
 
     Scene::~Scene(void) { }
 
-    void Scene::setViewport(unsigned int width, unsigned int height) {
-        m_vp_width = width;
-        m_vp_height = height;
+    void Scene::setViewport(unsigned int pixel_width, unsigned int pixel_height) {
+        m_vp_width = pixel_width;
+        m_vp_height = pixel_height;
     }
 
     void Scene::addMesh(wp_Mesh mesh) {

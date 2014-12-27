@@ -145,25 +145,29 @@ namespace graphplay {
 
     TEST_F(GeometryTestWithContext, BufferLifecycle) {
         OctohedronGeometry octohedron;
-        octohedron.generateBuffers();
+        octohedron.createArrayAndBuffers();
 
+        ASSERT_EQ(GL_TRUE, glIsVertexArray(octohedron.getVertexArrayObject()));
         ASSERT_EQ(GL_TRUE, glIsBuffer(octohedron.getArrayBuffer()));
         ASSERT_EQ(GL_TRUE, glIsBuffer(octohedron.getElementArrayBuffer()));
 
-        octohedron.destroyBuffers();
+        octohedron.destroyArrayAndBuffers();
 
+        ASSERT_EQ(GL_FALSE, glIsVertexArray(octohedron.getVertexArrayObject()));
         ASSERT_EQ(GL_FALSE, glIsBuffer(octohedron.getArrayBuffer()));
         ASSERT_EQ(GL_FALSE, glIsBuffer(octohedron.getElementArrayBuffer()));
     }
 
     TEST_F(GeometryTestWithContext, Destructor) {
         Geometry *g = new OctohedronGeometry();
-        g->generateBuffers();
+        g->createArrayAndBuffers();
+        GLuint vao = g->getVertexArrayObject();
         GLuint ab = g->getArrayBuffer();
         GLuint eab = g->getElementArrayBuffer();
         delete g;
         g = nullptr;
 
+        ASSERT_EQ(GL_FALSE, glIsVertexArray(vao));
         ASSERT_EQ(GL_FALSE, glIsBuffer(ab));
         ASSERT_EQ(GL_FALSE, glIsBuffer(eab));
     }

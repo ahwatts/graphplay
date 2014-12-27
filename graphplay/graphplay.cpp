@@ -36,15 +36,17 @@ typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
 static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
 
 int main(int argc, char **argv) {
-    int width = 800, height = 600;
+    int screen_width = 800, screen_height = 600;
+    int pixel_width = screen_width, pixel_height = screen_height;
     GLFWwindow *window;
 
-    initGLFW(width, height, "Graphplay", &window);
+    initGLFW(screen_width, screen_height, "Graphplay", &window);
+    glfwGetFramebufferSize(window, &pixel_width, &pixel_height);
 
     graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
     // graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
     // graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
-    octo_geo->generateBuffers();
+    octo_geo->createArrayAndBuffers();
     // octo_normals_geo->generateBuffers();
     // cube_geo->generateBuffers();
 
@@ -59,7 +61,7 @@ int main(int argc, char **argv) {
     // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
     // graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, lamb_mat));
 
-    graphplay::Scene scene(width, height);
+    graphplay::Scene scene(pixel_width, pixel_height);
     scene.addMesh(octo);
     // scene.addMesh(octo_normals);
     // scene.addMesh(cube);
@@ -70,7 +72,7 @@ int main(int argc, char **argv) {
     camera.setUpDirection(glm::vec3(0, 1, 0));
 
     glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, pixel_width, pixel_height);
 
     glfwSetKeyCallback(window, keypress);
 

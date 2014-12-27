@@ -20,9 +20,11 @@ namespace graphplay {
         ~Geometry();
 
         // These control the data on the GPU.
-        void generateBuffers();
-        void destroyBuffers();
+        void createArrayAndBuffers();
+        void destroyArrayAndBuffers();
+        void setUpVertexArray(const Material &material);
 
+        inline GLuint getVertexArrayObject() const { return m_vao; }
         inline GLuint getArrayBuffer() const { return m_data_buffer; }
         inline GLuint getElementArrayBuffer() const { return m_element_buffer; }
 
@@ -60,9 +62,11 @@ namespace graphplay {
         std::vector<float> m_new_vertex;
         bool m_new_vertex_started;
 
+        GLuint m_vao;
         GLuint m_data_buffer;
         GLuint m_element_buffer;
         bool m_buffers_created;
+        bool m_vao_initialized;
 
     public:
         // Iterator mumbo-jumbo so that we can walk the vertex list.

@@ -23,14 +23,14 @@ namespace graphplay {
           m_stride(0),
           m_new_vertex(),
           m_new_vertex_started(false),
+          m_vao(0),
           m_data_buffer(0),
           m_element_buffer(0),
-          m_buffers_created(false) { }
+          m_buffers_created(false),
+          m_vao_initialized(false) { }
 
     Geometry::~Geometry() {
-        if (m_buffers_created) {
-            destroyBuffers();
-        }
+        destroyArrayAndBuffers();
     }
 
     /*Geometry::Geometry(const collada::MeshGeometry &mesh_geo)
@@ -199,8 +199,12 @@ namespace graphplay {
         m_new_vertex_started = true;
     }
 
-    void Geometry::generateBuffers() {
+    void Geometry::createArrayAndBuffers() {
+        destroyArrayAndBuffers();
         commitNewVertex();
+
+        glGenVertexArrays(1, &m_vao);
+        glBindVertexArray(m_vao);
 
         GLuint buffers[2];
         glGenBuffers(2, buffers);
@@ -219,10 +223,14 @@ namespace graphplay {
                      m_vertex_elems.data(),
                      GL_STATIC_DRAW);
 
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
         m_buffers_created = true;
     }
 
-    void Geometry::destroyBuffers() {
+    void Geometry::destroyArrayAndBuffers() {
         if (m_buffers_created) {
             if (glIsBuffer(m_data_buffer)) {
                 glDeleteBuffers(1, &m_data_buffer);
@@ -231,25 +239,28 @@ namespace graphplay {
             if (glIsBuffer(m_element_buffer)) {
                 glDeleteBuffers(1, &m_element_buffer);
             }
+
+            if (glIsVertexArray(m_vao)) {
+                glDeleteVertexArrays(1, &m_vao);
+            }
         }
+
+        m_buffers_created = false;
+        m_vao_initialized = false;
     }
 
-    void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
-        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
+    void Geometry::setUpVertexArray(const Material &material) {
+        if (!m_buffers_created) {
+            createArrayAndBuffers();
+        }
 
         GLint pos_loc = material.getPositionLocation();
         GLint norm_loc = material.getNormalLocation();
         GLint color_loc = material.getColorLocation();
         GLint tc_loc = material.getTexCoordLocation();
-
-        GLint proj_loc = material.getProjectionLocation();
-        GLint mv_loc = material.getModelViewLocation();
-        GLint mvi_loc = material.getModelViewInverseLocation();
-
         GLsizeiptr vertex_size = m_stride * sizeof(float);
 
-        glUseProgram(material.getProgram());
-
+        glBindVertexArray(m_vao);
         glBindBuffer(GL_ARRAY_BUFFER, m_data_buffer);
 
         if (m_position_offset >= 0 && pos_loc >= 0) {
@@ -277,12 +288,29 @@ namespace graphplay {
             glVertexAttribPointer(tc_loc, 2, GL_FLOAT, GL_TRUE, vertex_size, BUFFER_OFFSET_BYTES(m_tex_coord_offset*sizeof(float)));
         }
 
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_vao_initialized = true;
+    }
+
+    void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
+        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
+
+        GLint proj_loc = material.getProjectionLocation();
+        GLint mv_loc = material.getModelViewLocation();
+        GLint mvi_loc = material.getModelViewInverseLocation();
+
+        glUseProgram(material.getProgram());
+        glBindVertexArray(m_vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
+
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
         glUniformMatrix3fv(mvi_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
         glDrawElements(m_draw_type, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     Geometry::VertexIterator Geometry::begin() const {

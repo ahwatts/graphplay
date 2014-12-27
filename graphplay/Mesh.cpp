@@ -20,10 +20,24 @@ namespace graphplay {
     Mesh::Mesh(sp_Geometry geo, sp_Material mat) : m_geometry(geo), m_material(mat)
     {
         copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
+        m_geometry->setUpVertexArray(*m_material);
     }
 
-    void Mesh::setGeometry(sp_Geometry geo) { m_geometry = geo; }
-    void Mesh::setMaterial(sp_Material mat) { m_material = mat; }
+    void Mesh::setGeometry(sp_Geometry geo) {
+        m_geometry = geo;
+
+        if (m_material) {
+            m_geometry->setUpVertexArray(*m_material);
+        }
+    }
+
+    void Mesh::setMaterial(sp_Material mat) {
+        m_material = mat;
+
+        if (m_geometry) {
+            m_geometry->setUpVertexArray(*m_material);
+        }
+    }
 
     void Mesh::setTransform(const glm::mat4x4 &new_transform) {
         copy_mat4x4_to_array(m_model_transform, new_transform);
