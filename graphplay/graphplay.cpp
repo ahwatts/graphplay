@@ -43,6 +43,11 @@ int main(int argc, char **argv) {
     initGLEW();
     glfwGetFramebufferSize(window, &pixel_width, &pixel_height);
 
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
+
     graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
     // graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
     // graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
@@ -102,11 +107,12 @@ int main(int argc, char **argv) {
         pstime = stime;
 #else
         gettimeofday(&tod, NULL);
-        auto delta = (tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec) / 100;
+        auto delta = (tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec);
         ptod = tod;
 #endif
 
         float dtime = delta / 1e6f;
+        // std::cout << "delta = " << delta << " dtime = " << dtime << std::endl;
 
         // Update the rotation based on the time delta.
         yrot += 90.0f * dtime;
