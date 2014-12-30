@@ -11,6 +11,7 @@ add_executable(graphplay WIN32
 
 target_link_libraries(graphplay
   ${GLFW_LIBRARIES}
+  ${GLEW_LIBRARIES}
   ${OPENGL_LIBRARIES})
 
 if (WIN32)
@@ -27,6 +28,7 @@ if (WIN32)
 
   target_link_libraries(graphplay-console
     ${GLFW_LIBRARIES}
+    ${GLEW_LIBRARIES}
     ${OPENGL_LIBRARIES})
 
   if(MINGW)

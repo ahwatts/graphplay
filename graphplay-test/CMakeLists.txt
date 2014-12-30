@@ -15,6 +15,7 @@ include_directories(AFTER SYSTEM ../vendor/gtest/include)
 
 target_link_libraries(graphplay-test
   ${GLFW_LIBRARIES}
+  ${GLEW_LIBRARIES}
   ${OPENGL_LIBRARIES}
   gtest gtest_main)
 
