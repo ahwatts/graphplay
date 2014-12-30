@@ -26,12 +26,7 @@ void initGLFW(int width, int height, const char *title, GLFWwindow **window);
 void initGLEW();
 void handle_glfw_error(int code, const char *desc);
 void bailout(const std::string &msg);
-
-#if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0
-void keypress(GLFWwindow *wnd, int key, int action);
-#else
 void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
-#endif
 
 // typedef enum { OCTOHEDRON, CUBE } view_state_t;
 // static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
@@ -107,7 +102,7 @@ int main(int argc, char **argv) {
         pstime = stime;
 #else
         gettimeofday(&tod, NULL);
-        auto delta = tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec;
+        auto delta = (tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec) / 100;
         ptod = tod;
 #endif
 
