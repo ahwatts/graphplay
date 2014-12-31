@@ -1,5 +1,7 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "graphplay.h"
+
 #include <iostream>
 #include <numeric>
 #include <sstream>

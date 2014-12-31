@@ -1,15 +1,14 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-// #include <glm/glm.hpp>
-// #include <glm/gtc/type_ptr.hpp>
-
+#include "graphplay.h"
 #include "Geometry.h"
 
+#include <iostream>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/io.hpp>
 
 #include "Material.h"
-#include "graphplay.h"
 
 namespace graphplay {
     Geometry::Geometry()
@@ -295,12 +294,27 @@ namespace graphplay {
 
     void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
         glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
+        // glm::mat3x3 mv_inverse2 = glm::mat3x3(model_view);
+
+        /* glm::vec3 point1(m_vertex_attrs[ 0], m_vertex_attrs[ 1], m_vertex_attrs[ 2]);
+        glm::vec3 point2(m_vertex_attrs[10], m_vertex_attrs[11], m_vertex_attrs[12]);
+        glm::vec3 point3(m_vertex_attrs[20], m_vertex_attrs[21], m_vertex_attrs[22]);
+        glm::vec3 normal = glm::normalize(glm::cross(point3 - point2, point1 - point2));
+        std::cout << "triangle = " << point1 << ", " << point2 << ", " << point3 << std::endl;
+        std::cout << "normal   = " << normal << std::endl;
+
+        glm::vec3 tpoint1 = glm::vec3(model_view * glm::vec4(point1, 1.0));
+        glm::vec3 tpoint2 = glm::vec3(model_view * glm::vec4(point2, 1.0));
+        glm::vec3 tpoint3 = glm::vec3(model_view * glm::vec4(point3, 1.0));
+        glm::vec3 tnormal = glm::normalize(glm::cross(tpoint3 - tpoint2, tpoint1 - tpoint2));
+        glm::vec3 ttnormal = mv_inverse * normal;
+        std::cout << "triangle (2) = " << tpoint1 << ", " << tpoint2 << ", " << tpoint3 << std::endl;
+        std::cout << "normal   (2) = " << tnormal << " ==? " << ttnormal << std::endl; */
 
         GLint proj_loc = material.getProjectionLocation();
         GLint mv_loc = material.getModelViewLocation();
         GLint mvi_loc = material.getModelViewInverseLocation();
 
-        glUseProgram(material.getProgram());
         glBindVertexArray(m_vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
 

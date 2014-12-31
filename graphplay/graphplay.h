@@ -7,4 +7,7 @@
 #define BUFFER_OFFSET_BYTES(n) ((GLvoid*)(n))
 #endif
 
+#define GLM_FORCE_RADIANS
+#define _USE_MATH_DEFINES
+
 #endif

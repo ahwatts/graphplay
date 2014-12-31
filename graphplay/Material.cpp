@@ -1,12 +1,13 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "graphplay.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <vector>
 
 #include "Material.h"
-#include "graphplay.h"
 #include "opengl.h"
 
 namespace graphplay {
@@ -217,10 +218,12 @@ namespace graphplay {
             vec3 eye_eye_dir = normalize(eye_vert_pos);
             vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);
 
-            gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
+            gl_Position = uProjection * vec4(eye_vert_pos, 1.0);
             vAmbientColor = 0.05 * aColor;
             vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;
             vSpecularColor = pow(dot(eye_reflected_dir, eye_eye_dir), uSpecularExponent) * uLightColor * aColor;
+            // vSpecularColor = dot(eye_reflected_dir, eye_eye_dir) * vec4(1.0, 1.0, 1.0, 1.0);
+            // vSpecularColor = vec4(abs(eye_reflected_dir), 1.0);
         }
     )glsl";
 
@@ -234,7 +237,8 @@ namespace graphplay {
         out vec4 FragColor;
 
         void main(void) {
-            FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
+            // FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
+            FragColor = vSpecularColor;
         }
     )glsl";
 
