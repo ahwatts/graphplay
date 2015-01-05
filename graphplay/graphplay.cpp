@@ -1,41 +1,34 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "graphplay.h"
 #include "config.h"
 
 #ifdef MSVC
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#else
-#include <sys/time.h>
 #endif
-
-#include <GL/glew.h>
-#include GLFW_HEADER
 
 #include <string>
 #include <iostream>
-#include <memory>
 #include <sstream>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+#include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Camera.h"
+#ifndef MSVC
+#include <sys/time.h>
+#endif
+
 #include "Geometry.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "Scene.h"
+#include "opengl.h"
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window);
 void initGLEW();
+void handle_glfw_error(int code, const char *desc);
 void bailout(const std::string &msg);
-
-#if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0
-void keypress(GLFWwindow *wnd, int key, int action);
-#else
 void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
-#endif
 
 // typedef enum { OCTOHEDRON, CUBE } view_state_t;
 // static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
@@ -44,16 +37,23 @@ typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
 // static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
 
 int main(int argc, char **argv) {
-    int width = 800, height = 600;
+    int screen_width = 800, screen_height = 600;
+    int pixel_width = screen_width, pixel_height = screen_height;
     GLFWwindow *window;
 
-    initGLFW(width, height, "Graphplay", &window);
+    initGLFW(screen_width, screen_height, "Graphplay", &window);
     initGLEW();
+    glfwGetFramebufferSize(window, &pixel_width, &pixel_height);
+
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
     graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
     // graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
     // graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
-    octo_geo->generateBuffers();
+    octo_geo->createArrayAndBuffers();
     // octo_normals_geo->generateBuffers();
     // cube_geo->generateBuffers();
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
     graphplay::sp_Mesh octo(new graphplay::DebugMesh(octo_geo));
 
-    graphplay::Scene scene(width, height);
+    graphplay::Scene scene(pixel_width, pixel_height);
     scene.addMesh(octo);
     // scene.addMesh(octo_normals);
     // scene.addMesh(cube);
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     camera.setUpDirection(glm::vec3(0, 1, 0));
 
     glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, pixel_width, pixel_height);
 
     glfwSetKeyCallback(window, keypress);
 
@@ -90,11 +90,12 @@ int main(int argc, char **argv) {
     glm::vec3 xhat = glm::vec3(1, 0, 0);
     // glm::vec3 offset = glm::vec3(-1, -1, -1);
     // glm::vec3 scale = glm::vec3(2, 2, 2);
-    float yrot = 0, xrot = 0;
+    double yrot = 0, xrot = 0;
     
 #ifdef MSVC
-    SYSTEMTIME stime, pstime;
-    GetSystemTime(&pstime);
+    LARGE_INTEGER time, ptime, frequency, tick_delta;
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&ptime);
 #else
     struct timeval tod, ptod;
     gettimeofday(&ptod, NULL);
@@ -104,27 +105,25 @@ int main(int argc, char **argv) {
 
         // Calculate the time delta.
 #ifdef MSVC
-        GetSystemTime(&stime);
-        // We're kind of assuming that this won't go for more than a second
-        // without an update.
-        int msec = stime.wMilliseconds - pstime.wMilliseconds;
-        if (msec < 0) msec = 1000 + msec;
-        int delta = msec * 10;
-        pstime = stime;
+        QueryPerformanceCounter(&time);
+        tick_delta.QuadPart = time.QuadPart - ptime.QuadPart;
+        auto delta = tick_delta.QuadPart * 1000000 / frequency.QuadPart; // delta is now in usec.
+        ptime = time;
 #else
         gettimeofday(&tod, NULL);
-        auto delta = tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec;
+        auto delta = (tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec); // delta in usec.
         ptod = tod;
 #endif
 
-        float dtime = delta / 1e6f;
+        double dtime = delta / 1e6;
+        // std::cout << "delta = " << delta << " dtime = " << dtime << std::endl;
 
         // Update the rotation based on the time delta.
-        yrot += 30.0f * dtime;
-        if (yrot >= 360.0) { yrot -= 360.0; }
+        yrot += M_PI / 20.0 * dtime;
+        if (yrot >= 2*M_PI) { yrot -= 2*M_PI; }
 
-        xrot += 10.0f * dtime;
-        if (xrot >= 360.0) { xrot -= 360.0; }
+        xrot += M_PI / 60.0 * dtime;
+        if (xrot >= 2*M_PI) { xrot -= 2*M_PI; }
 
         // Handle input.
         //if (new_light_state != light_state) {
@@ -138,8 +137,8 @@ int main(int argc, char **argv) {
 
         // Create the modelview matrix.
         mv = glm::mat4x4();
-        mv = glm::rotate(mv, yrot, yhat);
-        mv = glm::rotate(mv, xrot, xhat);
+        mv = glm::rotate(mv, (float)yrot, yhat);
+        mv = glm::rotate(mv, (float)xrot, xhat);
 
         // Make the meshes use the modelview matrix.
         octo->setTransform(mv);
@@ -159,10 +158,18 @@ int main(int argc, char **argv) {
 }
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window) {
+    glfwSetErrorCallback(handle_glfw_error);
     if (!glfwInit()) {
         bailout("Could not initialize GLFW!");
     }
 
+#ifdef __APPLE_CC__
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
     *window = glfwCreateWindow(width, height, title, NULL, NULL);
 
     if (!*window) {
@@ -173,12 +180,19 @@ void initGLFW(int width, int height, const char *title, GLFWwindow **window) {
 }
 
 void initGLEW() {
+#ifndef __APPLE_CC__
     GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
         std::ostringstream msg;
         msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
         bailout(msg.str());
     }
+#endif
+}
+
+void handle_glfw_error(int code, const char *desc) {
+    std::cerr << "GLFW Error Code " << code << std::endl
+              << desc << std::endl;
 }
 
 void bailout(const std::string &msg) {

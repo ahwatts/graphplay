@@ -1,8 +1,8 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include "Body.h"
+
 #include "graphplay.h"
+#include "Body.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace graphplay {
     Body::Body()

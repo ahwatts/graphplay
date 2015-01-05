@@ -3,8 +3,8 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_BODY_H_
 #define _GRAPHPLAY_GRAPHPLAY_BODY_H_
 
-#include <GL/glew.h>
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace graphplay {
     class Body

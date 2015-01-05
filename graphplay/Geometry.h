@@ -3,10 +3,11 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
 
-#include <GL/glew.h>
-#include <glm/glm.hpp>
 #include <memory>
 #include <vector>
+#include <glm/mat4x4.hpp>
+
+#include "opengl.h"
 
 namespace graphplay {
     class Material;
@@ -33,9 +34,11 @@ namespace graphplay {
         value_type get(unsigned int index) const;
 
         // These control the data on the GPU.
-        void generateBuffers();
-        void destroyBuffers();
+        void createArrayAndBuffers();
+        void destroyArrayAndBuffers();
+        void setUpVertexArray(const Material &material);
 
+        inline GLuint getVertexArrayObject() const { return m_vao; }
         inline GLuint getArrayBuffer() const { return m_data_buffer; }
         inline GLuint getElementArrayBuffer() const { return m_element_buffer; }
         inline GLenum getDrawType() const { return m_draw_type; }
@@ -65,7 +68,6 @@ namespace graphplay {
         unsigned int findVertex(std::vector<float> &vdata);
         GLenum m_draw_type;
 
-    private:
         std::vector<float> m_vertex_attrs;
         std::vector<GLuint> m_vertex_elems;
         int m_position_offset, m_normal_offset, m_color_offset, m_tex_coord_offset;
@@ -74,9 +76,11 @@ namespace graphplay {
         std::vector<float> m_new_vertex;
         bool m_new_vertex_started;
 
+        GLuint m_vao;
         GLuint m_data_buffer;
         GLuint m_element_buffer;
         bool m_buffers_created;
+        bool m_vao_initialized;
 
     public:
         class VertexIterator {

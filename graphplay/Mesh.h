@@ -3,7 +3,7 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_MESH_H_
 #define _GRAPHPLAY_GRAPHPLAY_MESH_H_
 
-#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
 #include <memory>
 
 #include "Geometry.h"

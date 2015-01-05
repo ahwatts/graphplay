@@ -1,14 +1,12 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-
+#include "graphplay.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "graphplay.h"
 
 #include <iostream>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace graphplay {
@@ -28,10 +26,24 @@ namespace graphplay {
     Mesh::Mesh(sp_Geometry geo, sp_Material mat) : m_geometry(geo), m_material(mat)
     {
         copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
+        m_geometry->setUpVertexArray(*m_material);
     }
 
-    void Mesh::setGeometry(sp_Geometry geo) { m_geometry = geo; }
-    void Mesh::setMaterial(sp_Material mat) { m_material = mat; }
+    void Mesh::setGeometry(sp_Geometry geo) {
+        m_geometry = geo;
+
+        if (m_material) {
+            m_geometry->setUpVertexArray(*m_material);
+        }
+    }
+
+    void Mesh::setMaterial(sp_Material mat) {
+        m_material = mat;
+
+        if (m_geometry) {
+            m_geometry->setUpVertexArray(*m_material);
+        }
+    }
 
     void Mesh::setTransform(const glm::mat4x4 &new_transform) {
         copy_mat4x4_to_array(m_model_transform, new_transform);
@@ -44,7 +56,9 @@ namespace graphplay {
     }
 
     // Class DebugMesh.
-    const char *DebugMesh::vertex_shader_1_src = GLSL("130",
+    const char *DebugMesh::vertex_shader_1_src = R"glsl(
+        #version 410 core
+
         in vec3 aPosition;
         in vec3 aNormal;
         in vec4 aColor;
@@ -91,9 +105,11 @@ namespace graphplay {
             vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;
             vSpecularColor = pow(dot(eye_reflected_dir, eye_eye_dir), uSpecularExponent) * uLightColor * aColor;
         }
-    );
+    )glsl";
 
-    const char *DebugMesh::fragment_shader_1_src = GLSL("130",
+    const char *DebugMesh::fragment_shader_1_src = R"glsl(
+        #version 410 core
+
         in vec4 vAmbientColor;
         in vec4 vDiffuseColor;
         in vec4 vSpecularColor;
@@ -103,9 +119,11 @@ namespace graphplay {
         void main(void) {
             FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
         }
-    );
+    )glsl";
 
-    const char *DebugMesh::vertex_shader_2_src = GLSL("130",
+    const char *DebugMesh::vertex_shader_2_src = R"glsl(
+        #version 410 core
+
         in vec3 aPosition;
 
         uniform mat4x4 uProjection;
@@ -113,15 +131,17 @@ namespace graphplay {
         void main(void) {
             gl_Position = uProjection * vec4(aPosition, 1.0);
         }
-    );
+    )glsl";
 
-    const char *DebugMesh::fragment_shader_2_src = GLSL("130",
+    const char *DebugMesh::fragment_shader_2_src = R"glsl(
+        #version 410 core
+
         out vec4 FragColor;
 
         void main(void) {
             FragColor = vec4(1.0, 1.0, 1.0, 1.0);
         }
-    );
+    )glsl";
 
     DebugMesh::DebugMesh(sp_Geometry geo) : Mesh() {
         m_geometry = geo;

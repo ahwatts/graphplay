@@ -1,12 +1,14 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-
-#include "Geometry.h"
-#include "Material.h"
 #include "graphplay.h"
+#include "Geometry.h"
+
+#include <iostream>
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/io.hpp>
+
+#include "Material.h"
 
 namespace graphplay {
     Geometry::Geometry()
@@ -20,14 +22,14 @@ namespace graphplay {
           m_stride(0),
           m_new_vertex(),
           m_new_vertex_started(false),
+          m_vao(0),
           m_data_buffer(0),
           m_element_buffer(0),
-          m_buffers_created(false) { }
+          m_buffers_created(false),
+          m_vao_initialized(false) { }
 
     Geometry::~Geometry() {
-        if (m_buffers_created) {
-            destroyBuffers();
-        }
+        destroyArrayAndBuffers();
     }
 
     /*Geometry::Geometry(const collada::MeshGeometry &mesh_geo)
@@ -196,8 +198,12 @@ namespace graphplay {
         m_new_vertex_started = true;
     }
 
-    void Geometry::generateBuffers() {
+    void Geometry::createArrayAndBuffers() {
+        destroyArrayAndBuffers();
         commitNewVertex();
+
+        glGenVertexArrays(1, &m_vao);
+        glBindVertexArray(m_vao);
 
         GLuint buffers[2];
         glGenBuffers(2, buffers);
@@ -216,10 +222,14 @@ namespace graphplay {
                      m_vertex_elems.data(),
                      GL_STATIC_DRAW);
 
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
         m_buffers_created = true;
     }
 
-    void Geometry::destroyBuffers() {
+    void Geometry::destroyArrayAndBuffers() {
         if (m_buffers_created) {
             if (glIsBuffer(m_data_buffer)) {
                 glDeleteBuffers(1, &m_data_buffer);
@@ -228,27 +238,28 @@ namespace graphplay {
             if (glIsBuffer(m_element_buffer)) {
                 glDeleteBuffers(1, &m_element_buffer);
             }
+
+            if (glIsVertexArray(m_vao)) {
+                glDeleteVertexArrays(1, &m_vao);
+            }
         }
+
+        m_buffers_created = false;
+        m_vao_initialized = false;
     }
 
-    void Geometry::render(const glm::mat4x4 &projection,
-                          const glm::mat4x4 &model_view,
-                          const  Material &material) const {
-        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
+    void Geometry::setUpVertexArray(const Material &material) {
+        if (!m_buffers_created) {
+            createArrayAndBuffers();
+        }
 
         GLint pos_loc = material.getPositionLocation();
         GLint norm_loc = material.getNormalLocation();
         GLint color_loc = material.getColorLocation();
         GLint tc_loc = material.getTexCoordLocation();
-
-        GLint proj_loc = material.getProjectionLocation();
-        GLint mv_loc = material.getModelViewLocation();
-        GLint mvi_loc = material.getModelViewInverseLocation();
-
         GLsizeiptr vertex_size = m_stride * sizeof(float);
 
-        glUseProgram(material.getProgram());
-
+        glBindVertexArray(m_vao);
         glBindBuffer(GL_ARRAY_BUFFER, m_data_buffer);
 
         if (m_position_offset >= 0 && pos_loc >= 0) {
@@ -280,12 +291,28 @@ namespace graphplay {
                                   BUFFER_OFFSET_BYTES(m_tex_coord_offset*sizeof(float)));
         }
 
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        m_vao_initialized = true;
+    }
+
+    void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
+        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
+
+        GLint proj_loc = material.getProjectionLocation();
+        GLint mv_loc = material.getModelViewLocation();
+        GLint mvi_loc = material.getModelViewInverseLocation();
+
+        glBindVertexArray(m_vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
+
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
         glUniformMatrix3fv(mvi_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
         glDrawElements(m_draw_type, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     Geometry::VertexIterator Geometry::begin() const {
@@ -335,40 +362,84 @@ namespace graphplay {
         return clone;
     }
 
+    struct PCNVertex {
+        float position[3];
+        float color[4];
+        float normal[3];
+    };
+
+    const PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
+        // Position        Color           Normal
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577,  0.577,  0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577,  0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, {  0.577,  0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, { -0.577,  0.577,  0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, { -0.577,  0.577,  0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577,  0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, { -0.577, -0.577,  0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577, -0.577,  0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, { -0.577, -0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577, -0.577,  0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, {  0.577, -0.577,  0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577, -0.577,  0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, {  0.577,  0.577, -0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, {  0.577,  0.577, -0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, { -0.577,  0.577, -0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577,  0.577, -0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, { -0.577,  0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, { -0.577, -0.577, -0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, { -0.577, -0.577, -0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577, -0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, {  0.577, -0.577, -0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577, -0.577, -0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, {  0.577, -0.577, -0.577 } },
+    };
+
+    // This is just each of the vertex data in order, since each
+    // repeated position / color has a different normal...
+    const unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
+         0,  1,  2,
+         3,  4,  5,
+         6,  7,  8,
+         9, 10, 11,
+        12, 13, 14,
+        15, 16, 17,
+        18, 19, 20,
+        21, 22, 23,
+    };
+
     OctohedronGeometry::OctohedronGeometry() : Geometry() {
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f( 0.577f,  0.577f,  0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f,  0.577f,  0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f,  0.577f,  0.577f);
+        m_position_offset = 0;
+        m_normal_offset = 7;
+        m_color_offset = 3;
+        m_stride = 10;
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f(-0.577f,  0.577f,  0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f,  0.577f,  0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f,  0.577f,  0.577f);
+        m_vertex_attrs.resize(24 * m_stride);
+        m_vertex_elems.resize(24);
+        for (unsigned int i = 0; i < 24; ++i) {
+            m_vertex_elems[i] = OCTOHEDRON_VERTEX_ELEMS[i];
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f,  0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
+            m_vertex_attrs[m_stride*i]   = OCTOHEDRON_VERTEX_ARRAY[i].position[0];
+            m_vertex_attrs[m_stride*i+1] = OCTOHEDRON_VERTEX_ARRAY[i].position[1];
+            m_vertex_attrs[m_stride*i+2] = OCTOHEDRON_VERTEX_ARRAY[i].position[2];
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f,  0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
+            m_vertex_attrs[m_stride*i+3] = OCTOHEDRON_VERTEX_ARRAY[i].color[0];
+            m_vertex_attrs[m_stride*i+4] = OCTOHEDRON_VERTEX_ARRAY[i].color[1];
+            m_vertex_attrs[m_stride*i+5] = OCTOHEDRON_VERTEX_ARRAY[i].color[2];
+            m_vertex_attrs[m_stride*i+6] = OCTOHEDRON_VERTEX_ARRAY[i].color[3];
 
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f,  0.577f, -0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
-
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f,  0.577f, -0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
-
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f, -0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
-
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f, -0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);
-
-        commitNewVertex();
+            m_vertex_attrs[m_stride*i+7] = OCTOHEDRON_VERTEX_ARRAY[i].normal[0];
+            m_vertex_attrs[m_stride*i+8] = OCTOHEDRON_VERTEX_ARRAY[i].normal[1];
+            m_vertex_attrs[m_stride*i+9] = OCTOHEDRON_VERTEX_ARRAY[i].normal[2];
+        }
     }
 
     CubeGeometry::CubeGeometry() : Geometry() {

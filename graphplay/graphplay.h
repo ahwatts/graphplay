@@ -7,8 +7,7 @@
 #define BUFFER_OFFSET_BYTES(n) ((GLvoid*)(n))
 #endif
 
-#ifndef GLSL
-#define GLSL(version, src) "#version " version "\n" #src
-#endif
+#define GLM_FORCE_RADIANS
+#define _USE_MATH_DEFINES
 
 #endif

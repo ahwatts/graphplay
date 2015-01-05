@@ -1,5 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "../graphplay/graphplay.h"
+
 #include <memory>
 #include <gtest/gtest.h>
 

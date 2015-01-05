@@ -1,10 +1,11 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "graphplay.h"
+#include "Scene.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "Scene.h"
 
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
@@ -17,9 +18,9 @@ namespace graphplay {
 
     Scene::~Scene(void) { }
 
-    void Scene::setViewport(unsigned int width, unsigned int height) {
-        m_vp_width = width;
-        m_vp_height = height;
+    void Scene::setViewport(unsigned int pixel_width, unsigned int pixel_height) {
+        m_vp_width = pixel_width;
+        m_vp_height = pixel_height;
     }
 
     void Scene::addMesh(wp_Mesh mesh) {

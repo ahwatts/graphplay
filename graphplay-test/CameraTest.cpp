@@ -1,5 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "../graphplay/graphplay.h"
+
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,12 +15,11 @@ namespace graphplay {
     TEST(CameraTest, DefaultConstructor) {
         Camera c;
         unsigned int i = 0;
-        glm::mat4x4 identity = glm::mat4x4();
-        glm::mat4x4 camera_transform = c.getViewTransform();
-        const float *identity_ptr = glm::value_ptr(identity);
-        const float *camera_transform_ptr = glm::value_ptr(camera_transform);
+        glm::mat4x4 identity = glm::mat4x4(), camera_transform = c.getViewTransform();
+        const float *id_ptr = glm::value_ptr(identity), *camera_transform_ptr = glm::value_ptr(camera_transform);
+
         for (i = 0; i < 16; ++i) {
-            ASSERT_FLOAT_EQ(identity_ptr[i], camera_transform_ptr[i]);
+            ASSERT_FLOAT_EQ(id_ptr[i], camera_transform_ptr[i]);
         }
     }
 
@@ -29,6 +30,7 @@ namespace graphplay {
         glm::mat4x4 actual = c.getViewTransform();
         const float *expected_ptr = glm::value_ptr(expected);
         const float *actual_ptr = glm::value_ptr(actual);
+
         for (i = 0; i < 16; ++i) {
             ASSERT_FLOAT_EQ(expected_ptr[i], actual_ptr[i]);
         }
