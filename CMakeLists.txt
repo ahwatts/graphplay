@@ -47,6 +47,7 @@ message(STATUS "Found GLFW include: " ${GLFW_INCLUDE_DIRS})
 message(STATUS "Found GLFW header: " ${GLFW_HEADER_PATH})
 message(STATUS "Found GLFW libs: " ${GLFW_LIBRARIES})
 
+find_path(GLM_INCLUDE_PATH glm/glm.hpp PATHS ${CMAKE_PREFIX_PATH}/include NO_DEFAULT_PATH)
 find_path(GLM_INCLUDE_PATH glm/glm.hpp)
 set(GLM_INCLUDE_DIRS ${GLM_INCLUDE_PATH})
 message(STATUS "Found glm include: " ${GLM_INCLUDE_DIRS})
