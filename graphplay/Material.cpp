@@ -237,8 +237,9 @@ namespace graphplay {
         out vec4 FragColor;
 
         void main(void) {
-            // FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
-            FragColor = vSpecularColor;
+            FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
+            // FragColor = vSpecularColor;
+            // FragColor = vec4(1.0, 1.0, 1.0, 1.0);
         }
     )glsl";
 

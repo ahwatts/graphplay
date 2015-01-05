@@ -294,22 +294,6 @@ namespace graphplay {
 
     void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
         glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
-        // glm::mat3x3 mv_inverse2 = glm::mat3x3(model_view);
-
-        /* glm::vec3 point1(m_vertex_attrs[ 0], m_vertex_attrs[ 1], m_vertex_attrs[ 2]);
-        glm::vec3 point2(m_vertex_attrs[10], m_vertex_attrs[11], m_vertex_attrs[12]);
-        glm::vec3 point3(m_vertex_attrs[20], m_vertex_attrs[21], m_vertex_attrs[22]);
-        glm::vec3 normal = glm::normalize(glm::cross(point3 - point2, point1 - point2));
-        std::cout << "triangle = " << point1 << ", " << point2 << ", " << point3 << std::endl;
-        std::cout << "normal   = " << normal << std::endl;
-
-        glm::vec3 tpoint1 = glm::vec3(model_view * glm::vec4(point1, 1.0));
-        glm::vec3 tpoint2 = glm::vec3(model_view * glm::vec4(point2, 1.0));
-        glm::vec3 tpoint3 = glm::vec3(model_view * glm::vec4(point3, 1.0));
-        glm::vec3 tnormal = glm::normalize(glm::cross(tpoint3 - tpoint2, tpoint1 - tpoint2));
-        glm::vec3 ttnormal = mv_inverse * normal;
-        std::cout << "triangle (2) = " << tpoint1 << ", " << tpoint2 << ", " << tpoint3 << std::endl;
-        std::cout << "normal   (2) = " << tnormal << " ==? " << ttnormal << std::endl; */
 
         GLint proj_loc = material.getProjectionLocation();
         GLint mv_loc = material.getModelViewLocation();
@@ -370,40 +354,84 @@ namespace graphplay {
         return clone;
     }
 
+    struct PCNVertex {
+        float position[3];
+        float color[4];
+        float normal[3];
+    };
+
+    const PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
+        // Position        Color           Normal
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577,  0.577,  0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577,  0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, {  0.577,  0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, { -0.577,  0.577,  0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, { -0.577,  0.577,  0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577,  0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, { -0.577, -0.577,  0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577, -0.577,  0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, { -0.577, -0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577, -0.577,  0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, {  0.577, -0.577,  0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577, -0.577,  0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, {  0.577,  0.577, -0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, {  0.577,  0.577, -0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, { -0.577,  0.577, -0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577,  0.577, -0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, { -0.577,  0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, { -0.577, -0.577, -0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, { -0.577, -0.577, -0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577, -0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, {  0.577, -0.577, -0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577, -0.577, -0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, {  0.577, -0.577, -0.577 } },
+    };
+
+    // This is just each of the vertex data in order, since each
+    // repeated position / color has a different normal...
+    const unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
+         0,  1,  2,
+         3,  4,  5,
+         6,  7,  8,
+         9, 10, 11,
+        12, 13, 14,
+        15, 16, 17,
+        18, 19, 20,
+        21, 22, 23,
+    };
+
     OctohedronGeometry::OctohedronGeometry() : Geometry() {
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f( 0.577f,  0.577f,  0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f,  0.577f,  0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f,  0.577f,  0.577f);
+        m_position_offset = 0;
+        m_normal_offset = 7;
+        m_color_offset = 3;
+        m_stride = 10;
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f(-0.577f,  0.577f,  0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f,  0.577f,  0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f,  0.577f,  0.577f);
+        m_vertex_attrs.resize(24 * m_stride);
+        m_vertex_elems.resize(24);
+        for (unsigned int i = 0; i < 24; ++i) {
+            m_vertex_elems[i] = OCTOHEDRON_VERTEX_ELEMS[i];
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f,  0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f,  0.577f);
+            m_vertex_attrs[m_stride*i]   = OCTOHEDRON_VERTEX_ARRAY[i].position[0];
+            m_vertex_attrs[m_stride*i+1] = OCTOHEDRON_VERTEX_ARRAY[i].position[1];
+            m_vertex_attrs[m_stride*i+2] = OCTOHEDRON_VERTEX_ARRAY[i].position[2];
 
-        vertex3f( 0,  0,  1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f,  0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f,  0.577f);
+            m_vertex_attrs[m_stride*i+3] = OCTOHEDRON_VERTEX_ARRAY[i].color[0];
+            m_vertex_attrs[m_stride*i+4] = OCTOHEDRON_VERTEX_ARRAY[i].color[1];
+            m_vertex_attrs[m_stride*i+5] = OCTOHEDRON_VERTEX_ARRAY[i].color[2];
+            m_vertex_attrs[m_stride*i+6] = OCTOHEDRON_VERTEX_ARRAY[i].color[3];
 
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f,  0.577f, -0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f,  0.577f, -0.577f);
-
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f,  0.577f, -0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
-        vertex3f( 0,  1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f,  0.577f, -0.577f);
-
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f(-0.577f, -0.577f, -0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
-        vertex3f(-1,  0,  0); color4f(1, 0, 0, 1); normal3f(-0.577f, -0.577f, -0.577f);
-
-        vertex3f( 0,  0, -1); color4f(0, 0, 1, 1); normal3f( 0.577f, -0.577f, -0.577f);
-        vertex3f( 1,  0,  0); color4f(1, 0, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);
-        vertex3f( 0, -1,  0); color4f(0, 1, 0, 1); normal3f( 0.577f, -0.577f, -0.577f);
-
-        commitNewVertex();
+            m_vertex_attrs[m_stride*i+7] = OCTOHEDRON_VERTEX_ARRAY[i].normal[0];
+            m_vertex_attrs[m_stride*i+8] = OCTOHEDRON_VERTEX_ARRAY[i].normal[1];
+            m_vertex_attrs[m_stride*i+9] = OCTOHEDRON_VERTEX_ARRAY[i].normal[2];
+        }
     }
 
     CubeGeometry::CubeGeometry() : Geometry() {

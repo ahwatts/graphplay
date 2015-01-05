@@ -52,7 +52,6 @@ namespace graphplay {
         unsigned int findVertex(std::vector<float> &vdata);
         GLenum m_draw_type;
 
-    private:
         std::vector<float> m_vertex_attrs;
         std::vector<GLuint> m_vertex_elems;
         int m_position_offset, m_normal_offset, m_color_offset, m_tex_coord_offset;
