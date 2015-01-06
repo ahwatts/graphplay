@@ -284,7 +284,7 @@ namespace graphplay {
         glBindVertexArray(0);
         glUseProgram(0);
 
-        printTransformFeedback();
+        // printTransformFeedback();
     }
 
     void DebugMesh::printTransformFeedback() const {
