@@ -3,9 +3,12 @@
 #include "graphplay.h"
 #include "Scene.h"
 
+#include <iostream>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/io.hpp>
 
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
@@ -43,9 +46,9 @@ namespace graphplay {
 
     void Scene::render() {
         m_perspective = glm::perspective<float>(
-            90,
+            20.0f * M_PI / 180.0f,
             (float)m_vp_width / (float)m_vp_height, 
-            0.1f, 100);
+            1.0f, 20.0f);
 
         m_model_view = m_camera.getViewTransform();
 

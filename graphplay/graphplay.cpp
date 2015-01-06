@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     // scene.addMesh(cube);
 
     graphplay::Camera &camera = scene.getCamera();
-    camera.setLocation(glm::vec3(0, 0, 3));
+    camera.setLocation(glm::vec3(0, 0, 10));
     camera.setDirection(glm::vec3(0, 0, 0));
     camera.setUpDirection(glm::vec3(0, 1, 0));
 

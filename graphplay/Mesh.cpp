@@ -8,6 +8,7 @@
 #include <iostream>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/io.hpp>
 
 namespace graphplay {
     void copy_mat4x4_to_array(float *arr, const glm::mat4x4 &mat) {
@@ -88,17 +89,17 @@ namespace graphplay {
             vec3 eye_light_pos = uLightPosition;
             vec3 eye_vert_norm = normalize(uModelViewInverse * aNormal);
             vec3 eye_light_dir = normalize(eye_light_pos - eye_vert_pos);
-            vec3 eye_eye_dir = normalize(eye_vert_pos);
+            vec3 eye_eye_dir = normalize(-1*eye_vert_pos);
             vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);
 
             light_src = eye_vert_pos;
-            light_dst = eye_vert_pos + 0.5*eye_light_dir;
+            light_dst = eye_vert_pos + 5*eye_light_dir;
 
             eye_src = eye_vert_pos;
-            eye_dst = eye_vert_pos + 0.5*eye_eye_dir;
+            eye_dst = eye_vert_pos + 5*eye_eye_dir;
 
             reflected_src = eye_vert_pos;
-            reflected_dst = eye_vert_pos + 0.5*eye_reflected_dir;
+            reflected_dst = eye_vert_pos + 5*eye_reflected_dir;
 
             gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
             vAmbientColor = 0.05 * aColor;
@@ -117,7 +118,11 @@ namespace graphplay {
         out vec4 FragColor;
 
         void main(void) {
-            FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
+            if (gl_FrontFacing) {
+                FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
+            } else {
+                FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            }
         }
     )glsl";
 
@@ -128,18 +133,23 @@ namespace graphplay {
 
         uniform mat4x4 uProjection;
 
+        out vec4 vColor;
+
         void main(void) {
             gl_Position = uProjection * vec4(aPosition, 1.0);
+            vColor = gl_VertexID % 2 == 0 ? vec4(1.0, 1.0, 0.0, 1.0) : vec4(1.0, 0.0, 1.0, 1.0);
         }
     )glsl";
 
     const char *DebugMesh::fragment_shader_2_src = R"glsl(
         #version 410 core
 
+        in vec4 vColor;
+
         out vec4 FragColor;
 
         void main(void) {
-            FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            FragColor = vColor;
         }
     )glsl";
 
@@ -221,13 +231,22 @@ namespace graphplay {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
-        glm::mat4x4 model_transform = glm::make_mat4x4(m_model_transform);
-        glm::mat4x4 full_mv = model_view * model_transform;
-        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(full_mv));
-        glm::vec3 light_pos(2, 2, 10);
+    void DebugMesh::render(const glm::mat4 &projection, const glm::mat4 &model_view) const {
+        glm::mat4 model_transform = glm::make_mat4(m_model_transform);
+        glm::mat4 full_mv = model_view * model_transform;
+        glm::mat3 mv_inverse = glm::inverseTranspose(glm::mat3(full_mv));
+        glm::vec3 light_pos(0, 0, 10);
         glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
         unsigned int specular_exponent = 2;
+
+        // std::cout << "model_view = " << model_view << std::endl
+        //           << "projection = " << projection << std::endl
+        //           << "model_transform = " << model_transform << std::endl
+        //           << "full_mv = " << full_mv << std::endl
+        //           << "mv_inverse = " << mv_inverse << std::endl
+        //           << "light_pos = " << light_pos << std::endl
+        //           << "light_color = " << light_color << std::endl
+        //           << "specular_exponent = " << specular_exponent << std::endl;
 
         // Use our special shader program.
         glUseProgram(m_program_1);
@@ -264,6 +283,8 @@ namespace graphplay {
         // Clean up.
         glBindVertexArray(0);
         glUseProgram(0);
+
+        printTransformFeedback();
     }
 
     void DebugMesh::printTransformFeedback() const {
@@ -277,26 +298,22 @@ namespace graphplay {
             return;
         }
         
-        for (unsigned int i = 0; i < m_geometry->getNumVertices(); ++i) {
-            //out vec3 eye_light_dir;
-            //out vec3 eye_eye_dir;
-            //out vec3 eye_reflected_dir;
+        for (unsigned int i = 0; i < 1; ++i) {
+            //out vec3 light_src;
+            //out vec3 eye_src;
+            //out vec3 reflected_src;
+            //out vec3 light_dst;
+            //out vec3 eye_dst;
+            //out vec3 reflected_dst;
 
-            std::cout << "eye_light_dir[" << i << "]     = ("
-                << feedback[9*i] << ", "
-                << feedback[9*i+1] << ", "
-                << feedback[9*i+2] << ")"
-                << std::endl;
-            std::cout << "eye_eye_dir[" << i << "]       = ("
-                << feedback[9*i+3] << ", "
-                << feedback[9*i+4] << ", "
-                << feedback[9*i+5] << ")"
-                << std::endl;
-            std::cout << "eye_reflected_dir[" << i << "] = ("
-                << feedback[9*i+6] << ", "
-                << feedback[9*i+7] << ", "
-                << feedback[9*i+8] << ")"
-                << std::endl;
+            glm::vec3 light_src(feedback[18*i+0], feedback[18*i+ 1], feedback[18*i+ 2]);
+            glm::vec3 light_dst(feedback[18*i+9], feedback[18*i+10], feedback[18*i+11]);
+            glm::vec3 eye_src(feedback[18*i+ 3], feedback[18*i+ 4], feedback[18*i+ 5]);
+            glm::vec3 eye_dst(feedback[18*i+12], feedback[18*i+13], feedback[18*i+14]);
+            glm::vec3 reflected_src(feedback[18*i+ 6], feedback[18*i+ 7], feedback[18*i+ 8]);
+            glm::vec3 reflected_dst(feedback[18*i+15], feedback[18*i+16], feedback[18*i+17]);
+
+            std::cout << "light: " << light_src << " -> " << light_dst << " (" << light_dst - light_src << ")" << std::endl;
         }
 
         glUnmapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER);
