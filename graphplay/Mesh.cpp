@@ -168,39 +168,18 @@ namespace graphplay {
         m_light_color_loc = glGetUniformLocation(m_program_1, "uLightColor");
         m_specular_exponent_loc = glGetUniformLocation(m_program_1, "uSpecularExponent");
 
-        unsigned int num_geo_verts = m_geometry->getNumVertices();
+        // Create our VAOs.
+        GLuint vaos[2];
+        glGenVertexArrays(2, vaos);
+        m_vao_1 = vaos[0];
+        m_vao_2 = vaos[1];
 
-        // Create the buffer to receive the transform feedback. It will contain six vec3's per vertex.
-        glGenBuffers(1, &m_feedback_buffer);
-        glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_feedback_buffer);
-        glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, 6*3*num_geo_verts*sizeof(float), NULL, GL_DYNAMIC_COPY);
-
-        // Build the second-pass shader program.
-        vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_2_src);
-        fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, DebugMesh::fragment_shader_2_src);
-        m_program_2 = createProgramFromShaders(vertex_shader, fragment_shader);
-
-        m_position_loc_2 = (GLuint)glGetAttribLocation(m_program_2, "aPosition");
-        m_projection_loc_2 = glGetUniformLocation(m_program_2, "uProjection");
-    }
-
-    void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
-        glm::mat4x4 model_transform = glm::make_mat4x4(m_model_transform);
-        glm::mat4x4 full_mv = model_view * model_transform;
-        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(full_mv));
-        glm::vec3 light_pos(2, 2, 10);
-        glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
-        unsigned int specular_exponent = 2;
-
+        // Set up our first-pass VAO.
+        if (!m_geometry->arrayAndBuffersCreated()) m_geometry->createArrayAndBuffers();
         GLsizeiptr vertex_size = m_geometry->getStride() * sizeof(float);
-
-        // Use our special shader program.
-        glUseProgram(m_program_1);
-
-        // Use our geometry's data buffer.
+        glBindVertexArray(m_vao_1);
         glBindBuffer(GL_ARRAY_BUFFER, m_geometry->getArrayBuffer());
 
-        // Use the data buffer to the various shader inputs.
         glEnableVertexAttribArray(m_position_loc);
         glVertexAttribPointer(m_position_loc, 3, GL_FLOAT, GL_FALSE, vertex_size,
             BUFFER_OFFSET_BYTES(m_geometry->getPositionOffset()*sizeof(float)));
@@ -211,7 +190,47 @@ namespace graphplay {
 
         glEnableVertexAttribArray(m_color_loc);
         glVertexAttribPointer(m_color_loc, 4, GL_FLOAT, GL_FALSE, vertex_size,
-            BUFFER_OFFSET_BYTES(m_geometry->getColorOffset()*sizeof(float)));
+            BUFFER_OFFSET_BYTES(m_geometry->getColorOffset()*sizeof(float)));        
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        // Create the buffer to receive the transform feedback. It will contain six vec3's per vertex.
+        unsigned int num_geo_verts = m_geometry->getNumVertices();
+        glGenBuffers(1, &m_feedback_buffer);
+        glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, m_feedback_buffer);
+        glBufferData(GL_TRANSFORM_FEEDBACK_BUFFER, 6*3*num_geo_verts*sizeof(float), NULL, GL_DYNAMIC_COPY);
+        glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
+
+        // Build the second-pass shader program.
+        vertex_shader = createAndCompileShader(GL_VERTEX_SHADER, DebugMesh::vertex_shader_2_src);
+        fragment_shader = createAndCompileShader(GL_FRAGMENT_SHADER, DebugMesh::fragment_shader_2_src);
+        m_program_2 = createProgramFromShaders(vertex_shader, fragment_shader);
+
+        m_position_loc_2 = (GLuint)glGetAttribLocation(m_program_2, "aPosition");
+        m_projection_loc_2 = glGetUniformLocation(m_program_2, "uProjection");
+
+        // Set up our second-pass VAO.
+        glBindVertexArray(m_vao_2);
+        glBindBuffer(GL_ARRAY_BUFFER, m_feedback_buffer);
+
+        glEnableVertexAttribArray(m_position_loc_2);
+        glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), BUFFER_OFFSET_BYTES(0*sizeof(float)));
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    void DebugMesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
+        glm::mat4x4 model_transform = glm::make_mat4x4(m_model_transform);
+        glm::mat4x4 full_mv = model_view * model_transform;
+        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(full_mv));
+        glm::vec3 light_pos(2, 2, 10);
+        glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
+        unsigned int specular_exponent = 2;
+
+        // Use our special shader program.
+        glUseProgram(m_program_1);
 
         // Set the inputs for the uniforms.
         glUniformMatrix4fv(m_projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -221,10 +240,9 @@ namespace graphplay {
         glUniform4fv(m_light_color_loc, 1, glm::value_ptr(light_color));
         glUniform1ui(m_specular_exponent_loc, specular_exponent);
 
-        // Set the element array buffer.
+        // Bind what we want.
+        glBindVertexArray(m_vao_1);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_geometry->getElementArrayBuffer());
-
-        // Set the transform feedback buffer.
         glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_feedback_buffer);
 
         // Render with transform feedback.
@@ -232,16 +250,20 @@ namespace graphplay {
         glDrawElements(m_geometry->getDrawType(), m_geometry->getNumVertices(), GL_UNSIGNED_INT, 0);
         glEndTransformFeedback();
 
+        // Clean up.
+        glBindVertexArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
+
         // Render the feedback.
         glUseProgram(m_program_2);
-
-        glBindBuffer(GL_ARRAY_BUFFER, m_feedback_buffer);
-        glEnableVertexAttribArray(m_position_loc_2);
-        glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), BUFFER_OFFSET_BYTES(0*sizeof(float)));
-
         glUniformMatrix4fv(m_projection_loc_2, 1, GL_FALSE, glm::value_ptr(projection));
-
+        glBindVertexArray(m_vao_2);
         glDrawArrays(GL_LINES, 0, 2*m_geometry->getNumVertices());
+
+        // Clean up.
+        glBindVertexArray(0);
+        glUseProgram(0);
     }
 
     void DebugMesh::printTransformFeedback() const {

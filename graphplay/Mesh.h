@@ -50,6 +50,7 @@ namespace graphplay {
     protected:
         GLuint m_program_1, m_program_2;
 
+        GLuint m_vao_1, m_vao_2;
         GLuint m_feedback_buffer;
         GLuint m_feedback_element_buffer;
 

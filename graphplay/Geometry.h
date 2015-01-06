@@ -36,6 +36,7 @@ namespace graphplay {
         // These control the data on the GPU.
         void createArrayAndBuffers();
         void destroyArrayAndBuffers();
+        inline bool arrayAndBuffersCreated() { return m_buffers_created; }
         void setUpVertexArray(const Material &material);
 
         inline GLuint getVertexArrayObject() const { return m_vao; }
