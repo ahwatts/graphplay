@@ -13,7 +13,7 @@
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
         : m_perspective(),
-          m_model_view(),
+          m_view(),
           m_vp_width(vp_width),
           m_vp_height(vp_height),
           m_camera(),
@@ -50,7 +50,7 @@ namespace graphplay {
             (float)m_vp_width / (float)m_vp_height, 
             1.0f, 20.0f);
 
-        m_model_view = m_camera.getViewTransform();
+        m_view = m_camera.getViewTransform();
 
         glm::vec3 light_pos(0, 0, 10);
         glm::vec4 light_color(1, 0.5, 0.25, 1);
@@ -70,7 +70,7 @@ namespace graphplay {
                     if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
                     if (specular_exp_loc >= 0) glUniform1ui(specular_exp_loc, specular_exponent);
                 }
-                sm->render(m_perspective, m_model_view);
+                sm->render(m_perspective, m_view);
             }
         }
     }

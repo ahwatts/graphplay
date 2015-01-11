@@ -27,8 +27,7 @@ namespace graphplay {
         void render();
 
     private:
-        glm::mat4x4 m_perspective;
-        glm::mat4x4 m_model_view;
+        glm::mat4x4 m_perspective, m_view;
         unsigned int m_vp_width, m_vp_height;
 
         Camera m_camera;

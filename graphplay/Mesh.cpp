@@ -64,8 +64,9 @@ namespace graphplay {
         in vec3 aNormal;
         in vec4 aColor;
 
-        uniform mat4x4 uModelView;
-        uniform mat3x3 uModelViewInverse;
+        uniform mat4x4 uModel;
+        uniform mat3x3 uModel3InverseTranspose;
+        uniform mat4x4 uView;
         uniform mat4x4 uProjection;
         uniform vec3 uLightPosition;
         uniform vec4 uLightColor;
@@ -85,26 +86,38 @@ namespace graphplay {
         out vec3 reflected_dst;
 
         void main(void) {
-            vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));
-            vec3 eye_light_pos = uLightPosition;
-            vec3 eye_vert_norm = normalize(uModelViewInverse * aNormal);
-            vec3 eye_light_dir = normalize(eye_light_pos - eye_vert_pos);
-            vec3 eye_eye_dir = normalize(-1*eye_vert_pos);
-            vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);
+            vec4 wld_vert_position4 = uModel * vec4(aPosition, 1.0);
+            vec3 wld_vert_position = (1.0 / wld_vert_position4.w) * vec3(wld_vert_position4);
+            vec3 wld_vert_normal = normalize(uModel3InverseTranspose * aNormal);
+            vec3 wld_vert_light_dir = normalize(uLightPosition - wld_vert_position);
 
-            light_src = eye_vert_pos;
-            light_dst = eye_vert_pos + 5*eye_light_dir;
+            vec4 eye_vert_position4 = uView * wld_vert_position4;
+            vec3 eye_vert_position = (1.0 / eye_vert_position4.w) * vec3(eye_vert_position4);
+            vec4 eye_light_position4 = uView * vec4(uLightPosition, 1.0);
+            vec3 eye_light_position = (1.0 / eye_light_position4.w) * vec3(eye_light_position4);
+            vec3 eye_vert_light_dir = normalize(eye_light_position - eye_vert_position);
+            vec3 eye_vert_eye_dir = normalize(-1*eye_vert_position);
 
-            eye_src = eye_vert_pos;
-            eye_dst = eye_vert_pos + 5*eye_eye_dir;
+            light_src = eye_vert_position;
+            light_dst = eye_vert_position + 0.5*eye_vert_light_dir;
 
-            reflected_src = eye_vert_pos;
-            reflected_dst = eye_vert_pos + 5*eye_reflected_dir;
+            eye_src = eye_vert_position;
+            eye_dst = eye_vert_position * 0.5*eye_vert_eye_dir;
 
-            gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
-            vAmbientColor = 0.05 * aColor;
-            vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;
-            vSpecularColor = pow(dot(eye_reflected_dir, eye_eye_dir), uSpecularExponent) * uLightColor * aColor;
+            // Make this be nothing for now.
+            reflected_src = eye_vert_position;
+            reflected_dst = eye_vert_position;
+
+            gl_Position = uProjection * eye_vert_position4;
+
+            vAmbientColor = 0.5 * aColor;
+            // vAmbientColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+            vDiffuseColor = 0.5 * dot(wld_vert_normal, wld_vert_light_dir) * (uLightColor * aColor);
+            // vDiffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+            // Make this be nothing for now.
+            vSpecularColor = vec4(0.0, 0.0, 0.0, 1.0);
         }
     )glsl";
 
@@ -171,9 +184,10 @@ namespace graphplay {
         m_normal_loc = (GLuint)glGetAttribLocation(m_program_1, "aNormal");
         m_color_loc = (GLuint)glGetAttribLocation(m_program_1, "aColor");
 
+        m_model_loc = glGetUniformLocation(m_program_1, "uModel");
+        m_model_3_inv_trans_loc = glGetUniformLocation(m_program_1, "uModel3InverseTranspose");
+        m_view_loc = glGetUniformLocation(m_program_1, "uView");
         m_projection_loc = glGetUniformLocation(m_program_1, "uProjection");
-        m_model_view_loc = glGetUniformLocation(m_program_1, "uModelView");
-        m_model_view_inv_loc = glGetUniformLocation(m_program_1, "uModelViewInverse");
         m_light_position_loc = glGetUniformLocation(m_program_1, "uLightPosition");
         m_light_color_loc = glGetUniformLocation(m_program_1, "uLightColor");
         m_specular_exponent_loc = glGetUniformLocation(m_program_1, "uSpecularExponent");
@@ -231,30 +245,21 @@ namespace graphplay {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void DebugMesh::render(const glm::mat4 &projection, const glm::mat4 &model_view) const {
-        glm::mat4 model_transform = glm::make_mat4(m_model_transform);
-        glm::mat4 full_mv = model_view * model_transform;
-        glm::mat3 mv_inverse = glm::inverseTranspose(glm::mat3(full_mv));
-        glm::vec3 light_pos(0, 0, 10);
-        glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
+    void DebugMesh::render(const glm::mat4 &projection, const glm::mat4 &view) const {
+        glm::mat4 model = glm::make_mat4(m_model_transform);
+        glm::mat3 model_3_inv_trans = glm::inverseTranspose(glm::mat3(model));
+        glm::vec3 light_pos(0, 10, 0);
+        glm::vec4 light_color(0.5, 1.0, 0.75, 1.0);
         unsigned int specular_exponent = 2;
-
-        // std::cout << "model_view = " << model_view << std::endl
-        //           << "projection = " << projection << std::endl
-        //           << "model_transform = " << model_transform << std::endl
-        //           << "full_mv = " << full_mv << std::endl
-        //           << "mv_inverse = " << mv_inverse << std::endl
-        //           << "light_pos = " << light_pos << std::endl
-        //           << "light_color = " << light_color << std::endl
-        //           << "specular_exponent = " << specular_exponent << std::endl;
 
         // Use our special shader program.
         glUseProgram(m_program_1);
 
         // Set the inputs for the uniforms.
+        glUniformMatrix4fv(m_model_loc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix3fv(m_model_3_inv_trans_loc, 1, GL_FALSE, glm::value_ptr(model_3_inv_trans));
+        glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(m_projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(m_model_view_loc, 1, GL_FALSE, glm::value_ptr(full_mv));
-        glUniformMatrix3fv(m_model_view_inv_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
         glUniform3fv(m_light_position_loc, 1, glm::value_ptr(light_pos));
         glUniform4fv(m_light_color_loc, 1, glm::value_ptr(light_color));
         glUniform1ui(m_specular_exponent_loc, specular_exponent);

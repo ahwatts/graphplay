@@ -22,7 +22,7 @@ namespace graphplay {
         inline const float* getTransform() const { return m_model_transform; }
         void setTransform(const glm::mat4x4 &new_transform);
 
-        virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const;
+        virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &view) const;
 
         inline const wp_Geometry getGeometry() const { return wp_Geometry(m_geometry); }
         inline const wp_Material getMaterial() const { return wp_Material(m_material); }
@@ -43,7 +43,7 @@ namespace graphplay {
     public:
         DebugMesh(sp_Geometry geo);
 
-        virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const;
+        virtual void render(const glm::mat4x4 &projection, const glm::mat4x4 &view) const;
 
         void printTransformFeedback() const;
 
@@ -58,9 +58,10 @@ namespace graphplay {
         GLuint m_normal_loc;
         GLuint m_color_loc;
 
+        GLint m_model_loc;
+        GLint m_model_3_inv_trans_loc;
+        GLint m_view_loc;
         GLint m_projection_loc;
-        GLint m_model_view_loc;
-        GLint m_model_view_inv_loc;
         GLint m_light_position_loc;
         GLint m_light_color_loc;
         GLint m_specular_exponent_loc;
