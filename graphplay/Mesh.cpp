@@ -125,14 +125,19 @@ namespace graphplay {
 
             gl_Position = uProjection * eye_vert_position4;
 
-            vAmbientColor = 0.5 * aColor;
+            vAmbientColor = 0.3 * aColor;
             // vAmbientColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-            vDiffuseColor = 0.5 * dot(wld_vert_normal, wld_vert_light_dir) * (uLightColor * aColor);
+            vDiffuseColor = 0.7 * max(0.0, dot(wld_vert_normal, wld_vert_light_dir)) * (uLightColor * aColor);
             // vDiffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
 
             // Make this be nothing for now.
-            vSpecularColor = vec4(0.0, 0.0, 0.0, 1.0);
+            // vSpecularColor = vec4(0.0, 0.0, 0.0, 1.0);
+            if (dot(wld_vert_normal, wld_vert_light_dir) < 0.0) {
+                vSpecularColor = vec4(0.0, 0.0, 0.0, 1.0);
+            } else {
+                vSpecularColor = 0.7 * pow(max(0.0, dot(wld_light_reflect_dir, wld_eye_dir)), uSpecularExponent) * (uLightColor * aColor);
+            }
         }
     )glsl";
 
@@ -266,7 +271,7 @@ namespace graphplay {
         glm::mat3 model_3_inv_trans = glm::inverseTranspose(glm::mat3(model));
         glm::mat4 view_inv = glm::inverse(view);
         glm::vec3 light_pos(0, 10, 0);
-        glm::vec4 light_color(0.5, 1.0, 0.75, 1.0);
+        glm::vec4 light_color(0.25, 1.0, 0.5, 1.0);
         unsigned int specular_exponent = 2;
 
         // Use our special shader program.
