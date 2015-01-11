@@ -61,6 +61,7 @@ namespace graphplay {
         GLint m_model_loc;
         GLint m_model_3_inv_trans_loc;
         GLint m_view_loc;
+        GLint m_view_inv_loc;
         GLint m_projection_loc;
         GLint m_light_position_loc;
         GLint m_light_color_loc;
