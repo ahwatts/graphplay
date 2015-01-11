@@ -26,9 +26,11 @@ namespace graphplay {
         virtual GLint getColorLocation() const { return -1; }
         virtual GLint getTexCoordLocation() const { return -1; }
 
+        virtual GLint getModelLocation() const { return -1; }
+        virtual GLint getModelInverseTranspose3Location() const { return -1; }
+        virtual GLint getViewLocation() const { return -1; }
+        virtual GLint getViewInverseLocation() const { return -1; }
         virtual GLint getProjectionLocation() const { return -1; }
-        virtual GLint getModelViewLocation() const { return -1; }
-        virtual GLint getModelViewInverseLocation() const { return -1; }
         virtual GLint getLightPositionLocation() const { return -1; }
         virtual GLint getLightColorLocation() const { return -1; }
         virtual GLint getSpecularExponentLocation() const { return -1; }
@@ -51,15 +53,17 @@ namespace graphplay {
         virtual GLint getPositionLocation() const { return (GLint)m_position_loc; }
         virtual GLint getColorLocation() const { return (GLint)m_color_loc; }
 
+        virtual GLint getModelLocation() const { return m_model_loc; }
+        virtual GLint getViewLocation() const { return m_view_loc; }
         virtual GLint getProjectionLocation() const { return m_projection_loc; }
-        virtual GLint getModelViewLocation() const { return m_model_view_loc; }
 
     protected:
         GLuint m_position_loc;
         GLuint m_color_loc;
 
+        GLint m_model_loc;
+        GLint m_view_loc;
         GLint m_projection_loc;
-        GLint m_model_view_loc;
 
         static const char *vertex_shader_src, *fragment_shader_src;
     };
@@ -75,9 +79,11 @@ namespace graphplay {
         virtual GLint getNormalLocation() const { return (GLint)m_normal_loc; }
         virtual GLint getColorLocation() const { return (GLint)m_color_loc; }
 
+        virtual GLint getModelLocation() const { return m_model_loc; }
+        virtual GLint getModelInverseTranspose3Location() const { return m_model_inv_trans_3_loc; }
+        virtual GLint getViewLocation() const { return m_view_loc; }
+        virtual GLint getViewInverseLocation() const { return m_view_inv_loc; }
         virtual GLint getProjectionLocation() const { return m_projection_loc; }
-        virtual GLint getModelViewLocation() const { return m_model_view_loc; }
-        virtual GLint getModelViewInverseLocation() const { return m_model_view_inv_loc; }
         virtual GLint getLightPositionLocation() const { return m_light_position_loc; }
         virtual GLint getLightColorLocation() const { return m_light_color_loc; }
         virtual GLint getSpecularExponentLocation() const { return m_specular_exponent_loc; }
@@ -87,9 +93,11 @@ namespace graphplay {
         GLuint m_normal_loc;
         GLuint m_color_loc;
 
+        GLint m_model_loc;
+        GLint m_model_inv_trans_3_loc;
+        GLint m_view_loc;
+        GLint m_view_inv_loc;
         GLint m_projection_loc;
-        GLint m_model_view_loc;
-        GLint m_model_view_inv_loc;
         GLint m_light_position_loc;
         GLint m_light_color_loc;
         GLint m_specular_exponent_loc;
@@ -108,9 +116,11 @@ namespace graphplay {
         virtual GLint getNormalLocation() const { return (GLint)m_normal_loc; }
         virtual GLint getColorLocation() const { return (GLint)m_color_loc; }
 
+        virtual GLint getModelLocation() const { return m_model_loc; }
+        virtual GLint getModelInverseTranspose3Location() const { return m_model_inv_trans_3_loc; }
+        virtual GLint getViewLocation() const { return m_view_loc; }
+        virtual GLint getViewInverseLocation() const { return m_view_inv_loc; }
         virtual GLint getProjectionLocation() const { return m_projection_loc; }
-        virtual GLint getModelViewLocation() const { return m_model_view_loc; }
-        virtual GLint getModelViewInverseLocation() const { return m_model_view_inv_loc; }
         virtual GLint getLightPositionLocation() const { return m_light_position_loc; }
         virtual GLint getLightColorLocation() const { return m_light_color_loc; }
         virtual GLint getSpecularExponentLocation() const { return m_specular_exponent_loc; }
@@ -120,9 +130,11 @@ namespace graphplay {
         GLuint m_normal_loc;
         GLuint m_color_loc;
 
+        GLint m_model_loc;
+        GLint m_model_inv_trans_3_loc;
+        GLint m_view_loc;
+        GLint m_view_inv_loc;
         GLint m_projection_loc;
-        GLint m_model_view_loc;
-        GLint m_model_view_inv_loc;
         GLint m_light_position_loc;
         GLint m_light_color_loc;
         GLint m_specular_exponent_loc;

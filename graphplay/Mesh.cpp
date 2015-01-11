@@ -44,9 +44,8 @@ namespace graphplay {
         copy_mat4x4_to_array(m_model_transform, new_transform);
     }
 
-    void Mesh::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const {
-        glm::mat4x4 transform_mat = glm::make_mat4x4(m_model_transform);
-        glm::mat4x4 full_mv = model_view * transform_mat;
-        m_geometry->render(projection, full_mv, *m_material);
+    void Mesh::render() const {
+        glm::mat4x4 model = glm::make_mat4x4(m_model_transform);
+        m_geometry->render(model, *m_material);
     }
 };

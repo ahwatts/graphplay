@@ -148,13 +148,14 @@ namespace graphplay {
         in vec3 aPosition;
         in vec4 aColor;
 
-        uniform mat4x4 uModelView;
+        uniform mat4x4 uModel;
+        uniform mat4x4 uView;
         uniform mat4x4 uProjection;
 
         out vec4 vColor;
 
         void main(void) {
-            gl_Position = uProjection * uModelView * vec4(aPosition, 1.0);
+            gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
             vColor = aColor;
         }
     )glsl";
@@ -175,8 +176,9 @@ namespace graphplay {
         : Material(),
           m_position_loc(-1),
           m_color_loc(-1),
-          m_projection_loc(-1),
-          m_model_view_loc(-1) {}
+          m_model_loc(-1),
+          m_view_loc(-1),
+          m_projection_loc(-1) {}
 
     GouraudMaterial::~GouraudMaterial() { }
 
@@ -188,8 +190,9 @@ namespace graphplay {
         m_position_loc = (GLuint)glGetAttribLocation(m_program, "aPosition");
         m_color_loc = (GLuint)glGetAttribLocation(m_program, "aColor");
 
+        m_model_loc = glGetUniformLocation(m_program, "uModel");
+        m_view_loc = glGetUniformLocation(m_program, "uView");
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
-        m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
     }
 
     // Class LambertMaterial.
@@ -200,9 +203,12 @@ namespace graphplay {
         in vec3 aNormal;
         in vec4 aColor;
 
-        uniform mat4x4 uModelView;
-        uniform mat3x3 uModelViewInverse;
+        uniform mat4x4 uModel;
+        uniform mat3x3 uModelInverseTranspose3;
+        uniform mat4x4 uView;
+        uniform mat4x4 uViewInverse;
         uniform mat4x4 uProjection;
+
         uniform vec3 uLightPosition;
         uniform vec4 uLightColor;
         uniform uint uSpecularExponent;
@@ -248,9 +254,11 @@ namespace graphplay {
           m_position_loc(-1),
           m_normal_loc(-1),
           m_color_loc(-1),
+          m_model_loc(-1),
+          m_model_inv_trans_3_loc(-1),
+          m_view_loc(-1),
+          m_view_inv_loc(-1),
           m_projection_loc(-1),
-          m_model_view_loc(-1),
-          m_model_view_inv_loc(-1),
           m_light_position_loc(-1),
           m_light_color_loc(-1),
           m_specular_exponent_loc(-1) { }
@@ -266,9 +274,12 @@ namespace graphplay {
         m_normal_loc = (GLuint)glGetAttribLocation(m_program, "aNormal");
         m_color_loc = (GLuint)glGetAttribLocation(m_program, "aColor");
 
+        m_model_loc = glGetUniformLocation(m_program, "uModel");
+        m_model_inv_trans_3_loc = glGetUniformLocation(m_program, "uModelInverseTranspose3");
+        m_view_loc = glGetUniformLocation(m_program, "uView");
+        m_view_inv_loc = glGetUniformLocation(m_program, "uViewInverse");
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
-        m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
-        m_model_view_inv_loc = glGetUniformLocation(m_program, "uModelViewInverse");
+
         m_light_position_loc = glGetUniformLocation(m_program, "uLightPosition");
         m_light_color_loc = glGetUniformLocation(m_program, "uLightColor");
         m_specular_exponent_loc = glGetUniformLocation(m_program, "uSpecularExponent");
@@ -281,11 +292,15 @@ namespace graphplay {
         in vec3 aNormal;
         in vec4 aColor;
 
-        uniform mat4x4 uModelView;
-        uniform mat3x3 uModelViewInverse;
+        uniform mat4x4 uModel;
+        uniform mat3x3 uModelInverseTranspose3;
+        uniform mat4x4 uView;
+        uniform mat4x4 uViewInverse;
         uniform mat4x4 uProjection;
+
         uniform vec3 uLightPosition;
         uniform vec4 uLightColor;
+        uniform uint uSpecularExponent;
 
         out vec4 vColor;
         out vec3 vEyeDir;
@@ -325,9 +340,11 @@ namespace graphplay {
           m_position_loc(-1),
           m_normal_loc(-1),
           m_color_loc(-1),
+          m_model_loc(-1),
+          m_model_inv_trans_3_loc(-1),
+          m_view_loc(-1),
+          m_view_inv_loc(-1),
           m_projection_loc(-1),
-          m_model_view_loc(-1),
-          m_model_view_inv_loc(-1),
           m_light_position_loc(-1),
           m_light_color_loc(-1),
           m_specular_exponent_loc(-1) { }
@@ -343,9 +360,12 @@ namespace graphplay {
         m_normal_loc = (GLuint)glGetAttribLocation(m_program, "aNormal");
         m_color_loc = (GLuint)glGetAttribLocation(m_program, "aColor");
 
+        m_model_loc = glGetUniformLocation(m_program, "uModel");
+        m_model_inv_trans_3_loc = glGetUniformLocation(m_program, "uModelInverseTranspose3");
+        m_view_loc = glGetUniformLocation(m_program, "uView");
+        m_view_inv_loc = glGetUniformLocation(m_program, "uViewInverse");
         m_projection_loc = glGetUniformLocation(m_program, "uProjection");
-        m_model_view_loc = glGetUniformLocation(m_program, "uModelView");
-        m_model_view_inv_loc = glGetUniformLocation(m_program, "uModelViewInverse");
+
         m_light_position_loc = glGetUniformLocation(m_program, "uLightPosition");
         m_light_color_loc = glGetUniformLocation(m_program, "uLightColor");
         m_specular_exponent_loc = glGetUniformLocation(m_program, "uSpecularExponent");

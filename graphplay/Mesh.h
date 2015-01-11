@@ -22,7 +22,7 @@ namespace graphplay {
         inline const float* getTransform() const { return m_model_transform; }
         void setTransform(const glm::mat4x4 &new_transform);
 
-        void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view) const;
+        void render() const;
 
         inline const wp_Geometry getGeometry() const { return wp_Geometry(m_geometry); }
         inline const wp_Material getMaterial() const { return wp_Material(m_material); }

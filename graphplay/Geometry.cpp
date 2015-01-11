@@ -292,19 +292,22 @@ namespace graphplay {
         m_vao_initialized = true;
     }
 
-    void Geometry::render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const  Material &material) const {
-        glm::mat3x3 mv_inverse = glm::inverseTranspose(glm::mat3x3(model_view));
-
-        GLint proj_loc = material.getProjectionLocation();
-        GLint mv_loc = material.getModelViewLocation();
-        GLint mvi_loc = material.getModelViewInverseLocation();
+    void Geometry::render(const glm::mat4x4 &model, const Material &material) const {
+        GLint model_loc = material.getModelLocation();
+        GLint model_inv_trans_3_loc = material.getModelInverseTranspose3Location();
 
         glBindVertexArray(m_vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
 
-        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(mv_loc, 1, GL_FALSE, glm::value_ptr(model_view));
-        glUniformMatrix3fv(mvi_loc, 1, GL_FALSE, glm::value_ptr(mv_inverse));
+        if (model_loc >= 0) {
+            glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
+        }
+
+        if (model_inv_trans_3_loc >= 0) {
+            glm::mat3x3 model_inv_trans_3 = glm::inverseTranspose(glm::mat3x3(model));
+            glUniformMatrix3fv(model_inv_trans_3_loc, 1, GL_FALSE, glm::value_ptr(model_inv_trans_3));
+        }
+
         glDrawElements(m_draw_type, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);

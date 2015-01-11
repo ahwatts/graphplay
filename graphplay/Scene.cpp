@@ -9,8 +9,9 @@
 
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
-        : m_perspective(),
-          m_model_view(),
+        : m_view(),
+          m_view_inv(),
+          m_projection(),
           m_vp_width(vp_width),
           m_vp_height(vp_height),
           m_camera(),
@@ -42,12 +43,13 @@ namespace graphplay {
     }
 
     void Scene::render() {
-        m_perspective = glm::perspective<float>(
+        m_projection = glm::perspective<float>(
             90,
             (float)m_vp_width / (float)m_vp_height, 
             0.1f, 100);
 
-        m_model_view = m_camera.getViewTransform();
+        m_view = m_camera.getViewTransform();
+        m_view_inv = glm::inverse(m_view);
 
         glm::vec3 light_pos(0, 0, 10);
         glm::vec4 light_color(1, 0.5, 0.25, 1);
@@ -57,17 +59,23 @@ namespace graphplay {
             if (auto sm = wm.lock()) {
                 sp_Material mat = sm->getMaterial().lock();
                 if (mat) {
+                    GLuint program = mat->getProgram();
+                    GLint view_loc = mat->getViewLocation();
+                    GLint view_inv_loc = mat->getViewInverseLocation();
+                    GLint projection_loc = mat->getProjectionLocation();
                     GLint light_pos_loc = mat->getLightPositionLocation();
                     GLint light_color_loc = mat->getLightColorLocation();
                     GLint specular_exp_loc = mat->getSpecularExponentLocation();
-                    GLuint program = mat->getProgram();
 
                     glUseProgram(program);
+                    if (view_loc >= 0) glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(m_view));
+                    if (view_inv_loc >= 0) glUniformMatrix4fv(view_inv_loc, 1, GL_FALSE, glm::value_ptr(m_view_inv));
+                    if (projection_loc >= 0) glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(m_projection));
                     if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
                     if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
                     if (specular_exp_loc >= 0) glUniform1ui(specular_exp_loc, specular_exponent);
                 }
-                sm->render(m_perspective, m_model_view);
+                sm->render();
             }
         }
     }

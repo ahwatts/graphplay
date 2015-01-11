@@ -28,7 +28,7 @@ namespace graphplay {
         inline GLuint getElementArrayBuffer() const { return m_element_buffer; }
 
         // Renders the geometry.
-        void render(const glm::mat4x4 &projection, const glm::mat4x4 &model_view, const Material &material) const;
+        void render(const glm::mat4x4 &model, const Material &material) const;
 
         // These work sort of like OpenGL's immediate-vertex functions, if you
         // want to generate the geometry directly. You'll need to call 
