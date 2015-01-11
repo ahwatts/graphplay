@@ -102,7 +102,7 @@ namespace graphplay {
             light_dst = eye_vert_position + 0.5*eye_vert_light_dir;
 
             eye_src = eye_vert_position;
-            eye_dst = eye_vert_position * 0.5*eye_vert_eye_dir;
+            eye_dst = eye_vert_position + 0.5*eye_vert_eye_dir;
 
             // Make this be nothing for now.
             reflected_src = eye_vert_position;
@@ -239,7 +239,7 @@ namespace graphplay {
         glBindBuffer(GL_ARRAY_BUFFER, m_feedback_buffer);
 
         glEnableVertexAttribArray(m_position_loc_2);
-        glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), BUFFER_OFFSET_BYTES(0*sizeof(float)));
+        glVertexAttribPointer(m_position_loc_2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), BUFFER_OFFSET_BYTES(3*sizeof(float)));
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -318,7 +318,8 @@ namespace graphplay {
             glm::vec3 reflected_src(feedback[18*i+ 6], feedback[18*i+ 7], feedback[18*i+ 8]);
             glm::vec3 reflected_dst(feedback[18*i+15], feedback[18*i+16], feedback[18*i+17]);
 
-            std::cout << "light: " << light_src << " -> " << light_dst << " (" << light_dst - light_src << ")" << std::endl;
+            // std::cout << "light: " << light_src << " -> " << light_dst << " (" << light_dst - light_src << ")" << std::endl;
+            std::cout << "eye: " << eye_src << " -> " << eye_dst << " (" << (eye_dst - eye_src) << ")" << std::endl;
         }
 
         glUnmapBuffer(GL_TRANSFORM_FEEDBACK_BUFFER);
