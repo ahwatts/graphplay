@@ -217,19 +217,29 @@ namespace graphplay {
         out vec4 vDiffuseColor;
         out vec4 vSpecularColor;
 
-        void main(void) {
-            vec3 eye_vert_pos = vec3(uModelView * vec4(aPosition, 1.0));
-            vec3 eye_vert_norm = normalize(uModelViewInverse * aNormal);
-            vec3 eye_light_dir = normalize(uLightPosition - eye_vert_pos);
-            vec3 eye_eye_dir = normalize(eye_vert_pos);
-            vec3 eye_reflected_dir = normalize(2 * dot(eye_light_dir, eye_vert_norm) * eye_vert_norm - eye_light_dir);
+        vec3 vec4to3(vec4 vec) {
+            return (1.0 / vec.w) * vec3(vec);
+        }
 
-            gl_Position = uProjection * vec4(eye_vert_pos, 1.0);
-            vAmbientColor = 0.05 * aColor;
-            vDiffuseColor = dot(eye_light_dir, eye_vert_norm) * uLightColor * aColor;
-            vSpecularColor = pow(dot(eye_reflected_dir, eye_eye_dir), uSpecularExponent) * uLightColor * aColor;
-            // vSpecularColor = dot(eye_reflected_dir, eye_eye_dir) * vec4(1.0, 1.0, 1.0, 1.0);
-            // vSpecularColor = vec4(abs(eye_reflected_dir), 1.0);
+        void main(void) {
+            vec4 wld_vert_position4 = uModel * vec4(aPosition, 1.0);
+            vec3 wld_vert_position = vec4to3(wld_vert_position4);
+
+            vec3 wld_vert_normal = uModelInverseTranspose3 * aNormal;
+
+            vec3 wld_vert_light_dir = uLightPosition - wld_vert_position;
+
+            vec3 vert_color_rgb = vec3(aColor);
+            vec3 light_color_rgb = vec3(uLightColor);
+
+            gl_Position = uProjection * uView * wld_vert_position4;
+
+            vAmbientColor = vec4(0.05 * vert_color_rgb, aColor.a);
+
+            float diffuse_coeff = 0.7 * max(0.0, dot(wld_vert_normal, wld_vert_light_dir));
+            vDiffuseColor = vec4(diffuse_coeff * light_color_rgb * vert_color_rgb, aColor.a);
+
+            vSpecularColor = vec4(0.0, 0.0, 0.0, 1.0);
         }
     )glsl";
 
