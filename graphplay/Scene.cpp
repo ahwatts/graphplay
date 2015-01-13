@@ -44,14 +44,14 @@ namespace graphplay {
 
     void Scene::render() {
         m_projection = glm::perspective<float>(
-            90,
+            20,
             (float)m_vp_width / (float)m_vp_height, 
             0.1f, 100);
 
         m_view = m_camera.getViewTransform();
         m_view_inv = glm::inverse(m_view);
 
-        glm::vec3 light_pos(0, 0, 10);
+        glm::vec3 light_pos(0, 10, 10);
         glm::vec4 light_color(1, 0.5, 0.25, 1);
         unsigned int specular_exponent = 2;
 

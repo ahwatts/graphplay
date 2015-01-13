@@ -225,16 +225,16 @@ namespace graphplay {
             vec4 wld_vert_position4 = uModel * vec4(aPosition, 1.0);
             vec3 wld_vert_position = vec4to3(wld_vert_position4);
 
-            vec3 wld_vert_normal = uModelInverseTranspose3 * aNormal;
+            vec3 wld_vert_normal = normalize(uModelInverseTranspose3 * aNormal);
 
-            vec3 wld_vert_light_dir = uLightPosition - wld_vert_position;
+            vec3 wld_vert_light_dir = normalize(uLightPosition - wld_vert_position);
 
             vec3 vert_color_rgb = vec3(aColor);
             vec3 light_color_rgb = vec3(uLightColor);
 
             gl_Position = uProjection * uView * wld_vert_position4;
 
-            vAmbientColor = vec4(0.05 * vert_color_rgb, aColor.a);
+            vAmbientColor = vec4(0.1 * vert_color_rgb, aColor.a);
 
             float diffuse_coeff = 0.7 * max(0.0, dot(wld_vert_normal, wld_vert_light_dir));
             vDiffuseColor = vec4(diffuse_coeff * light_color_rgb * vert_color_rgb, aColor.a);
@@ -253,9 +253,10 @@ namespace graphplay {
         out vec4 FragColor;
 
         void main(void) {
-            FragColor = clamp(vAmbientColor + vDiffuseColor + vSpecularColor, 0.0, 1.0);
-            // FragColor = vSpecularColor;
-            // FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            vec3 ambient_rgb = vec3(vAmbientColor);
+            vec3 diffuse_rgb = vec3(vDiffuseColor);
+            vec3 specular_rgb = vec3(vSpecularColor);
+            FragColor = vec4(clamp(ambient_rgb + diffuse_rgb + specular_rgb, 0.0, 1.0), 1.0);
         }
     )glsl";
 
