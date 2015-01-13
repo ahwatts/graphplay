@@ -22,9 +22,11 @@ namespace graphplay {
         ASSERT_GT(0, mat.getColorLocation());
         ASSERT_GT(0, mat.getTexCoordLocation());
 
+        ASSERT_GT(0, mat.getModelLocation());
+        ASSERT_GT(0, mat.getModelInverseTranspose3Location());
+        ASSERT_GT(0, mat.getViewLocation());
+        ASSERT_GT(0, mat.getViewInverseLocation());
         ASSERT_GT(0, mat.getProjectionLocation());
-        ASSERT_GT(0, mat.getModelViewLocation());
-        ASSERT_GT(0, mat.getModelViewInverseLocation());
     }
 
     TEST_F(MaterialTest, CreateProgram) {
@@ -40,9 +42,11 @@ namespace graphplay {
         ASSERT_LE(0, mat.getColorLocation());
         ASSERT_GT(0, mat.getTexCoordLocation());
 
-        ASSERT_LE(0, mat.getProjectionLocation());
-        ASSERT_LE(0, mat.getModelViewLocation());
-        ASSERT_LE(0, mat.getModelViewInverseLocation());
+        ASSERT_GT(0, mat.getModelLocation());
+        ASSERT_GT(0, mat.getModelInverseTranspose3Location());
+        ASSERT_GT(0, mat.getViewLocation());
+        ASSERT_GT(0, mat.getViewInverseLocation());
+        ASSERT_GT(0, mat.getProjectionLocation());
     }
 
     TEST_F(MaterialTest, MaterialLifecycle) {
