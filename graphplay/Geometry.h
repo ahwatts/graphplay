@@ -106,7 +106,7 @@ namespace graphplay {
     // Subclasses with specific kinds of geometries.
     class OctohedronGeometry : public Geometry { public: OctohedronGeometry(); };
     class CubeGeometry : public Geometry { public: CubeGeometry(); };
-    class NormalGeometry : public Geometry { public: NormalGeometry(const Geometry& base); };
+    class SphereGeometry : public Geometry { public: SphereGeometry(); };
 };
 
 #endif

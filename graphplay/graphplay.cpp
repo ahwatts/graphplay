@@ -33,8 +33,8 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
 // typedef enum { OCTOHEDRON, CUBE } view_state_t;
 // static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
 
-typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
-static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
+// typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
+// static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
 
 int main(int argc, char **argv) {
     int screen_width = 800, screen_height = 600;
@@ -50,12 +50,15 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
-    graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
+    // graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
     // graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
     // graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
-    octo_geo->createArrayAndBuffers();
+    graphplay::sp_Geometry sphere_geo(new graphplay::SphereGeometry());
+
+    // octo_geo->createArrayAndBuffers();
     // octo_normals_geo->generateBuffers();
     // cube_geo->generateBuffers();
+    sphere_geo->createArrayAndBuffers();
 
     // graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
     graphplay::sp_Material lamb_mat(new graphplay::LambertMaterial());
@@ -64,14 +67,16 @@ int main(int argc, char **argv) {
     lamb_mat->createProgram();
     // phong_mat->createProgram();
 
-    graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
+    // graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
     // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
     // graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, lamb_mat));
+    graphplay::sp_Mesh sphere(new graphplay::Mesh(sphere_geo, lamb_mat));
 
     graphplay::Scene scene(pixel_width, pixel_height);
-    scene.addMesh(octo);
+    // scene.addMesh(octo);
     // scene.addMesh(octo_normals);
     // scene.addMesh(cube);
+    scene.addMesh(sphere);
 
     graphplay::Camera &camera = scene.getCamera();
     camera.setLocation(glm::vec3(0, 0, 3));
@@ -139,8 +144,7 @@ int main(int argc, char **argv) {
         mv = glm::rotate(mv, (float)xrot, xhat);
 
         // Make the meshes use the modelview matrix.
-        octo->setTransform(mv);
-        // octo_normals->setTransform(mv);
+        sphere->setTransform(mv);
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
