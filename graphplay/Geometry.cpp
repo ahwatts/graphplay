@@ -501,11 +501,6 @@ namespace graphplay {
         std::vector<unsigned int> elems;
     };
 
-    bool all_epsilon_equal(const glm::vec3 &x, const glm::vec3 &y, const float epsilon) {
-        glm::bvec3 result = epsilonEqual(x, y, epsilon);
-        return result.x && result.y && result.z;
-    }
-
     int index_of(std::vector<glm::vec3> &vec, const glm::vec3 &val) {
         for (unsigned int i = 0; i < vec.size(); ++i) {
             if (glm::all(glm::epsilonEqual(vec[i], val, glm::epsilon<float>()))) {
@@ -576,7 +571,7 @@ namespace graphplay {
         }
 
         // Run the refinements. We don't need to do this a lot.
-        for (unsigned int i = 0; i < 3; ++i) {
+        for (unsigned int i = 0; i < 4; ++i) {
             std::swap(pne, prev_pne);
             pne = refine(prev_pne);
         }
@@ -592,14 +587,17 @@ namespace graphplay {
         for (unsigned int i = 0; i < pne.verts.size(); ++i) {
             glm::vec3 pos = glm::normalize(pne.verts[i]);
 
+            // Position.
             m_vertex_attrs[i*m_stride] =   pos.x;
             m_vertex_attrs[i*m_stride+1] = pos.y;
             m_vertex_attrs[i*m_stride+2] = pos.z;
 
+            // Normal. (same as position, since it's the unit sphere)
             m_vertex_attrs[i*m_stride+3] = pos.x;
             m_vertex_attrs[i*m_stride+4] = pos.y;
-            m_vertex_attrs[i*m_stride+5] = pos.y;
+            m_vertex_attrs[i*m_stride+5] = pos.z;
 
+            // Color.
             m_vertex_attrs[i*m_stride+6] = std::abs(pos.x);
             m_vertex_attrs[i*m_stride+7] = std::abs(pos.y);
             m_vertex_attrs[i*m_stride+8] = std::abs(pos.z);
