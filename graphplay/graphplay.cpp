@@ -33,8 +33,8 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
 // typedef enum { OCTOHEDRON, CUBE } view_state_t;
 // static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
 
-// typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
-// static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
+typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
+static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
 
 int main(int argc, char **argv) {
     int screen_width = 800, screen_height = 600;
@@ -60,12 +60,12 @@ int main(int argc, char **argv) {
     // cube_geo->generateBuffers();
     sphere_geo->createArrayAndBuffers();
 
-    // graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
+    graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
     graphplay::sp_Material lamb_mat(new graphplay::LambertMaterial());
-    // graphplay::sp_Material phong_mat(new graphplay::PhongMaterial());
-    // gour_mat->createProgram();
+    graphplay::sp_Material phong_mat(new graphplay::PhongMaterial());
+    gour_mat->createProgram();
     lamb_mat->createProgram();
-    // phong_mat->createProgram();
+    phong_mat->createProgram();
 
     // graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
     // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
@@ -129,14 +129,14 @@ int main(int argc, char **argv) {
         if (xrot >= 2*M_PI) { xrot -= 2*M_PI; }
 
         // Handle input.
-        // if (new_light_state != light_state) {
-        //     light_state = new_light_state;
-        //     switch (new_light_state) {
-        //     case GOURAUD: octo->setMaterial(gour_mat); break;
-        //     case LAMBERT: octo->setMaterial(lamb_mat); break;
-        //     case PHONG: octo->setMaterial(phong_mat); break;
-        //     }
-        // }
+        if (new_light_state != light_state) {
+            light_state = new_light_state;
+            switch (new_light_state) {
+            case GOURAUD: sphere->setMaterial(gour_mat); break;
+            case LAMBERT: sphere->setMaterial(lamb_mat); break;
+            case PHONG: sphere->setMaterial(phong_mat); break;
+            }
+        }
 
         // Create the modelview matrix.
         mv = glm::mat4x4();
@@ -211,26 +211,27 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(wnd, true);
             break;
-        // case 'S':
-        // case 's':
-        //     if (vew_state == OCTOHEDRON) {
-        //         view_state = CUBE;
-        //     } else if (view_state == CUBE) {
-        //         view_state = OCTOHEDRON;
-        //     }
-        //     break;
-        // case 'Q':
-        // case 'q':
-        //     new_light_state = GOURAUD;
-        //     break;
-        // case 'W':
-        // case 'w':
-        //     new_light_state = LAMBERT;
-        //     break;
-        // case 'E':
-        // case 'e':
-        //     new_light_state = PHONG;
-        //     break;
+        //case 'S':
+        //case 's':
+        //    if (vew_state == OCTOHEDRON) {
+        //        view_state = CUBE;
+        //    }
+        //    else if (view_state == CUBE) {
+        //        view_state = OCTOHEDRON;
+        //    }
+        //    break;
+        case 'Q':
+        case 'q':
+            new_light_state = GOURAUD;
+            break;
+        case 'W':
+        case 'w':
+            new_light_state = LAMBERT;
+            break;
+        case 'E':
+        case 'e':
+            new_light_state = PHONG;
+            break;
         default:
             std::cout << "key: " << key
                       << " action: " << action

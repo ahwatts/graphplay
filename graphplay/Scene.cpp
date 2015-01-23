@@ -51,7 +51,7 @@ namespace graphplay {
         m_view = m_camera.getViewTransform();
         m_view_inv = glm::inverse(m_view);
 
-        glm::vec3 light_pos(0, 10, 10);
+        glm::vec3 light_pos(0, 10, 0);
         glm::vec4 light_color(1, 1, 1, 1);
         unsigned int specular_exponent = 4;
 
