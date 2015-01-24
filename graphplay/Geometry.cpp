@@ -264,6 +264,7 @@ namespace graphplay {
 
         glBindVertexArray(m_vao);
         glBindBuffer(GL_ARRAY_BUFFER, m_data_buffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
 
         if (m_position_offset >= 0 && pos_loc >= 0) {
             glEnableVertexAttribArray(pos_loc);
@@ -292,6 +293,7 @@ namespace graphplay {
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         m_vao_initialized = true;
     }
 
@@ -300,7 +302,6 @@ namespace graphplay {
         GLint model_inv_trans_3_loc = material.getModelInverseTranspose3Location();
 
         glBindVertexArray(m_vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_buffer);
 
         if (model_loc >= 0) {
             glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
@@ -314,7 +315,6 @@ namespace graphplay {
         glDrawElements(m_draw_type, m_vertex_elems.size(), GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     Geometry::VertexIterator Geometry::begin() const {
