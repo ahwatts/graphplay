@@ -34,7 +34,7 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
 // static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
 
 typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
-static lighting_state_t light_state = LAMBERT, new_light_state = LAMBERT;
+static lighting_state_t light_state = PHONG, new_light_state = PHONG;
 
 int main(int argc, char **argv) {
     int screen_width = 800, screen_height = 600;
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     // graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
     // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
     // graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, lamb_mat));
-    graphplay::sp_Mesh sphere(new graphplay::Mesh(sphere_geo, lamb_mat));
+    graphplay::sp_Mesh sphere(new graphplay::Mesh(sphere_geo, phong_mat));
 
     graphplay::Scene scene(pixel_width, pixel_height);
     // scene.addMesh(octo);
