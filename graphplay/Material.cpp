@@ -321,7 +321,7 @@ namespace graphplay {
         out vec3 vNormal;
 
         void main(void) {
-            vec4 wld_vert_position4 = vec4(aPosition, 1.0);
+            vec4 wld_vert_position4 = uModel * vec4(aPosition, 1.0);
             vec3 wld_vert_position = wld_vert_position4.xyz / wld_vert_position4.w;
 
             vec4 wld_eye_position4 = uViewInverse * vec4(0.0, 0.0, 0.0, 1.0);
@@ -362,7 +362,7 @@ namespace graphplay {
 
             vec3 ambient_color = 0.1 * color_combination;
 
-            float diffuse_coeff = 0.7 * max(0.0, dot(vNormal, vEyeDir));
+            float diffuse_coeff = 0.7 * max(0.0, dot(vNormal, vLightDir));
             vec3 diffuse_color = diffuse_coeff * color_combination;
 
             vec3 specular_color = vec3(0.0);
