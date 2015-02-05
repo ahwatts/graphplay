@@ -24,6 +24,10 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
+find_package(Threads REQUIRED)
+message(STATUS "Found thread libs: " ${CMAKE_THREAD_LIBS_INIT})
+message(STATUS "Using pthreads: " ${CMAKE_USE_PTHREADS_INIT})
+
 find_package(OpenGL REQUIRED)
 message(STATUS "Found OpenGL include: " ${OPENGL_INCLUDE_DIRS})
 message(STATUS "Found OpenGL header: " ${OPENGL_HEADER_PATH})
