@@ -105,6 +105,7 @@
     <ClCompile Include="graphplay.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
@@ -115,6 +116,7 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="graphplay.h" />
     <ClInclude Include="Collada.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="opengl.h" />

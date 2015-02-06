@@ -22,6 +22,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Scene.h"
+#include "Shader.h"
 #include "opengl.h"
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window);
@@ -66,6 +67,11 @@ int main(int argc, char **argv) {
     gour_mat->createProgram();
     lamb_mat->createProgram();
     phong_mat->createProgram();
+
+    graphplay::Shader shader(
+        graphplay::GouraudMaterial::vertex_shader_src,
+        graphplay::GouraudMaterial::fragment_shader_src);
+    shader.dump();
 
     // graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
     // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));

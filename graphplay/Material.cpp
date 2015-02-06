@@ -11,67 +11,12 @@
 #include "opengl.h"
 
 namespace graphplay {
-    // Helper functions.
-
-    void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders) {
-        int num_shaders;
-        GLuint *shader_return;
-        glGetProgramiv(program, GL_ATTACHED_SHADERS, &num_shaders);
-
-        shader_return = new GLuint[num_shaders];
-        glGetAttachedShaders(program, num_shaders, NULL, shader_return);
-
-        shaders.clear();
-        for (int i = 0; i < num_shaders; ++i) {
-            shaders.push_back(shader_return[i]);
-        }
-
-        delete [] shader_return;
-    }
-
-    GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
-        GLuint shader = glCreateShader(shader_type);
-        GLint errlen, status, src_length = std::strlen(shader_src);
-
-        glShaderSource(shader, 1, &shader_src, &src_length);
-        glCompileShader(shader);
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-        if (!status) {
-            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &errlen);
-            char *err = new char[errlen];
-            glGetShaderInfoLog(shader, errlen, NULL, err);
-            std::cerr << "Could not compile shader!" << std::endl;
-            std::cerr << "  error: " << err << std::endl;
-            std::cerr << "  source:" << std::endl << shader_src << std::endl;
-            delete [] err;
-            std::exit(1);
-        }
-
-        return shader;
-    }
-
-    GLuint createProgramFromShaders(GLuint vertex_shader, GLuint fragment_shader) {
-        GLuint program = glCreateProgram();
-        glAttachShader(program, vertex_shader);
-        glAttachShader(program, fragment_shader);
-        glLinkProgram(program);
-
-        GLint status;
-        glGetProgramiv(program, GL_LINK_STATUS, &status);
-        if (!status) {
-            GLint errlen;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &errlen);
-
-            char *err = new char[errlen];
-            glGetProgramInfoLog(program, errlen, NULL, err);
-            std::cerr << "Could not link shader program: " << err << std::endl;
-            delete [] err;
-
-            std::exit(1);
-        }
-
-        return program;
-    }
+    // Helper functions. I've moved these to Shader.h, and eventually this file
+    // will go away. But until then, I'll leave the declarations here so that
+    // this file compiles.
+    GLuint createAndCompileShader(GLenum shader_type, const char* shader_src);
+    GLuint createProgramFromShaders(GLuint vertex_shader, GLuint fragment_shader);
+    void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders);
 
     // Class Material.
     Material::Material() : m_program(0) { }

@@ -57,6 +57,8 @@ namespace graphplay {
         virtual GLint getViewLocation() const { return m_view_loc; }
         virtual GLint getProjectionLocation() const { return m_projection_loc; }
 
+        static const char *vertex_shader_src, *fragment_shader_src;
+
     protected:
         GLuint m_position_loc;
         GLuint m_color_loc;
@@ -64,8 +66,6 @@ namespace graphplay {
         GLint m_model_loc;
         GLint m_view_loc;
         GLint m_projection_loc;
-
-        static const char *vertex_shader_src, *fragment_shader_src;
     };
 
     class LambertMaterial : public Material {
@@ -88,6 +88,8 @@ namespace graphplay {
         virtual GLint getLightColorLocation() const { return m_light_color_loc; }
         virtual GLint getSpecularExponentLocation() const { return m_specular_exponent_loc; }
 
+        static const char *vertex_shader_src, *fragment_shader_src;
+
     protected:
         GLuint m_position_loc;
         GLuint m_normal_loc;
@@ -101,8 +103,6 @@ namespace graphplay {
         GLint m_light_position_loc;
         GLint m_light_color_loc;
         GLint m_specular_exponent_loc;
-
-        static const char *vertex_shader_src, *fragment_shader_src;
     };
 
     class PhongMaterial : public Material {
@@ -125,6 +125,8 @@ namespace graphplay {
         virtual GLint getLightColorLocation() const { return m_light_color_loc; }
         virtual GLint getSpecularExponentLocation() const { return m_specular_exponent_loc; }
 
+        static const char *vertex_shader_src, *fragment_shader_src;
+
     protected:
         GLuint m_position_loc;
         GLuint m_normal_loc;
@@ -138,8 +140,6 @@ namespace graphplay {
         GLint m_light_position_loc;
         GLint m_light_color_loc;
         GLint m_specular_exponent_loc;
-
-        static const char *vertex_shader_src, *fragment_shader_src;
     };
 };
 
