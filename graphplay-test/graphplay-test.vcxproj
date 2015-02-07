@@ -12,6 +12,7 @@
     <ClCompile Include="..\graphplay\Material.cpp" />
     <ClCompile Include="..\graphplay\Mesh.cpp" />
     <ClCompile Include="..\graphplay\Scene.cpp" />
+    <ClCompile Include="..\graphplay\Shader.cpp" />
     <ClCompile Include="CameraTest.cpp" />
     <ClCompile Include="GeometryTest.cpp" />
     <ClCompile Include="MaterialTest.cpp" />
@@ -26,6 +27,7 @@
     <ClInclude Include="..\graphplay\Mesh.h" />
     <ClInclude Include="..\graphplay\opengl.h" />
     <ClInclude Include="..\graphplay\Scene.h" />
+    <ClInclude Include="..\graphplay\Shader.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="TestOpenGLContext.h" />
   </ItemGroup>
