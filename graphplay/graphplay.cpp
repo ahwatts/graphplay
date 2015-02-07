@@ -69,8 +69,8 @@ int main(int argc, char **argv) {
     phong_mat->createProgram();
 
     graphplay::Shader shader(
-        graphplay::GouraudMaterial::vertex_shader_src,
-        graphplay::GouraudMaterial::fragment_shader_src);
+        graphplay::Shader::unlit_vertex_shader_source,
+        graphplay::Shader::unlit_fragment_shader_source);
     shader.dump();
 
     // graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));

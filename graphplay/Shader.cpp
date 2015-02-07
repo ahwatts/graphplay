@@ -15,7 +15,9 @@ namespace graphplay {
     void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders);
     void getAttributeInfo(GLuint program, Shader::index_map &attributes);
     void getUniformInfo(GLuint program, Shader::index_map &uniforms);
+    void getUniformBlockInfo(GLuint program, Shader::index_map &uniform_blocks);
 
+    // Shader class
     Shader::Shader(const char *vertex_shader_source, const char *fragment_shader_source)
         : m_program(0),
           m_attributes(),
@@ -27,6 +29,7 @@ namespace graphplay {
         m_program = createProgramFromShaders(vshader, fshader);
         getAttributeInfo(m_program, m_attributes);
         getUniformInfo(m_program, m_uniforms);
+        getUniformBlockInfo(m_program, m_uniform_blocks);
     }
 
     Shader::~Shader() {
@@ -72,9 +75,54 @@ namespace graphplay {
         }
         std::cout << " }";
 
+        std::cout << " uniform blocks = { ";
+        for (auto a : m_uniform_blocks) {
+            std::cout << a.first << ": " << a.second;
+            if (a != *m_uniform_blocks.crbegin()) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << " }";
+
         std::cout << ">" << std::endl;
     }
 
+    // Actual shader code.
+    const char *Shader::unlit_vertex_shader_source = R"glsl(
+        #version 410 core
+
+        in vec3 position;
+        in vec4 color;
+
+        uniform mat4x4 model_tf;
+        uniform mat3x3 model_inv_trans_3_tf;
+        uniform view_and_projection_tfs {
+            mat4x4 view_tf;
+            mat4x4 view_inv_tf;
+            mat4x4 proj_tf;
+        };
+
+        out vec4 v_color;
+
+        void main(void) {
+            gl_Position = proj_tf * view_tf * model_tf * vec4(position, 1.0);
+            v_color = color;
+        }
+    )glsl";
+
+    const char *Shader::unlit_fragment_shader_source = R"glsl(
+        #version 410 core
+
+        in vec4 v_color;
+
+        out vec4 FragColor;
+
+        void main(void) {
+            FragColor = v_color;
+        }
+    )glsl";
+
+    // Helper function definitions.
     GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
         GLuint shader = glCreateShader(shader_type);
         GLint errlen, status, src_length = std::strlen(shader_src);
@@ -142,7 +190,7 @@ namespace graphplay {
 
         char *name = new char[max_name_len];
 
-        for (unsigned int i = 0; i < (unsigned int)num_attrs; ++i) {
+        for (auto i = 0; i < num_attrs; ++i) {
             GLsizei name_len = 0, size = 0;
             GLenum type = 0;
             glGetActiveAttrib(program, i, max_name_len, &name_len, &size, &type, name);
@@ -159,11 +207,27 @@ namespace graphplay {
 
         char *name = new char[max_name_len];
 
-        for (unsigned int i = 0; i < (unsigned int)num_unifs; ++i) {
+        for (auto i = 0; i < num_unifs; ++i) {
             GLsizei name_len = 0, size = 0;
             GLenum type = 0;
             glGetActiveUniform(program, i, max_name_len, &name_len, &size, &type, name);
             uniforms[name] = i;
+        }
+
+        delete[] name;
+    }
+
+    void getUniformBlockInfo(GLuint program, Shader::index_map &uniform_blocks) {
+        GLint num_unifbs, max_name_len;
+        glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &num_unifbs);
+        glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
+
+        char *name = new char[max_name_len];
+
+        for (auto i = 0; i < num_unifbs; ++i) {
+            GLsizei name_len = 0;
+            glGetActiveUniformBlockName(program, i, max_name_len, &name_len, name);
+            uniform_blocks[name] = i;
         }
 
         delete[] name;

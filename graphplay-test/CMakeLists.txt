@@ -9,7 +9,8 @@ add_executable(graphplay-test
   ../graphplay/Geometry.cpp
   ../graphplay/Material.cpp
   ../graphplay/Mesh.cpp
-  ../graphplay/Scene.cpp)
+  ../graphplay/Scene.cpp
+  ../graphplay/Shader.cpp)
 
 include_directories(AFTER SYSTEM ../vendor/gtest/include)
 

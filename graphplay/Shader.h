@@ -22,6 +22,9 @@ namespace graphplay {
         index_map::const_iterator getUniforms() const;
         index_map::const_iterator getUniformBlocks() const;
 
+        static const char *unlit_vertex_shader_source, *unlit_fragment_shader_source;
+        static const char *lit_vertex_shader_source, *lit_fragment_shader_source;
+
     private:
         GLuint m_program;
         index_map m_attributes;

@@ -6,6 +6,7 @@ add_executable(graphplay WIN32
   Material.cpp
   Mesh.cpp
   Scene.cpp
+  Shader.cpp
   graphplay.cpp
   tinyxml2.cpp)
 
