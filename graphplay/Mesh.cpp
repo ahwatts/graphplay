@@ -13,30 +13,32 @@ namespace graphplay {
         }
     }
 
-    Mesh::Mesh() : m_geometry(), m_material()
+    Mesh::Mesh() : m_geometry(), m_shader()
     {
         copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
     }
     
-    Mesh::Mesh(sp_Geometry geo, sp_Material mat) : m_geometry(geo), m_material(mat)
+    Mesh::Mesh(AbstractGeometry::sptr_type geo, Shader::sptr_type shader) : m_geometry(geo), m_shader(shader)
     {
         copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
-        m_geometry->setUpVertexArray(*m_material);
+        m_geometry->createVertexArray(*m_shader);
     }
 
-    void Mesh::setGeometry(sp_Geometry geo) {
+    Mesh::~Mesh() {}
+
+    void Mesh::setGeometry(AbstractGeometry::sptr_type geo) {
         m_geometry = geo;
 
-        if (m_material) {
-            m_geometry->setUpVertexArray(*m_material);
+        if (m_shader) {
+            m_geometry->createVertexArray(*m_shader);
         }
     }
 
-    void Mesh::setMaterial(sp_Material mat) {
-        m_material = mat;
+    void Mesh::setShader(Shader::sptr_type shader) {
+        m_shader = shader;
 
         if (m_geometry) {
-            m_geometry->setUpVertexArray(*m_material);
+            m_geometry->createVertexArray(*m_shader);
         }
     }
 
@@ -45,7 +47,7 @@ namespace graphplay {
     }
 
     void Mesh::render() const {
-        glm::mat4x4 model = glm::make_mat4x4(m_model_transform);
-        m_geometry->render(model, *m_material);
+        // glm::mat4x4 model = glm::make_mat4x4(m_model_transform);
+        m_geometry->render();
     }
 };

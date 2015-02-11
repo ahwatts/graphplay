@@ -24,12 +24,12 @@ namespace graphplay {
         m_vp_height = pixel_height;
     }
 
-    void Scene::addMesh(wp_Mesh mesh) {
+    void Scene::addMesh(Mesh::wptr_type mesh) {
         m_meshes.push_back(mesh);
     }
 
-    wp_Mesh Scene::removeMesh(wp_Mesh mesh) {
-        wp_Mesh rv;
+    Mesh::wptr_type Scene::removeMesh(Mesh::wptr_type mesh) {
+        Mesh::wptr_type rv;
 
         for (auto mi = m_meshes.begin(); mi != m_meshes.end(); ++mi) {
             if (!mi->owner_before(mesh) && !mesh.owner_before(*mi)) {
@@ -57,8 +57,8 @@ namespace graphplay {
 
         for (auto wm : m_meshes) {
             if (auto sm = wm.lock()) {
-                sp_Material mat = sm->getMaterial().lock();
-                if (mat) {
+                Shader::sptr_type shader = sm->getShader().lock();
+                /* if (mat) {
                     GLuint program = mat->getProgram();
                     GLint view_loc = mat->getViewLocation();
                     GLint view_inv_loc = mat->getViewInverseLocation();
@@ -74,7 +74,7 @@ namespace graphplay {
                     if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
                     if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
                     if (specular_exp_loc >= 0) glUniform1ui(specular_exp_loc, specular_exponent);
-                }
+                } */
                 sm->render();
             }
         }
@@ -101,7 +101,7 @@ namespace graphplay {
     }
 
     Scene::value_type Scene::MeshIterator::operator*() {
-        return wp_Mesh(m_scene.m_meshes[m_loc]);
+        return Mesh::wptr_type(m_scene.m_meshes[m_loc]);
     }
 
     Scene::MeshIterator &Scene::MeshIterator::operator++() {

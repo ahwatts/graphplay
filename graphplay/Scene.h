@@ -13,13 +13,21 @@ namespace graphplay {
     class Scene
     {
     public:
+        typedef std::unique_ptr<Scene> uptr_type;
+        typedef std::shared_ptr<Scene> sptr_type;
+        typedef std::weak_ptr<Scene> wptr_type;
+
         Scene(unsigned int vp_width, unsigned int vp_height);
+        Scene(const Scene &other);
         ~Scene();
+
+        Scene& operator=(const Scene &other);
+        Scene& operator=(Scene &&other);
 
         void setViewport(unsigned int new_width, unsigned int new_height);
 
-        void addMesh(wp_Mesh mesh);
-        wp_Mesh removeMesh(wp_Mesh mesh);
+        void addMesh(Mesh::wptr_type mesh);
+        Mesh::wptr_type removeMesh(Mesh::wptr_type mesh);
         inline unsigned int getNumMeshes() const { return m_meshes.size(); }
 
         Camera &getCamera() { return m_camera; }
@@ -33,7 +41,7 @@ namespace graphplay {
         unsigned int m_vp_width, m_vp_height;
 
         Camera m_camera;
-        std::vector<wp_Mesh> m_meshes;
+        std::vector<Mesh::wptr_type> m_meshes;
 
     public:
         // Iterator mumbo-jumbo so that we can walk the mesh list.
@@ -67,10 +75,6 @@ namespace graphplay {
             unsigned int m_loc;
         };
     };
-
-    typedef std::unique_ptr<Scene> up_Scene;
-    typedef std::shared_ptr<Scene> sp_Scene;
-    typedef std::weak_ptr<Scene> wp_Scene;
 };
 
 #endif

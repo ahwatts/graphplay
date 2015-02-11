@@ -13,29 +13,34 @@ namespace graphplay {
     class Mesh
     {
     public:
-        Mesh();
-        Mesh(sp_Geometry geo, sp_Material mat);
+        typedef std::unique_ptr<Mesh> uptr_type;
+        typedef std::shared_ptr<Mesh> sptr_type;
+        typedef std::weak_ptr<Mesh> wptr_type;
 
-        void setGeometry(sp_Geometry geo);
-        void setMaterial(sp_Material mat);
+        Mesh();
+        Mesh(const Mesh &other);
+        Mesh(AbstractGeometry::sptr_type geo, Shader::sptr_type shader);
+        ~Mesh();
+
+        Mesh& operator=(Mesh &other);
+        Mesh& operator=(Mesh &&other);
+
+        void setGeometry(AbstractGeometry::sptr_type geo);
+        void setShader(Shader::sptr_type shader);
 
         inline const float* getTransform() const { return m_model_transform; }
         void setTransform(const glm::mat4x4 &new_transform);
 
         void render() const;
 
-        inline const wp_Geometry getGeometry() const { return wp_Geometry(m_geometry); }
-        inline const wp_Material getMaterial() const { return wp_Material(m_material); }
+        inline const AbstractGeometry::wptr_type getGeometry() const { return AbstractGeometry::wptr_type(m_geometry); }
+        inline const Shader::wptr_type getShader() const { return Shader::wptr_type(m_shader); }
     private:
         // glm::mat4x4 m_model_transform;
         float m_model_transform[16];
-        sp_Geometry m_geometry;
-        sp_Material m_material;
+        AbstractGeometry::sptr_type m_geometry;
+        Shader::sptr_type m_shader;
     };
-
-    typedef std::unique_ptr<Mesh> up_Mesh;
-    typedef std::shared_ptr<Mesh> sp_Mesh;
-    typedef std::weak_ptr<Mesh> wp_Mesh;
 };
 
 #endif

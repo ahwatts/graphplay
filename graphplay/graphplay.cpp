@@ -51,37 +51,15 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
-    // graphplay::sp_Geometry octo_geo(new graphplay::OctohedronGeometry());
-    // graphplay::sp_Geometry octo_normals_geo(new graphplay::NormalGeometry(*octo_geo));
-    // graphplay::sp_Geometry cube_geo(new graphplay::CubeGeometry());
-    graphplay::sp_Geometry sphere_geo(new graphplay::SphereGeometry());
+    graphplay::Geometry<graphplay::PNCVertex>::sptr_type sphere_geo(graphplay::makeSphereGeometry());
 
-    // octo_geo->createArrayAndBuffers();
-    // octo_normals_geo->generateBuffers();
-    // cube_geo->generateBuffers();
-    sphere_geo->createArrayAndBuffers();
-
-    graphplay::sp_Material gour_mat(new graphplay::GouraudMaterial());
-    graphplay::sp_Material lamb_mat(new graphplay::LambertMaterial());
-    graphplay::sp_Material phong_mat(new graphplay::PhongMaterial());
-    gour_mat->createProgram();
-    lamb_mat->createProgram();
-    phong_mat->createProgram();
-
-    graphplay::Shader shader(
+    graphplay::Shader::sptr_type unlit_shader(new graphplay::Shader(
         graphplay::Shader::unlit_vertex_shader_source,
-        graphplay::Shader::unlit_fragment_shader_source);
-    shader.dump();
+        graphplay::Shader::unlit_fragment_shader_source));
 
-    // graphplay::sp_Mesh octo(new graphplay::Mesh(octo_geo, lamb_mat));
-    // graphplay::sp_Mesh octo_normals(new graphplay::Mesh(octo_normals_geo, gour_mat));
-    // graphplay::sp_Mesh cube(new graphplay::Mesh(cube_geo, lamb_mat));
-    graphplay::sp_Mesh sphere(new graphplay::Mesh(sphere_geo, phong_mat));
+    graphplay::Mesh::sptr_type sphere(new graphplay::Mesh(sphere_geo, unlit_shader));
 
     graphplay::Scene scene(pixel_width, pixel_height);
-    // scene.addMesh(octo);
-    // scene.addMesh(octo_normals);
-    // scene.addMesh(cube);
     scene.addMesh(sphere);
 
     graphplay::Camera &camera = scene.getCamera();
@@ -135,14 +113,14 @@ int main(int argc, char **argv) {
         if (xrot >= 2*M_PI) { xrot -= 2*M_PI; }
 
         // Handle input.
-        if (new_light_state != light_state) {
+        /* if (new_light_state != light_state) {
             light_state = new_light_state;
             switch (new_light_state) {
             case GOURAUD: sphere->setMaterial(gour_mat); break;
             case LAMBERT: sphere->setMaterial(lamb_mat); break;
             case PHONG: sphere->setMaterial(phong_mat); break;
             }
-        }
+        } */
 
         // Create the modelview matrix.
         mv = glm::mat4x4();

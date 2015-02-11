@@ -1,5 +1,6 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <cstring>
 #include <iostream>
 #include <map>
 #include <string>
@@ -13,9 +14,9 @@ namespace graphplay {
     GLuint createAndCompileShader(GLenum shader_type, const char* shader_src);
     GLuint createProgramFromShaders(GLuint vertex_shader, GLuint fragment_shader);
     void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders);
-    void getAttributeInfo(GLuint program, Shader::index_map &attributes);
-    void getUniformInfo(GLuint program, Shader::index_map &uniforms);
-    void getUniformBlockInfo(GLuint program, Shader::index_map &uniform_blocks);
+    void getAttributeInfo(GLuint program, Shader::index_map_type &attributes);
+    void getUniformInfo(GLuint program, Shader::index_map_type &uniforms);
+    void getUniformBlockInfo(GLuint program, Shader::index_map_type &uniform_blocks);
 
     // Shader class
     Shader::Shader(const char *vertex_shader_source, const char *fragment_shader_source)
@@ -183,7 +184,7 @@ namespace graphplay {
         delete[] shader_return;
     }
 
-    void getAttributeInfo(GLuint program, Shader::index_map &attributes) {
+    void getAttributeInfo(GLuint program, Shader::index_map_type &attributes) {
         GLint num_attrs, max_name_len;
         glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &num_attrs);
         glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_len);
@@ -200,7 +201,7 @@ namespace graphplay {
         delete [] name;
     }
 
-    void getUniformInfo(GLuint program, Shader::index_map &uniforms) {
+    void getUniformInfo(GLuint program, Shader::index_map_type &uniforms) {
         GLint num_unifs, max_name_len;
         glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &num_unifs);
         glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
@@ -217,7 +218,7 @@ namespace graphplay {
         delete[] name;
     }
 
-    void getUniformBlockInfo(GLuint program, Shader::index_map &uniform_blocks) {
+    void getUniformBlockInfo(GLuint program, Shader::index_map_type &uniform_blocks) {
         GLint num_unifbs, max_name_len;
         glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &num_unifbs);
         glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
