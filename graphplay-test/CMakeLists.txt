@@ -9,6 +9,7 @@ add_executable(graphplay-test
   ../graphplay/Geometry.cpp
   ../graphplay/Material.cpp
   ../graphplay/Mesh.cpp
+  ../graphplay/OpenGLUtils.cpp
   ../graphplay/Scene.cpp
   ../graphplay/Shader.cpp)
 
