@@ -3,13 +3,22 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_SHADER_H_
 #define _GRAPHPLAY_GRAPHPLAY_SHADER_H_
 
+#include "graphplay.h"
+
 #include <map>
 #include <memory>
 #include <string>
 
 #include "opengl.h"
+#include <glm/mat4x4.hpp>
 
 namespace graphplay {
+    struct ViewAndProjectionBlock {
+        glm::mat4x4 view;
+        glm::mat4x4 view_inv;
+        glm::mat4x4 projection;
+    };
+
     class Shader {
     public:
         typedef std::map<std::string, GLuint> index_map_type;

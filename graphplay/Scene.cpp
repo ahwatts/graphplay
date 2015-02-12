@@ -2,6 +2,7 @@
 
 #include "graphplay.h"
 #include "Scene.h"
+#include "Shader.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -9,15 +10,17 @@
 
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
-        : m_view(),
-          m_view_inv(),
-          m_projection(),
-          m_vp_width(vp_width),
+        : m_vp_width(vp_width),
           m_vp_height(vp_height),
           m_camera(),
-          m_meshes() { }
+          m_projection(),
+          m_meshes(),
+          m_uniform_buffer(0)
+    {}
 
-    Scene::~Scene(void) { }
+    Scene::~Scene() {
+        deleteBuffer();
+    }
 
     void Scene::setViewport(unsigned int pixel_width, unsigned int pixel_height) {
         m_vp_width = pixel_width;
@@ -40,6 +43,28 @@ namespace graphplay {
         }
 
         return rv;
+    }
+
+    void Scene::createBuffer() {
+        deleteBuffer();
+        glGenBuffers(1, &m_uniform_buffer);
+        updateBuffer();
+    }
+
+    void Scene::updateBuffer() {
+        glm::mat4x4 view = m_camera.getViewTransform();
+        ViewAndProjectionBlock block { view, glm::inverse(view), m_projection };
+
+        if (!glIsBuffer(m_uniform_buffer)) createBuffer();
+        glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewAndProjectionBlock), &block, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
+
+    void Scene::deleteBuffer() {
+        if (glIsBuffer(m_uniform_buffer)) {
+            glDeleteBuffers(1, &m_uniform_buffer);
+        }
     }
 
     void Scene::render() {

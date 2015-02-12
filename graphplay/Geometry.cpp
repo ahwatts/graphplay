@@ -69,6 +69,13 @@ namespace graphplay {
 
     void AbstractGeometry::render() const {}
 
+    // Static PCNVertex description.
+    const AttrMap PCNVertex::description {
+        { "position", VertexDesc { BUFFER_OFFSET_BYTES(0*sizeof(float)), GL_FLOAT, 3 } },
+        { "color",    VertexDesc { BUFFER_OFFSET_BYTES(3*sizeof(float)), GL_FLOAT, 4 } },
+        { "normal",   VertexDesc { BUFFER_OFFSET_BYTES(7*sizeof(float)), GL_FLOAT, 3 } }
+    };
+
     // Octohedron geometry builder.
     const PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
         // Position        Color           Normal

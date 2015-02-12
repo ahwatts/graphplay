@@ -95,18 +95,18 @@ namespace graphplay {
         in vec3 position;
         in vec4 color;
 
-        uniform mat4x4 model_tf;
-        uniform mat3x3 model_inv_trans_3_tf;
-        uniform view_and_projection_tfs {
-            mat4x4 view_tf;
-            mat4x4 view_inv_tf;
-            mat4x4 proj_tf;
+        uniform mat4x4 model;
+        uniform mat3x3 model_inv_trans_3;
+        uniform view_and_projection {
+            mat4x4 view;
+            mat4x4 view_inv;
+            mat4x4 projection;
         };
 
         out vec4 v_color;
 
         void main(void) {
-            gl_Position = proj_tf * view_tf * model_tf * vec4(position, 1.0);
+            gl_Position = projection * view * model * vec4(position, 1.0);
             v_color = color;
         }
     )glsl";

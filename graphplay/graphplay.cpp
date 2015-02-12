@@ -37,6 +37,8 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods);
 // typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
 // static lighting_state_t light_state = PHONG, new_light_state = PHONG;
 
+using namespace graphplay;
+
 int main(int argc, char **argv) {
     int screen_width = 800, screen_height = 600;
     int pixel_width = screen_width, pixel_height = screen_height;
@@ -51,21 +53,21 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
-    graphplay::Geometry<graphplay::PCNVertex>::sptr_type octo_geo(graphplay::makeOctohedronGeometry());
-    // graphplay::Geometry<graphplay::PCNVertex>::sptr_type sphere_geo(graphplay::makeSphereGeometry());
+    Geometry<PCNVertex>::sptr_type octo_geo = makeOctohedronGeometry();
+    // Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
 
-    graphplay::Shader::sptr_type unlit_shader(new graphplay::Shader(
-        graphplay::Shader::unlit_vertex_shader_source,
-        graphplay::Shader::unlit_fragment_shader_source));
+    Shader::sptr_type unlit_shader = std::make_shared<Shader>(
+        Shader::unlit_vertex_shader_source,
+        Shader::unlit_fragment_shader_source);
 
-    graphplay::Mesh::sptr_type octo(new graphplay::Mesh(octo_geo, unlit_shader));
-    // graphplay::Mesh::sptr_type sphere(new graphplay::Mesh(sphere_geo, unlit_shader));
+    Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, unlit_shader);
+    // Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, unlit_shader);
 
-    graphplay::Scene scene(pixel_width, pixel_height);
+    Scene scene(pixel_width, pixel_height);
     scene.addMesh(octo);
     // scene.addMesh(sphere);
 
-    graphplay::Camera &camera = scene.getCamera();
+    Camera &camera = scene.getCamera();
     camera.setLocation(glm::vec3(0, 0, 3));
     camera.setDirection(glm::vec3(0, 0, 0));
     camera.setUpDirection(glm::vec3(0, 1, 0));
