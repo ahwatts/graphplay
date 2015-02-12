@@ -144,8 +144,7 @@ namespace graphplay {
             glGetBufferParameteriv(target, GL_BUFFER_SIZE, &size);
             glGetBufferParameteriv(target, GL_BUFFER_USAGE, &usage);
             char *src_data = (char *)glMapBuffer(target, GL_READ_ONLY);
-            char *inter_data = new char[size];
-            std::copy(src_data, src_data + size, inter_data);
+            std::vector<char> inter_data(src_data, src_data + size);
             glUnmapBuffer(target);
             glBindBuffer(target, 0);
 
@@ -153,11 +152,8 @@ namespace graphplay {
             GLuint dst = 0;
             glGenBuffers(1, &dst);
             glBindBuffer(target, dst);
-            glBufferData(target, size, inter_data, usage);
+            glBufferData(target, size, inter_data.data(), usage);
             glBindBuffer(target, 0);
-
-            // Cleanup.
-            delete [] inter_data;
 
             return dst;
         } else {
