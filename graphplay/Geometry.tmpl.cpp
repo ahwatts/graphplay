@@ -171,6 +171,7 @@
 
 #include "graphplay.h"
 #include "Geometry.h"
+#include "OpenGLUtils.h"
 
 namespace graphplay {
     template <typename V>

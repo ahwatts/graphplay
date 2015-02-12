@@ -10,6 +10,8 @@
 #include <string>
 
 #include "opengl.h"
+#include "OpenGLUtils.h"
+
 #include <glm/mat4x4.hpp>
 
 namespace graphplay {
@@ -21,7 +23,6 @@ namespace graphplay {
 
     class Shader {
     public:
-        typedef std::map<std::string, GLuint> index_map_type;
         typedef std::unique_ptr<Shader> uptr_type;
         typedef std::shared_ptr<Shader> sptr_type;
         typedef std::weak_ptr<Shader> wptr_type;
@@ -36,18 +37,18 @@ namespace graphplay {
 
         void dump() const;
 
-        inline const index_map_type& getAttributes()    const { return m_attributes; }
-        inline const index_map_type& getUniforms()      const { return m_uniforms; }
-        inline const index_map_type& getUniformBlocks() const { return m_uniform_blocks; };
+        inline const IndexMap& getAttributes()    const { return m_attributes; }
+        inline const IndexMap& getUniforms()      const { return m_uniforms; }
+        inline const IndexMap& getUniformBlocks() const { return m_uniform_blocks; };
 
         static const char *unlit_vertex_shader_source, *unlit_fragment_shader_source;
         static const char *lit_vertex_shader_source, *lit_fragment_shader_source;
 
     private:
         GLuint m_program;
-        index_map_type m_attributes;
-        index_map_type m_uniforms;
-        index_map_type m_uniform_blocks;
+        IndexMap m_attributes;
+        IndexMap m_uniforms;
+        IndexMap m_uniform_blocks;
     };
 };
 

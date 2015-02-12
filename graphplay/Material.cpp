@@ -9,15 +9,9 @@
 
 #include "Material.h"
 #include "opengl.h"
+#include "OpenGLUtils.h"
 
 namespace graphplay {
-    // Helper functions. I've moved these to Shader.h, and eventually this file
-    // will go away. But until then, I'll leave the declarations here so that
-    // this file compiles.
-    GLuint createAndCompileShader(GLenum shader_type, const char* shader_src);
-    GLuint createProgramFromShaders(GLuint vertex_shader, GLuint fragment_shader);
-    void getAttachedShaders(GLuint program, std::vector<GLuint> &shaders);
-
     // Class Material.
     Material::Material() : m_program(0) { }
 

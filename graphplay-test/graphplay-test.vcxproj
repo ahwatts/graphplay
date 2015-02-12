@@ -11,6 +11,7 @@
     <ClCompile Include="..\graphplay\Geometry.cpp" />
     <ClCompile Include="..\graphplay\Material.cpp" />
     <ClCompile Include="..\graphplay\Mesh.cpp" />
+    <ClCompile Include="..\graphplay\OpenGLUtils.cpp" />
     <ClCompile Include="..\graphplay\Scene.cpp" />
     <ClCompile Include="..\graphplay\Shader.cpp" />
     <ClCompile Include="CameraTest.cpp" />
@@ -26,6 +27,7 @@
     <ClInclude Include="..\graphplay\Material.h" />
     <ClInclude Include="..\graphplay\Mesh.h" />
     <ClInclude Include="..\graphplay\opengl.h" />
+    <ClInclude Include="..\graphplay\OpenGLUtils.h" />
     <ClInclude Include="..\graphplay\Scene.h" />
     <ClInclude Include="..\graphplay\Shader.h" />
     <ClInclude Include="config.h" />

@@ -51,6 +51,9 @@
     <ClCompile Include="..\graphplay\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\graphplay\OpenGLUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\graphplay\Geometry.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\graphplay\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\graphplay\OpenGLUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

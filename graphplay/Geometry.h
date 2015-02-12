@@ -97,10 +97,6 @@ namespace graphplay {
     // Geometry factory functions.
     Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();
     Geometry<PCNVertex>::sptr_type makeSphereGeometry();
-
-    // Helper functions.
-    GLuint duplicateBuffer(GLenum target, GLuint src);
-    GLuint duplicateVertexArrayObject(GLuint src);
 };
 
 #include "Geometry.tmpl.cpp"
