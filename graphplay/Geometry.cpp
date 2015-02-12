@@ -73,11 +73,11 @@ namespace graphplay {
     const AttrMap PCNVertex::description {
         { "position", VertexDesc { BUFFER_OFFSET_BYTES(0*sizeof(float)), GL_FLOAT, 3 } },
         { "color",    VertexDesc { BUFFER_OFFSET_BYTES(3*sizeof(float)), GL_FLOAT, 4 } },
-        { "normal",   VertexDesc { BUFFER_OFFSET_BYTES(7*sizeof(float)), GL_FLOAT, 3 } }
+        { "normal",   VertexDesc { BUFFER_OFFSET_BYTES(7*sizeof(float)), GL_FLOAT, 3 } },
     };
 
     // Octohedron geometry builder.
-    const PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
+    constexpr PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
         // Position        Color           Normal
         {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577,  0.577,  0.577 } },
         {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577,  0.577 } },
@@ -114,7 +114,7 @@ namespace graphplay {
 
     // This is just each of the vertex data in order, since each
     // repeated position / color has a different normal...
-    const unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
+    constexpr unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
          0,  1,  2,
          3,  4,  5,
          6,  7,  8,
