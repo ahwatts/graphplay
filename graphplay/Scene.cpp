@@ -10,13 +10,15 @@
 
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
-        : m_vp_width(vp_width),
-          m_vp_height(vp_height),
+        : m_vp_width(0),
+          m_vp_height(0),
           m_camera(),
           m_projection(),
           m_meshes(),
           m_uniform_buffer(0)
-    {}
+    {
+        setViewport(vp_width, vp_height);
+    }
 
     Scene::~Scene() {
         deleteBuffer();
@@ -25,6 +27,11 @@ namespace graphplay {
     void Scene::setViewport(unsigned int pixel_width, unsigned int pixel_height) {
         m_vp_width = pixel_width;
         m_vp_height = pixel_height;
+
+        m_projection = glm::perspective<float>(
+            20,
+            (float)m_vp_width / (float)m_vp_height,
+            0.1f, 100);
     }
 
     void Scene::addMesh(Mesh::wptr_type mesh) {
@@ -68,14 +75,7 @@ namespace graphplay {
     }
 
     void Scene::render() {
-        // m_projection = glm::perspective<float>(
-        //     20,
-        //     (float)m_vp_width / (float)m_vp_height, 
-        //     0.1f, 100);
-
-        // m_view = m_camera.getViewTransform();
-        // m_view_inv = glm::inverse(m_view);
-
+        updateBuffer();
         // glm::vec3 light_pos(0, 10, 10);
         // glm::vec4 light_color(1, 1, 1, 1);
         // unsigned int specular_exponent = 10;
