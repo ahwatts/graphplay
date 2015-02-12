@@ -43,38 +43,38 @@ namespace graphplay {
     }
 
     void Scene::render() {
-        m_projection = glm::perspective<float>(
-            20,
-            (float)m_vp_width / (float)m_vp_height, 
-            0.1f, 100);
+        // m_projection = glm::perspective<float>(
+        //     20,
+        //     (float)m_vp_width / (float)m_vp_height, 
+        //     0.1f, 100);
 
-        m_view = m_camera.getViewTransform();
-        m_view_inv = glm::inverse(m_view);
+        // m_view = m_camera.getViewTransform();
+        // m_view_inv = glm::inverse(m_view);
 
-        glm::vec3 light_pos(0, 10, 10);
-        glm::vec4 light_color(1, 1, 1, 1);
-        unsigned int specular_exponent = 10;
+        // glm::vec3 light_pos(0, 10, 10);
+        // glm::vec4 light_color(1, 1, 1, 1);
+        // unsigned int specular_exponent = 10;
 
         for (auto wm : m_meshes) {
             if (auto sm = wm.lock()) {
                 Shader::sptr_type shader = sm->getShader().lock();
-                /* if (mat) {
-                    GLuint program = mat->getProgram();
-                    GLint view_loc = mat->getViewLocation();
-                    GLint view_inv_loc = mat->getViewInverseLocation();
-                    GLint projection_loc = mat->getProjectionLocation();
-                    GLint light_pos_loc = mat->getLightPositionLocation();
-                    GLint light_color_loc = mat->getLightColorLocation();
-                    GLint specular_exp_loc = mat->getSpecularExponentLocation();
+                // if (mat) {
+                //     GLuint program = mat->getProgram();
+                //     GLint view_loc = mat->getViewLocation();
+                //     GLint view_inv_loc = mat->getViewInverseLocation();
+                //     GLint projection_loc = mat->getProjectionLocation();
+                //     GLint light_pos_loc = mat->getLightPositionLocation();
+                //     GLint light_color_loc = mat->getLightColorLocation();
+                //     GLint specular_exp_loc = mat->getSpecularExponentLocation();
 
-                    glUseProgram(program);
-                    if (view_loc >= 0) glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(m_view));
-                    if (view_inv_loc >= 0) glUniformMatrix4fv(view_inv_loc, 1, GL_FALSE, glm::value_ptr(m_view_inv));
-                    if (projection_loc >= 0) glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(m_projection));
-                    if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
-                    if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
-                    if (specular_exp_loc >= 0) glUniform1ui(specular_exp_loc, specular_exponent);
-                } */
+                //     glUseProgram(program);
+                //     if (view_loc >= 0) glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(m_view));
+                //     if (view_inv_loc >= 0) glUniformMatrix4fv(view_inv_loc, 1, GL_FALSE, glm::value_ptr(m_view_inv));
+                //     if (projection_loc >= 0) glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(m_projection));
+                //     if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
+                //     if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
+                //     if (specular_exp_loc >= 0) glUniform1ui(specular_exp_loc, specular_exponent);
+                // }
                 sm->render();
             }
         }

@@ -648,8 +648,8 @@ namespace graphplay {
         const typename Geometry<V>::vertex_type *const verts, unsigned int num_verts)
     {
         setVertexData(
-            typename Geometry<V>::elem_array_type(elems, elems[num_elems]),
-            typename Geometry<V>::vertex_array_type(verts, verts[num_verts]));
+            typename Geometry<V>::elem_array_type(elems, &elems[num_elems]),
+            typename Geometry<V>::vertex_array_type(verts, &verts[num_verts]));
     }
 
     template <typename V>
@@ -664,13 +664,13 @@ namespace graphplay {
         glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
         glBufferData(GL_ARRAY_BUFFER,
             m_vertices.size()*sizeof(Geometry<V>::vertex_type),
-            &m_vertices.cbegin(),
+            m_vertices.data(),
             GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elem_buffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
             m_elems.size()*sizeof(Geometry<V>::elem_type),
-            &m_elems.cbegin(),
+            m_elems.data(),
             GL_STATIC_DRAW);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);

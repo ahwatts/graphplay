@@ -125,7 +125,7 @@ namespace graphplay {
 namespace graphplay {
     struct VertexDesc
     {
-        unsigned int offset;
+        void *offset;
         GLenum type;
         unsigned int count;
     };
