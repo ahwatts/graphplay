@@ -625,6 +625,30 @@ namespace graphplay {
     Geometry<V>::~Geometry() {}
 
     template <typename V>
+    AbstractGeometry& Geometry<V>::operator=(const AbstractGeometry &abstract_other) {
+        const Geometry<V> &other = dynamic_cast<const Geometry<V>&>(abstract_other);
+        m_elem_buffer = duplicateBuffer(GL_ELEMENT_ARRAY_BUFFER, other.m_elem_buffer);
+        m_vertex_buffer = duplicateBuffer(GL_ARRAY_BUFFER, other.m_vertex_buffer);
+        m_array_object = duplicateVertexArrayObject(other.m_array_object);
+        m_vertices = other.m_vertices;
+        m_elems = other.m_elems;
+        m_attr_infos = other.m_attr_infos;
+        return *this;
+    }
+
+    template <typename V>
+    AbstractGeometry& Geometry<V>::operator=(AbstractGeometry &&abstract_other) {
+        Geometry<V> &other = dynamic_cast<Geometry<V>&>(abstract_other);
+        std::swap(m_vertex_buffer, other.m_vertex_buffer);
+        std::swap(m_elem_buffer, other.m_elem_buffer);
+        std::swap(m_array_object, other.m_array_object);
+        std::swap(m_vertices, other.m_vertices);
+        std::swap(m_elems, other.m_elems);
+        std::swap(m_attr_infos, other.m_attr_infos);
+        return *this;
+    }
+
+    template <typename V>
     void Geometry<V>::setVertexData(
         const typename Geometry<V>::elem_array_type &new_elems,
         const typename Geometry<V>::vertex_array_type &new_verts)

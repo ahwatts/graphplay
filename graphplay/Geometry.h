@@ -176,7 +176,7 @@ namespace graphplay {
         Geometry(Geometry<V> &&other);
         virtual ~Geometry();
 
-        virtual AbstractGeometry& operator=(AbstractGeometry &other);
+        virtual AbstractGeometry& operator=(const AbstractGeometry &other);
         virtual AbstractGeometry& operator=(AbstractGeometry &&other);
 
         void setVertexData(const elem_array_type &new_elems, const vertex_array_type &new_verts);
@@ -196,14 +196,19 @@ namespace graphplay {
         attr_map_type m_attr_infos;
     };
 
-    struct PNCVertex {
+    struct PCNVertex {
         float position[3];
-        float normal[3];
         float color[4];
+        float normal[3];
     };
 
-    Geometry<PNCVertex>* makeOctohedronGeometry();
-    Geometry<PNCVertex>* makeSphereGeometry();
+    // Geometry factory functions.
+    Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();
+    Geometry<PCNVertex>::sptr_type makeSphereGeometry();
+
+    // Helper functions.
+    GLuint duplicateBuffer(GLenum target, GLuint src);
+    GLuint duplicateVertexArrayObject(GLuint src);
 };
 
 #include "Geometry.tmpl.cpp"

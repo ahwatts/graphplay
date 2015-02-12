@@ -7,9 +7,7 @@
 #include "Geometry.h"
 
 namespace graphplay {
-    GLuint duplicateBuffer(GLenum target, GLuint src);
-    GLuint duplicateVertexArrayObject(GLuint src);
-
+    // Class AbstractGeometry.
     AbstractGeometry::AbstractGeometry()
         : m_vertex_buffer{0},
           m_elem_buffer{0},
@@ -71,7 +69,61 @@ namespace graphplay {
 
     void AbstractGeometry::render() const {}
 
-    Geometry<PNCVertex>* makeOctohedronGeometry() {
+    // Octohedron geometry builder.
+    const PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
+        // Position        Color           Normal
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577,  0.577,  0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577,  0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, {  0.577,  0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, { -0.577,  0.577,  0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, { -0.577,  0.577,  0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577,  0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, { -0.577, -0.577,  0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577, -0.577,  0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, { -0.577, -0.577,  0.577 } },
+
+        {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577, -0.577,  0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, {  0.577, -0.577,  0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577, -0.577,  0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, {  0.577,  0.577, -0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, {  0.577,  0.577, -0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, { -0.577,  0.577, -0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577,  0.577, -0.577 } },
+        {  {  0,  1,  0 }, { 0, 1, 0, 1 }, { -0.577,  0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, { -0.577, -0.577, -0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, { -0.577, -0.577, -0.577 } },
+        {  { -1,  0,  0 }, { 1, 0, 0, 1 }, { -0.577, -0.577, -0.577 } },
+
+        {  {  0,  0, -1 }, { 0, 0, 1, 1 }, {  0.577, -0.577, -0.577 } },
+        {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577, -0.577, -0.577 } },
+        {  {  0, -1,  0 }, { 0, 1, 0, 1 }, {  0.577, -0.577, -0.577 } },
+    };
+
+    // This is just each of the vertex data in order, since each
+    // repeated position / color has a different normal...
+    const unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
+         0,  1,  2,
+         3,  4,  5,
+         6,  7,  8,
+         9, 10, 11,
+        12, 13, 14,
+        15, 16, 17,
+        18, 19, 20,
+        21, 22, 23,
+    };
+
+    Geometry<PCNVertex>::sptr_type makeOctohedronGeometry() {
+        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex>>();
+        rv->setVertexData(
+            OCTOHEDRON_VERTEX_ELEMS, 24,
+            OCTOHEDRON_VERTEX_ARRAY, 24);
+        return rv;
     }
 
     // Geometry<PNCVertex>* makeSphereGeometry() {
