@@ -3,22 +3,14 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_SHADER_H_
 #define _GRAPHPLAY_GRAPHPLAY_SHADER_H_
 
-#include "graphplay.h"
-
-#include <map>
 #include <memory>
-#include <string>
-
-#include "opengl.h"
 #include "OpenGLUtils.h"
-
-#include <glm/mat4x4.hpp>
 
 namespace graphplay {
     struct ViewAndProjectionBlock {
-        glm::mat4x4 view;
-        glm::mat4x4 view_inv;
-        glm::mat4x4 projection;
+        float view[16];
+        float view_inv[16];
+        float projection[16];
     };
 
     class Shader {
@@ -27,28 +19,50 @@ namespace graphplay {
         typedef std::shared_ptr<Shader> sptr_type;
         typedef std::weak_ptr<Shader> wptr_type;
 
-        Shader(const char *vertex_shader_source, const char *fragment_shader_source);
-        Shader(const Shader &other);
-        Shader(Shader &&other);
+        Shader(GLenum type, const char *source);
+        Shader(const Shader &other) = delete;
+        Shader(Shader &&other) = delete;
         ~Shader();
 
-        Shader& operator=(Shader &other);
-        Shader& operator=(Shader &&other);
+        Shader& operator=(Shader &other) = delete;
+        Shader& operator=(Shader &&other) = delete;
 
-        void dump() const;
-
-        inline const IndexMap& getAttributes()    const { return m_attributes; }
-        inline const IndexMap& getUniforms()      const { return m_uniforms; }
-        inline const IndexMap& getUniformBlocks() const { return m_uniform_blocks; };
+        inline const GLuint getShaderId() const { return m_shader; }
 
         static const char *unlit_vertex_shader_source, *unlit_fragment_shader_source;
         static const char *lit_vertex_shader_source, *lit_fragment_shader_source;
 
     private:
+        GLuint m_shader;
+    };
+
+    class Program {
+    public:
+        typedef std::unique_ptr<Program> uptr_type;
+        typedef std::shared_ptr<Program> sptr_type;
+        typedef std::weak_ptr<Program> wptr_type;
+
+        Program(Shader::sptr_type vertex_shader, Shader::sptr_type fragment_shader);
+        Program(const Program &other);
+        Program(Program &&other);
+        ~Program();
+
+        Program& operator=(const Program &other);
+        Program& operator=(Program &&other);
+
+        void dump() const;
+
+        inline const GLuint getProgramId() const { return m_program; }
+        inline const Shader::sptr_type getVertexShader()   const { return m_vertex_shader; }
+        inline const Shader::sptr_type getFragmentShader() const { return m_fragment_shader; }
+        inline const IndexMap& getAttributes()    const { return m_attributes; }
+        inline const IndexMap& getUniforms()      const { return m_uniforms; }
+        inline const IndexMap& getUniformBlocks() const { return m_uniform_blocks; };
+
+    private:
         GLuint m_program;
-        IndexMap m_attributes;
-        IndexMap m_uniforms;
-        IndexMap m_uniform_blocks;
+        Shader::sptr_type m_vertex_shader, m_fragment_shader;
+        IndexMap m_attributes, m_uniforms, m_uniform_blocks;
     };
 };
 

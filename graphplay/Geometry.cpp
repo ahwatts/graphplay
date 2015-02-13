@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-#include "opengl.h"
-
+#include "graphplay.h"
+#include "OpenGLUtils.h"
 #include "Geometry.h"
 
 namespace graphplay {
@@ -37,8 +37,16 @@ namespace graphplay {
         deleteVertexArray();
     }
 
-    AbstractGeometry& AbstractGeometry::operator=(AbstractGeometry other) {
-        std::swap(*this, other);
+    AbstractGeometry& AbstractGeometry::operator=(const AbstractGeometry &other) {
+        AbstractGeometry tmp(other);
+        std::swap(*this, tmp);
+        return *this;
+    }
+
+    AbstractGeometry& AbstractGeometry::operator=(AbstractGeometry &&other) {
+        std::swap(m_array_object, other.m_array_object);
+        std::swap(m_elem_buffer, other.m_elem_buffer);
+        std::swap(m_vertex_buffer, other.m_vertex_buffer);
         return *this;
     }
 
@@ -57,7 +65,7 @@ namespace graphplay {
         m_elem_buffer = 0;
     }
 
-    void AbstractGeometry::createVertexArray(const Shader &shader) {}
+    void AbstractGeometry::createVertexArray(const Program &program) {}
 
     void AbstractGeometry::deleteVertexArray() {
         if (glIsVertexArray(m_array_object)) {

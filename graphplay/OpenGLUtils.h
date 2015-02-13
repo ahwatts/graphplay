@@ -4,7 +4,7 @@
 #define _GRAPHPLAY_GRAPHPLAY_OPENGL_UTILS_H_
 
 #include <map>
-
+#include <vector>
 #include "opengl.h"
 
 namespace graphplay {

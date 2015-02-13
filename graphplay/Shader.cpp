@@ -1,84 +1,132 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <cstring>
-#include <iostream>
-#include <map>
-#include <string>
-#include <vector>
-#include "opengl.h"
-
 #include "Shader.h"
 
 namespace graphplay {
-    // Shader class
-    Shader::Shader(const char *vertex_shader_source, const char *fragment_shader_source)
-        : m_program(0),
+    // Shader class.
+    Shader::Shader(GLenum type, const char *source) : m_shader{0} {
+        m_shader = createAndCompileShader(type, source);
+    }
+
+    Shader::~Shader() {
+        if (glIsShader(m_shader)) {
+            glDeleteShader(m_shader);
+        }
+    }
+
+    // Program class.
+    Program::Program(Shader::sptr_type vertex_shader, Shader::sptr_type fragment_shader)
+        : m_program{0},
+          m_vertex_shader{vertex_shader},
+          m_fragment_shader{fragment_shader},
           m_attributes(),
           m_uniforms(),
           m_uniform_blocks()
     {
-        GLuint vshader = createAndCompileShader(GL_VERTEX_SHADER, vertex_shader_source);
-        GLuint fshader = createAndCompileShader(GL_FRAGMENT_SHADER, fragment_shader_source);
-        m_program = createProgramFromShaders(vshader, fshader);
+        m_program = createProgramFromShaders(
+            m_vertex_shader->getShaderId(),
+            m_fragment_shader->getShaderId());
         getAttributeInfo(m_program, m_attributes);
         getUniformInfo(m_program, m_uniforms);
         getUniformBlockInfo(m_program, m_uniform_blocks);
     }
 
-    Shader::~Shader() {
+    Program::Program(const Program &other)
+        : m_program{0},
+          m_vertex_shader{other.m_vertex_shader},
+          m_fragment_shader{other.m_fragment_shader},
+          m_attributes(),
+          m_uniforms(),
+          m_uniform_blocks()
+    {
+        m_program = createProgramFromShaders(
+            m_vertex_shader->getShaderId(),
+            m_fragment_shader->getShaderId());
+        getAttributeInfo(m_program, m_attributes);
+        getUniformInfo(m_program, m_uniforms);
+        getUniformBlockInfo(m_program, m_uniform_blocks);
+    }
+
+    Program::Program(Program &&other)
+        : m_program{other.m_program},
+          m_vertex_shader{other.m_vertex_shader},
+          m_fragment_shader{other.m_fragment_shader},
+          m_attributes(),
+          m_uniforms(),
+          m_uniform_blocks()
+    {
+        other.m_program = 0;
+        std::swap(m_attributes, other.m_attributes);
+        std::swap(m_uniforms, other.m_uniforms);
+        std::swap(m_uniform_blocks, other.m_uniform_blocks);
+    }
+
+    Program::~Program() {
         if (glIsProgram(m_program)) {
             std::vector<GLuint> shaders;
-
             getAttachedShaders(m_program, shaders);
 
             for (auto s : shaders) {
                 if (glIsShader(s)) {
+                    // The shader *should* get deleted when its 
+                    // shared pointers go out of scope...
                     glDetachShader(m_program, s);
-                    glDeleteShader(s);
                 }
             }
 
             glDeleteProgram(m_program);
+            m_program = 0;
         }
-
-        m_program = 0;
-        m_attributes.clear();
-        m_uniforms.clear();
-        m_uniform_blocks.clear();
     }
 
-    void Shader::dump() const {
-        std::cout << "<Shader m_program = " << m_program;
-
-        std::cout << " attributes = { ";
-        for (const auto a : m_attributes) {
-            std::cout << a.first << ": " << a.second;
-            if (a != *m_attributes.crbegin()) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << " }";
-
-        std::cout << " uniforms = { ";
-        for (auto a : m_uniforms) {
-            std::cout << a.first << ": " << a.second;
-            if (a != *m_uniforms.crbegin()) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << " }";
-
-        std::cout << " uniform blocks = { ";
-        for (auto a : m_uniform_blocks) {
-            std::cout << a.first << ": " << a.second;
-            if (a != *m_uniform_blocks.crbegin()) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << " }";
-
-        std::cout << ">" << std::endl;
+    Program& Program::operator=(const Program &other) {
+        Program tmp(other);
+        std::swap(*this, tmp);
+        return *this;
     }
+
+    Program& Program::operator=(Program &&other) {
+        std::swap(m_program, other.m_program);
+        std::swap(m_vertex_shader, other.m_vertex_shader);
+        std::swap(m_fragment_shader, other.m_fragment_shader);
+        std::swap(m_attributes, other.m_attributes);
+        std::swap(m_uniforms, other.m_uniforms);
+        std::swap(m_uniform_blocks, other.m_uniform_blocks);
+        return *this;
+    }
+
+    //void Shader::dump() const {
+    //    std::cout << "<Shader m_program = " << m_program;
+
+    //    std::cout << " attributes = { ";
+    //    for (const auto a : m_attributes) {
+    //        std::cout << a.first << ": " << a.second;
+    //        if (a != *m_attributes.crbegin()) {
+    //            std::cout << ", ";
+    //        }
+    //    }
+    //    std::cout << " }";
+
+    //    std::cout << " uniforms = { ";
+    //    for (auto a : m_uniforms) {
+    //        std::cout << a.first << ": " << a.second;
+    //        if (a != *m_uniforms.crbegin()) {
+    //            std::cout << ", ";
+    //        }
+    //    }
+    //    std::cout << " }";
+
+    //    std::cout << " uniform blocks = { ";
+    //    for (auto a : m_uniform_blocks) {
+    //        std::cout << a.first << ": " << a.second;
+    //        if (a != *m_uniform_blocks.crbegin()) {
+    //            std::cout << ", ";
+    //        }
+    //    }
+    //    std::cout << " }";
+
+    //    std::cout << ">" << std::endl;
+    //}
 
     // Actual shader code.
     const char *Shader::unlit_vertex_shader_source = R"glsl(

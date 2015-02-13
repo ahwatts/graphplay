@@ -169,9 +169,9 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 
-#include "graphplay.h"
 #include "Geometry.h"
-#include "OpenGLUtils.h"
+#include "Shader.h"
+#include <iostream>
 
 namespace graphplay {
     template <typename V>
@@ -180,25 +180,65 @@ namespace graphplay {
           m_vertices(),
           m_elems(),
           m_attr_infos(V::description)
-    {}
+    {
+        // std::cout << "Geometry<V> default constructor: " << this << std::endl;
+    }
+
+    template <typename V>
+    Geometry<V>::Geometry(const Geometry<V> &other)
+        : AbstractGeometry(dynamic_cast<const AbstractGeometry&>(other)),
+          m_vertices(other.m_vertices),
+          m_elems(other.m_elems),
+          m_attr_infos(V::description)
+    {
+        // std::cout << "Geometry<V> copy constructor: " << &other << " -> " << this << std::endl;
+    }
+
+    template <typename V>
+    Geometry<V>::Geometry(Geometry<V> &&other)
+        : m_vertices(std::move(other.m_vertices)),
+          m_elems(std::move(other.m_elems)),
+          m_attr_infos(V::description)
+    {
+        m_vertex_buffer = other.m_vertex_buffer;
+        m_elem_buffer = other.m_elem_buffer;
+        m_array_object = other.m_array_object;
+        other.m_vertex_buffer = 0;
+        other.m_elem_buffer = 0;
+        other.m_array_object = 0;
+
+        // std::cout << "Geometry<V> move constructor: " << &other << " -> " << this << std::endl;
+    }
 
     template <typename V>
     Geometry<V>::~Geometry() {}
 
     template <typename V>
     AbstractGeometry& Geometry<V>::operator=(const AbstractGeometry &abstract_other) {
+        // std::cout << "Geometry<V> abstract geometry copy assignment: " << &abstract_other << " -> " << this << std::endl;
         const Geometry<V> &other = dynamic_cast<const Geometry<V>&>(abstract_other);
-        m_elem_buffer = duplicateBuffer(GL_ELEMENT_ARRAY_BUFFER, other.m_elem_buffer);
-        m_vertex_buffer = duplicateBuffer(GL_ARRAY_BUFFER, other.m_vertex_buffer);
-        m_array_object = duplicateVertexArrayObject(other.m_array_object);
-        m_vertices = other.m_vertices;
-        m_elems = other.m_elems;
+        return *this = other;
+    }
+
+    template <typename V>
+    Geometry<V>& Geometry<V>::operator=(const Geometry<V> &other) {
+        // std::cout << "Geometry<V> geometry copy assignment: " << &other << " -> " << this << std::endl;
+        Geometry<V> tmp(other);
+        std::swap(*this, tmp);
         return *this;
     }
 
     template <typename V>
     AbstractGeometry& Geometry<V>::operator=(AbstractGeometry &&abstract_other) {
+        // std::cout << "Geometry<V> abstract geometry move assignment: " << &abstract_other << " -> " << this << std::endl;
         Geometry<V> &other = dynamic_cast<Geometry<V>&>(abstract_other);
+        *this = std::move(other);
+        return *this;
+    }
+
+    template <typename V>
+    Geometry<V>& Geometry<V>::operator=(Geometry<V> &&other) {
+        // std::cout << "Geometry<V> geometry move assignment: " << &other << " -> " << this << std::endl;
         std::swap(m_vertex_buffer, other.m_vertex_buffer);
         std::swap(m_elem_buffer, other.m_elem_buffer);
         std::swap(m_array_object, other.m_array_object);
@@ -212,6 +252,7 @@ namespace graphplay {
         const typename Geometry<V>::elem_array_type &new_elems,
         const typename Geometry<V>::vertex_array_type &new_verts)
     {
+        // std::cout << "Geometry<V> setVertexData copy from refs" << std::endl;
         m_elems = new_elems;
         m_vertices = new_verts;
     }
@@ -221,8 +262,9 @@ namespace graphplay {
         typename Geometry<V>::elem_array_type &&new_elems,
         typename Geometry<V>::vertex_array_type &&new_verts)
     {
-        m_elems = new_elems;
-        m_vertices = new_verts;
+        // std::cout << "Geometry<V> setVertexData move from refs" << std::endl;
+        m_elems = std::move(new_elems);
+        m_vertices = std::move(new_verts);
     }
 
     template <typename V>
@@ -230,6 +272,7 @@ namespace graphplay {
         const typename Geometry<V>::elem_type *const elems, unsigned int num_elems,
         const typename Geometry<V>::vertex_type *const verts, unsigned int num_verts)
     {
+        // std::cout << "Geometry<V> setVertexData copy from pointers" << std::endl;
         setVertexData(
             typename Geometry<V>::elem_array_type(elems, &elems[num_elems]),
             typename Geometry<V>::vertex_array_type(verts, &verts[num_verts]));
@@ -261,7 +304,7 @@ namespace graphplay {
     }
 
     template <typename V>
-    void Geometry<V>::createVertexArray(const Shader &shader) {
+    void Geometry<V>::createVertexArray(const Program &program) {
         deleteVertexArray();
         if (!glIsBuffer(m_vertex_buffer) || !glIsBuffer(m_elem_buffer)) {
             createBuffers();
@@ -272,7 +315,7 @@ namespace graphplay {
         glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elem_buffer);
 
-        auto shader_attrs = shader.getAttributes();
+        auto shader_attrs = program.getAttributes();
         for (auto geo_attr : m_attr_infos) {
             auto shader_attr = shader_attrs.find(geo_attr.first);
             if (shader_attr != shader_attrs.end()) {

@@ -59,13 +59,13 @@ namespace graphplay {
     }
 
     void Scene::updateBuffer() {
-        glm::mat4x4 view = m_camera.getViewTransform();
+        /* glm::mat4x4 view = m_camera.getViewTransform();
         ViewAndProjectionBlock block { view, glm::inverse(view), m_projection };
 
         if (!glIsBuffer(m_uniform_buffer)) createBuffer();
         glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewAndProjectionBlock), &block, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0); */
     }
 
     void Scene::deleteBuffer() {
@@ -82,7 +82,7 @@ namespace graphplay {
 
         for (auto wm : m_meshes) {
             if (auto sm = wm.lock()) {
-                Shader::sptr_type shader = sm->getShader().lock();
+                Program::sptr_type program = sm->getProgram().lock();
                 // if (mat) {
                 //     GLuint program = mat->getProgram();
                 //     GLint view_loc = mat->getViewLocation();

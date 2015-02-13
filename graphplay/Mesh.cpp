@@ -13,15 +13,16 @@ namespace graphplay {
         }
     }
 
-    Mesh::Mesh() : m_geometry(), m_shader()
+    Mesh::Mesh() : m_geometry(), m_program()
     {
         copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
     }
     
-    Mesh::Mesh(AbstractGeometry::sptr_type geo, Shader::sptr_type shader) : m_geometry(geo), m_shader(shader)
+    Mesh::Mesh(AbstractGeometry::sptr_type geo, Program::sptr_type program)
+        : m_geometry{geo}, m_program{program}
     {
         copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
-        m_geometry->createVertexArray(*m_shader);
+        m_geometry->createVertexArray(*m_program);
     }
 
     Mesh::~Mesh() {}
@@ -29,16 +30,16 @@ namespace graphplay {
     void Mesh::setGeometry(AbstractGeometry::sptr_type geo) {
         m_geometry = geo;
 
-        if (m_shader) {
-            m_geometry->createVertexArray(*m_shader);
+        if (m_program) {
+            m_geometry->createVertexArray(*m_program);
         }
     }
 
-    void Mesh::setShader(Shader::sptr_type shader) {
-        m_shader = shader;
+    void Mesh::setProgram(Program::sptr_type program) {
+        m_program = program;
 
         if (m_geometry) {
-            m_geometry->createVertexArray(*m_shader);
+            m_geometry->createVertexArray(*m_program);
         }
     }
 

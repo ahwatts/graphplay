@@ -5,15 +5,14 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "opengl.h"
 #include "graphplay.h"
-
-#include "Shader.h"
+#include "opengl.h"
 
 namespace graphplay {
+    class Program;
+
     struct VertexDesc
     {
         void *offset;
@@ -34,11 +33,16 @@ namespace graphplay {
         AbstractGeometry(AbstractGeometry &&other);
         virtual ~AbstractGeometry();
 
-        virtual AbstractGeometry& operator=(AbstractGeometry other);
+        virtual AbstractGeometry& operator=(const AbstractGeometry &other);
+        virtual AbstractGeometry& operator=(AbstractGeometry &&other);
+
+        inline const GLuint getVertexBufferId() const { return m_vertex_buffer; }
+        inline const GLuint getElemBufferId() const { return m_elem_buffer; }
+        inline const GLuint getVertexArrayObjectId() const { return m_array_object; }
 
         virtual void createBuffers();
         virtual void deleteBuffers();
-        virtual void createVertexArray(const Shader &shader);
+        virtual void createVertexArray(const Program &program);
         virtual void deleteVertexArray();
 
         virtual void render() const;
@@ -63,12 +67,14 @@ namespace graphplay {
         typedef std::weak_ptr<Geometry<V>> wptr_type;
 
         Geometry();
-        Geometry(Geometry<V> &other);
+        Geometry(const Geometry<V> &other);
         Geometry(Geometry<V> &&other);
         virtual ~Geometry();
 
         virtual AbstractGeometry& operator=(const AbstractGeometry &other);
+        virtual Geometry<V>& operator=(const Geometry<V> &other);
         virtual AbstractGeometry& operator=(AbstractGeometry &&other);
+        virtual Geometry<V>& operator=(Geometry<V> &&other);
 
         void setVertexData(const elem_array_type &new_elems, const vertex_array_type &new_verts);
         void setVertexData(elem_array_type &&new_elems, vertex_array_type &&new_verts);
@@ -77,7 +83,11 @@ namespace graphplay {
             const vertex_type *const new_verts, unsigned int num_verts);
 
         virtual void createBuffers();
-        virtual void createVertexArray(const Shader &shader);
+        virtual void createVertexArray(const Program &program);
+
+        inline vertex_array_type& getVertices() { return m_vertices; }
+        inline elem_array_type& getElems() { return m_elems; }
+        inline const AttrMap& getAttrInfo() { return m_attr_infos; }
 
         void render() const;
 

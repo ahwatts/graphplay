@@ -56,11 +56,11 @@ int main(int argc, char **argv) {
     Geometry<PCNVertex>::sptr_type octo_geo = makeOctohedronGeometry();
     // Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
 
-    Shader::sptr_type unlit_shader = std::make_shared<Shader>(
-        Shader::unlit_vertex_shader_source,
-        Shader::unlit_fragment_shader_source);
+    Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
+    Shader::sptr_type unlit_fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::unlit_fragment_shader_source);
+    Program::sptr_type unlit_program = std::make_shared<Program>(unlit_vertex_shader, unlit_fragment_shader);
 
-    Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, unlit_shader);
+    Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, unlit_program);
     // Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, unlit_shader);
 
     Scene scene(pixel_width, pixel_height);
