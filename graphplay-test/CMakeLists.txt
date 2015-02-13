@@ -4,6 +4,7 @@ add_executable(graphplay-test
   MaterialTest.cpp
   MeshTest.cpp
   SceneTest.cpp
+  ShaderTest.cpp
   TestOpenGLContext.cpp
   ../graphplay/Camera.cpp
   ../graphplay/Geometry.cpp
