@@ -4,6 +4,7 @@
 #define _GRAPHPLAY_GRAPHPLAY_OPENGL_UTILS_H_
 
 #include <map>
+#include <string>
 #include <vector>
 #include "opengl.h"
 
