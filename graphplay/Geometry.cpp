@@ -85,7 +85,12 @@ namespace graphplay {
     };
 
     // Octohedron geometry builder.
-    constexpr PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
+#ifdef MSVC
+    const
+#else
+    constexpr
+#endif 
+    PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
         // Position        Color           Normal
         {  {  0,  0,  1 }, { 0, 0, 1, 1 }, {  0.577,  0.577,  0.577 } },
         {  {  1,  0,  0 }, { 1, 0, 0, 1 }, {  0.577,  0.577,  0.577 } },
@@ -122,7 +127,12 @@ namespace graphplay {
 
     // This is just each of the vertex data in order, since each
     // repeated position / color has a different normal...
-    constexpr unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
+#ifdef MSVC
+    const
+#else
+    constexpr
+#endif
+    unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
          0,  1,  2,
          3,  4,  5,
          6,  7,  8,
