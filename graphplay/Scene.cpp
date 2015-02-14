@@ -61,6 +61,7 @@ namespace graphplay {
     void Scene::createBuffer() {
         deleteBuffer();
         glGenBuffers(1, &m_uniform_buffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer);
         updateBuffer();
     }
 
