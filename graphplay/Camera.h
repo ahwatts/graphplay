@@ -12,6 +12,11 @@ namespace graphplay {
     public:
         Camera();
         Camera(const glm::vec3 &location, const glm::vec3 &direction, const glm::vec3 &up);
+        Camera(const Camera &other);
+        Camera(Camera &&other);
+
+        Camera& operator=(const Camera &other);
+        Camera& operator=(Camera &&other);
 
         glm::mat4x4 getViewTransform() const;
 

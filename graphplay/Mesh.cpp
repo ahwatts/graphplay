@@ -5,23 +5,17 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace graphplay {
-    void copy_mat4x4_to_array(float *arr, const glm::mat4x4 &mat) {
-        const float *ptr = glm::value_ptr(mat);
-        unsigned int i = 0;
-        for (i = 0; i < 16; ++i) {
-            arr[i] = ptr[i];
-        }
-    }
+    Mesh::Mesh()
+        : m_geometry(),
+          m_program(),
+          m_model_transform()
+    {}
 
-    Mesh::Mesh() : m_geometry(), m_program()
-    {
-        copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
-    }
-    
     Mesh::Mesh(AbstractGeometry::sptr_type geo, Program::sptr_type program)
-        : m_geometry{geo}, m_program{program}
+        : m_geometry(geo),
+          m_program(program),
+          m_model_transform()
     {
-        copy_mat4x4_to_array(m_model_transform, glm::mat4x4());
         m_geometry->createVertexArray(*m_program);
     }
 
@@ -44,11 +38,14 @@ namespace graphplay {
     }
 
     void Mesh::setTransform(const glm::mat4x4 &new_transform) {
-        copy_mat4x4_to_array(m_model_transform, new_transform);
+        m_model_transform = new_transform;
+    }
+
+    void Mesh::setUpProgramUniforms(GLuint uniform_buffer) {
+
     }
 
     void Mesh::render() const {
-        // glm::mat4x4 model = glm::make_mat4x4(m_model_transform);
         m_geometry->render();
     }
 };

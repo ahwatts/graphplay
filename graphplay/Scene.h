@@ -24,7 +24,8 @@ namespace graphplay {
         Scene(Scene &&other);
         ~Scene();
 
-        Scene& operator=(Scene other);
+        Scene& operator=(const Scene &other);
+        Scene& operator=(Scene &&other);
 
         // Update the projection transformation for the new viewport.
         void setViewport(unsigned int new_width, unsigned int new_height);

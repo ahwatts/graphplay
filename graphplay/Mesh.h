@@ -22,7 +22,7 @@ namespace graphplay {
         Mesh(AbstractGeometry::sptr_type geo, Program::sptr_type program);
         ~Mesh();
 
-        Mesh& operator=(Mesh &other);
+        Mesh& operator=(const Mesh &other);
         Mesh& operator=(Mesh &&other);
 
         void setGeometry(AbstractGeometry::sptr_type geo);
@@ -32,13 +32,14 @@ namespace graphplay {
         inline const Program::wptr_type getProgram() const { return Program::wptr_type(m_program); }
 
         void setTransform(const glm::mat4x4 &new_transform);
-        inline const float* getTransform() const { return m_model_transform; }
+        inline const glm::mat4x4& getTransform() const { return m_model_transform; }
+
+        void setUpProgramUniforms(GLuint uniform_buffer);
 
         void render() const;
 
     private:
-        // glm::mat4x4 m_model_transform;
-        float m_model_transform[16];
+        glm::mat4x4 m_model_transform;
         AbstractGeometry::sptr_type m_geometry;
         Program::sptr_type m_program;
     };

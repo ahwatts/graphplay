@@ -72,9 +72,10 @@ namespace graphplay {
         virtual ~Geometry();
 
         virtual AbstractGeometry& operator=(const AbstractGeometry &other);
-        virtual Geometry<V>& operator=(const Geometry<V> &other);
         virtual AbstractGeometry& operator=(AbstractGeometry &&other);
-        virtual Geometry<V>& operator=(Geometry<V> &&other);
+
+        virtual Geometry<V>&      operator=(const Geometry<V> &other);
+        virtual Geometry<V>&      operator=(Geometry<V> &&other);
 
         void setVertexData(const elem_array_type &new_elems, const vertex_array_type &new_verts);
         void setVertexData(elem_array_type &&new_elems, vertex_array_type &&new_verts);

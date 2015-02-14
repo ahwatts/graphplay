@@ -1,5 +1,7 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <algorithm>
+
 #include "graphplay.h"
 #include "Scene.h"
 #include "Shader.h"
@@ -36,6 +38,10 @@ namespace graphplay {
 
     void Scene::addMesh(Mesh::wptr_type mesh) {
         m_meshes.push_back(mesh);
+        Mesh::sptr_type sm = mesh.lock();
+        if (sm) {
+            sm->setUpProgramUniforms(m_uniform_buffer);
+        }
     }
 
     Mesh::wptr_type Scene::removeMesh(Mesh::wptr_type mesh) {
@@ -59,13 +65,18 @@ namespace graphplay {
     }
 
     void Scene::updateBuffer() {
-        /* glm::mat4x4 view = m_camera.getViewTransform();
-        ViewAndProjectionBlock block { view, glm::inverse(view), m_projection };
+        glm::mat4x4 view = m_camera.getViewTransform();
+        glm::mat4x4 view_inv = glm::inverse(view);
+        ViewAndProjectionBlock block;
+
+        std::copy(glm::value_ptr(view), glm::value_ptr(view) + 16 * sizeof(float), block.view);
+        std::copy(glm::value_ptr(view_inv), glm::value_ptr(view_inv) + 16 * sizeof(float), block.view_inv);
+        std::copy(glm::value_ptr(m_projection), glm::value_ptr(m_projection) + 16 * sizeof(float), block.projection);
 
         if (!glIsBuffer(m_uniform_buffer)) createBuffer();
         glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewAndProjectionBlock), &block, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_UNIFORM_BUFFER, 0); */
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
     void Scene::deleteBuffer() {
