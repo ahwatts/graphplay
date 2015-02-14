@@ -54,6 +54,9 @@
     <ClCompile Include="..\graphplay\OpenGLUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\graphplay\Geometry.h">

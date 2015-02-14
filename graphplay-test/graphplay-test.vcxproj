@@ -19,6 +19,7 @@
     <ClCompile Include="MaterialTest.cpp" />
     <ClCompile Include="MeshTest.cpp" />
     <ClCompile Include="SceneTest.cpp" />
+    <ClCompile Include="ShaderTest.cpp" />
     <ClCompile Include="TestOpenGLContext.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -25,9 +25,7 @@ namespace graphplay {
     }
 
     void assertBuffersCreated(const AbstractGeometry &g) {
-        ASSERT_LT(0, g.getElemBufferId());
         ASSERT_EQ(GL_TRUE, glIsBuffer(g.getElemBufferId()));
-        ASSERT_LT(0, g.getVertexBufferId());
         ASSERT_EQ(GL_TRUE, glIsBuffer(g.getVertexBufferId()));
         ASSERT_EQ(0, g.getVertexArrayObjectId());
         ASSERT_EQ(GL_FALSE, glIsVertexArray(g.getVertexArrayObjectId()));

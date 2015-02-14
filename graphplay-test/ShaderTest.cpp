@@ -36,7 +36,6 @@ namespace graphplay {
 
     TEST_F(ShaderTest, ShaderConstructor) {
         Shader s(GL_VERTEX_SHADER, vertex_shader_source);
-        ASSERT_LT(0, s.getShaderId());
         ASSERT_EQ(GL_TRUE, glIsShader(s.getShaderId()));
     }
 
@@ -46,7 +45,6 @@ namespace graphplay {
         {
             Shader s(GL_VERTEX_SHADER, vertex_shader_source);
             shader_id = s.getShaderId();
-            ASSERT_LT(0, shader_id);
             ASSERT_EQ(GL_TRUE, glIsShader(shader_id));
         }
 
@@ -58,7 +56,6 @@ namespace graphplay {
         Shader::sptr_type f = std::make_shared<Shader>(GL_FRAGMENT_SHADER, fragment_shader_source);
         Program::sptr_type p = std::make_shared<Program>(v, f);
 
-        ASSERT_LT(0, p->getProgramId());
         ASSERT_EQ(GL_TRUE, glIsProgram(p->getProgramId()));
         ASSERT_EQ(v, p->getVertexShader());
         ASSERT_EQ(f, p->getFragmentShader());
@@ -77,6 +74,6 @@ namespace graphplay {
 
         const IndexMap &unifbs = p->getUniformBlocks();
         index = unifbs.find("view_and_projection");
-        ASSERT_NE(unifs.end(), index);
+        ASSERT_NE(unifbs.end(), index);
     }
 }
