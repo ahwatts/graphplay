@@ -335,7 +335,16 @@ namespace graphplay {
             } else {
                 std::cout << "         array: disabled" << std::endl;
             }
+        }
+        delete [] name;
 
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_things);
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
+        name = new char[max_name_len];
+        std::cout << "    Uniforms: " << num_things << std::endl;
+        for (auto i = 0; i < num_things; ++i) {
+            glGetActiveUniform(progid, i, max_name_len, &name_len, &size, &type, name);
+            std::cout << "      " << i << ": " << name << " type: " << translateGLType(type) << " size: " << size << std::endl;
         }
         delete [] name;
 
