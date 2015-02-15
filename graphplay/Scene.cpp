@@ -18,8 +18,9 @@ namespace graphplay {
           m_projection(),
           m_meshes(),
           m_view_projection_uniform_buffer(0),
-          m_uniform_buffer_bindings{ { "view_and_projection", 0 } }
+          m_uniform_buffer_bindings()
     {
+        m_uniform_buffer_bindings["view_and_projection"] = 0;
         setViewport(vp_width, vp_height);
         createBuffers();
     }
