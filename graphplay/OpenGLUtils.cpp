@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "OpenGLUtils.h"
@@ -293,6 +294,158 @@ namespace graphplay {
         return rv;
     }
 
+    int sizeOfGLType(GLenum type) {
+        int rv;
+
+        switch (type) {
+        case GL_FLOAT:        rv =  1*sizeof(float); break;
+        case GL_FLOAT_VEC2:   rv =  2*sizeof(float); break;
+        case GL_FLOAT_VEC3:   rv =  3*sizeof(float); break;
+        case GL_FLOAT_VEC4:   rv =  4*sizeof(float); break;
+        case GL_FLOAT_MAT2:   rv =  4*sizeof(float); break;
+        case GL_FLOAT_MAT2x3: rv =  6*sizeof(float); break;
+        case GL_FLOAT_MAT2x4: rv =  8*sizeof(float); break;
+        case GL_FLOAT_MAT3x2: rv =  6*sizeof(float); break;
+        case GL_FLOAT_MAT3:   rv =  9*sizeof(float); break;
+        case GL_FLOAT_MAT3x4: rv = 12*sizeof(float); break;
+        case GL_FLOAT_MAT4x2: rv =  8*sizeof(float); break;
+        case GL_FLOAT_MAT4x3: rv = 12*sizeof(float); break;
+        case GL_FLOAT_MAT4:   rv = 16*sizeof(float); break;
+
+        case GL_INT:        rv =  1*sizeof(int); break;
+        case GL_INT_VEC2:   rv =  2*sizeof(int); break;
+        case GL_INT_VEC3:   rv =  3*sizeof(int); break;
+        case GL_INT_VEC4:   rv =  4*sizeof(int); break;
+
+        case GL_UNSIGNED_INT:        rv =  1*sizeof(unsigned int); break;
+        case GL_UNSIGNED_INT_VEC2:   rv =  2*sizeof(unsigned int); break;
+        case GL_UNSIGNED_INT_VEC3:   rv =  3*sizeof(unsigned int); break;
+        case GL_UNSIGNED_INT_VEC4:   rv =  4*sizeof(unsigned int); break;
+
+        case GL_DOUBLE:        rv =  1*sizeof(double); break;
+        case GL_DOUBLE_VEC2:   rv =  2*sizeof(double); break;
+        case GL_DOUBLE_VEC3:   rv =  3*sizeof(double); break;
+        case GL_DOUBLE_VEC4:   rv =  4*sizeof(double); break;
+        case GL_DOUBLE_MAT2:   rv =  4*sizeof(double); break;
+        case GL_DOUBLE_MAT2x3: rv =  6*sizeof(double); break;
+        case GL_DOUBLE_MAT2x4: rv =  8*sizeof(double); break;
+        case GL_DOUBLE_MAT3x2: rv =  6*sizeof(double); break;
+        case GL_DOUBLE_MAT3:   rv =  9*sizeof(double); break;
+        case GL_DOUBLE_MAT3x4: rv = 12*sizeof(double); break;
+        case GL_DOUBLE_MAT4x2: rv =  8*sizeof(double); break;
+        case GL_DOUBLE_MAT4x3: rv = 12*sizeof(double); break;
+        case GL_DOUBLE_MAT4:   rv = 16*sizeof(double); break;
+
+        default:
+            rv = 0;
+        }
+
+        return rv;
+    }
+
+    std::string getUniformValue(GLuint program, GLint location) {
+        std::stringstream out;
+        GLint size = 0, total_size = 0;
+        GLenum type = 0, error = GL_NO_ERROR;
+        glGetActiveUniform(program, location, 0, nullptr, &size, &type, nullptr);
+        total_size = size*sizeOfGLType(type);
+        char *buffer = new char[total_size];
+
+        switch (type) {
+        case GL_FLOAT:
+        case GL_FLOAT_VEC2:
+        case GL_FLOAT_VEC3:
+        case GL_FLOAT_VEC4:
+        case GL_FLOAT_MAT2:
+        case GL_FLOAT_MAT2x3:
+        case GL_FLOAT_MAT2x4:
+        case GL_FLOAT_MAT3x2:
+        case GL_FLOAT_MAT3:
+        case GL_FLOAT_MAT3x4:
+        case GL_FLOAT_MAT4x2:
+        case GL_FLOAT_MAT4x3:
+        case GL_FLOAT_MAT4:
+            glGetUniformfv(program, location, (float*)buffer);
+            error = glGetError();
+            if (error == GL_NO_ERROR) {
+                out << "[ ";
+                for (auto i = 0; i < total_size / sizeof(float); ++i) {
+                    out << ((float*)buffer)[i] << ", ";
+                }
+                out << "]";
+            } else {
+                out << "Error: " << error;
+            }
+            break;
+
+        case GL_INT:
+        case GL_INT_VEC2:
+        case GL_INT_VEC3:
+        case GL_INT_VEC4:
+            glGetUniformiv(program, location, (int*)buffer);
+            error = glGetError();
+            if (error == GL_NO_ERROR) {
+                out << "[ ";
+                for (auto i = 0; i < total_size / sizeof(int); ++i) {
+                    out << ((int*)buffer)[i] << ", ";
+                }
+                out << "]";
+            } else {
+                out << "Error: " << error;
+            }
+            break;
+
+        case GL_UNSIGNED_INT:
+        case GL_UNSIGNED_INT_VEC2:
+        case GL_UNSIGNED_INT_VEC3:
+        case GL_UNSIGNED_INT_VEC4:
+            glGetUniformuiv(program, location, (unsigned int*)buffer);
+            error = glGetError();
+            if (error == GL_NO_ERROR) {
+                out << "[ ";
+                for (auto i = 0; i < total_size / sizeof(unsigned int); ++i) {
+                    out << ((unsigned int*)buffer)[i] << ", ";
+                }
+                out << "]";
+            } else {
+                out << "Error: " << error;
+            }
+            break;
+
+        case GL_DOUBLE:
+        case GL_DOUBLE_VEC2:
+        case GL_DOUBLE_VEC3:
+        case GL_DOUBLE_VEC4:
+        case GL_DOUBLE_MAT2:
+        case GL_DOUBLE_MAT2x3:
+        case GL_DOUBLE_MAT2x4:
+        case GL_DOUBLE_MAT3x2:
+        case GL_DOUBLE_MAT3:
+        case GL_DOUBLE_MAT3x4:
+        case GL_DOUBLE_MAT4x2:
+        case GL_DOUBLE_MAT4x3:
+        case GL_DOUBLE_MAT4:
+            glGetUniformdv(program, location, (double*)buffer);
+            error = glGetError();
+            if (error == GL_NO_ERROR) {
+                out << "[ ";
+                for (auto i = 0; i < total_size / sizeof(double); ++i) {
+                    out << ((double*)buffer)[i] << ", ";
+                }
+                out << "]";
+            } else {
+                out << "Error: " << error;
+            }
+            break;
+
+        default:
+            out << "Unknown OpenGL Type: " << type;
+        }
+
+        delete [] buffer;
+        return out.str();
+    }
+
     void dumpOpenGLState() {
         GLint progid = 0;
         GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0;
@@ -342,9 +495,18 @@ namespace graphplay {
         glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
         name = new char[max_name_len];
         std::cout << "    Uniforms: " << num_things << std::endl;
-        for (auto i = 0; i < num_things; ++i) {
-            glGetActiveUniform(progid, i, max_name_len, &name_len, &size, &type, name);
-            std::cout << "      " << i << ": " << name << " type: " << translateGLType(type) << " size: " << size << std::endl;
+        for (GLuint i = 0; i < num_things; ++i) {
+            GLint block_index = 0, itype = 0;
+            glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_BLOCK_INDEX, &block_index);
+            glGetActiveUniformName(progid, i, max_name_len, nullptr, name);
+            if (block_index == -1) {
+                glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_SIZE, &size);
+                glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_TYPE, &itype);
+                std::cout << "      " << i << ": " << name << " type: " << translateGLType((GLenum)itype) << " size: " << size;
+                std::cout << " value: " << getUniformValue(progid, i) << std::endl;
+            } else {
+                std::cout << "      " << i << ": (in block)" << std::endl;
+            }
         }
         delete [] name;
 

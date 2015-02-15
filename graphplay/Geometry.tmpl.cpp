@@ -344,7 +344,7 @@ namespace graphplay {
         glBindVertexArray(m_array_object);
 
         static int i = 0;
-        if (i % 100 == 0) {
+        if (i % 500 == 0) {
             dumpOpenGLState();
         }
         ++i;
