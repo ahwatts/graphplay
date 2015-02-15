@@ -169,7 +169,7 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 
-#include <iostream>
+// #include <iostream>
 
 #include "Geometry.h"
 #include "OpenGLUtils.h"
@@ -312,6 +312,7 @@ namespace graphplay {
             createBuffers();
         }
 
+        glUseProgram(program.getProgramId());
         glGenVertexArrays(1, &m_array_object);
         glBindVertexArray(m_array_object);
         glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer);
@@ -321,6 +322,7 @@ namespace graphplay {
         for (auto geo_attr : m_attr_infos) {
             auto shader_attr = shader_attrs.find(geo_attr.first);
             if (shader_attr != shader_attrs.end()) {
+                glEnableVertexAttribArray(shader_attr->second);
                 glVertexAttribPointer(
                     shader_attr->second,
                     geo_attr.second.count,
@@ -334,18 +336,21 @@ namespace graphplay {
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glUseProgram(0);
     }
 
     template <typename V>
     void Geometry<V>::render() const {
-        static int i = 0;
         glBindVertexArray(m_array_object);
-        if (i % 100 == 0) {
-            dumpOpenGLState();
-        }
+
+        // static int i = 0;
+        // if (i % 100 == 0) {
+        //     dumpOpenGLState();
+        // }
+        // ++i;
+
         glDrawElements(GL_TRIANGLES, m_elems.size(), elem_gl_type, BUFFER_OFFSET_BYTES(0));
         glBindVertexArray(0);
-        ++i;
     }
 };
 

@@ -19,6 +19,8 @@ namespace graphplay {
     void getAttributeInfo(GLuint program, IndexMap &attributes);
     void getUniformInfo(GLuint program, IndexMap &uniforms);
     void getUniformBlockInfo(GLuint program, IndexMap &uniform_blocks);
+
+    std::string translateGLType(GLenum type);
     void dumpOpenGLState();
 }
 

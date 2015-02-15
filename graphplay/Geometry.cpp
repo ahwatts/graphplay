@@ -148,6 +148,7 @@ namespace graphplay {
         rv->setVertexData(
             OCTOHEDRON_VERTEX_ELEMS, 24,
             OCTOHEDRON_VERTEX_ARRAY, 24);
+        rv->createBuffers();
         return rv;
     }
 
