@@ -17,13 +17,15 @@ namespace graphplay {
           m_camera(),
           m_projection(),
           m_meshes(),
-          m_uniform_buffer(0)
+          m_view_projection_uniform_buffer(0),
+          m_uniform_buffer_bindings{ { "view_and_projection", 0 } }
     {
         setViewport(vp_width, vp_height);
+        createBuffers();
     }
 
     Scene::~Scene() {
-        deleteBuffer();
+        deleteBuffers();
     }
 
     void Scene::setViewport(unsigned int pixel_width, unsigned int pixel_height) {
@@ -43,24 +45,14 @@ namespace graphplay {
         if (smesh) {
             Program::sptr_type sprogram = smesh->getProgram().lock();
             if (sprogram) {
-                const IndexMap &blocks = sprogram->getUniformBlocks();
-                std::map<GLuint, GLuint> buffer_bindings;
-                GLuint binding_index = 0;
-
-                auto vp_elem = blocks.find("view_and_projection");
-                if (vp_elem != blocks.end()) {
-                    auto binding = buffer_bindings.find(m_uniform_buffer);
-                    if (binding == buffer_bindings.end()) {
-                        glBindBufferBase(GL_UNIFORM_BUFFER, binding_index, m_uniform_buffer);
-                        buffer_bindings[m_uniform_buffer] = binding_index;
-                        ++binding_index;
-                        binding = buffer_bindings.find(m_uniform_buffer);
+                GLuint progid = sprogram->getProgramId();
+                const IndexMap &program_blocks = sprogram->getUniformBlocks();
+                for (auto buffer_binding : m_uniform_buffer_bindings) {
+                    auto block_elem = program_blocks.find(buffer_binding.first);
+                    if (block_elem != program_blocks.end()) {
+                        glUniformBlockBinding(progid, block_elem->second, buffer_binding.second);
                     }
-
-                    glUniformBlockBinding(sprogram->getProgramId(), vp_elem->second, binding->second);
                 }
-
-                // Bind other uniform buffers...
             }
         }
     }
@@ -79,14 +71,15 @@ namespace graphplay {
         return rv;
     }
 
-    void Scene::createBuffer() {
-        deleteBuffer();
-        glGenBuffers(1, &m_uniform_buffer);
-        glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer);
-        updateBuffer();
+    void Scene::createBuffers() {
+        deleteBuffers();
+        glGenBuffers(1, &m_view_projection_uniform_buffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, m_view_projection_uniform_buffer);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewAndProjectionBlock), nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    void Scene::updateBuffer() {
+    void Scene::updateBuffers() {
         glm::mat4x4 view = m_camera.getViewTransform();
         glm::mat4x4 view_inv = glm::inverse(view);
         ViewAndProjectionBlock block;
@@ -98,60 +91,38 @@ namespace graphplay {
         std::copy(view_inv_ptr, view_inv_ptr + 16, block.view_inv);
         std::copy(proj_ptr, proj_ptr + 16, block.projection);
 
-        if (!glIsBuffer(m_uniform_buffer)) createBuffer();
-        glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewAndProjectionBlock), &block, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_UNIFORM_BUFFER, m_view_projection_uniform_buffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ViewAndProjectionBlock), &block);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    void Scene::deleteBuffer() {
-        if (glIsBuffer(m_uniform_buffer)) {
-            glDeleteBuffers(1, &m_uniform_buffer);
+    void Scene::bindBuffers() {
+        glBindBufferBase(
+            GL_UNIFORM_BUFFER,
+            m_uniform_buffer_bindings["view_and_projection"],
+            m_view_projection_uniform_buffer);
+    }
+
+    void Scene::unbindBuffers() {
+        glBindBufferBase(GL_UNIFORM_BUFFER, m_uniform_buffer_bindings["view_and_projection"], 0);
+    }
+
+    void Scene::deleteBuffers() {
+        if (glIsBuffer(m_view_projection_uniform_buffer)) {
+            glDeleteBuffers(1, &m_view_projection_uniform_buffer);
         }
     }
 
     void Scene::render() {
-        updateBuffer();
+        updateBuffers();
+        bindBuffers();
 
         for (auto wm : m_meshes) {
             if (auto sm = wm.lock()) {
                 sm->render();
             }
         }
-    }
 
-    Scene::MeshIterator Scene::begin() const {
-        return Scene::MeshIterator(*this, 0);
-    }
-
-    Scene::MeshIterator Scene::end() const {
-        return Scene::MeshIterator(*this, m_meshes.size());
-    }
-
-    Scene::MeshIterator::MeshIterator(const Scene &scene, unsigned int init_loc)
-        : m_scene(scene),
-          m_loc(init_loc) { }
-
-    bool Scene::MeshIterator::operator==(const Scene::MeshIterator &other) const {
-        return !(*this != other);
-    }
-
-    bool Scene::MeshIterator::operator!=(const Scene::MeshIterator &other) const {
-        return &m_scene != &other.m_scene || m_loc != other.m_loc;
-    }
-
-    Scene::value_type Scene::MeshIterator::operator*() {
-        return Mesh::wptr_type(m_scene.m_meshes[m_loc]);
-    }
-
-    Scene::MeshIterator &Scene::MeshIterator::operator++() {
-        ++m_loc;
-        return *this;
-    }
-
-    Scene::MeshIterator Scene::MeshIterator::operator++(int) {
-        Scene::MeshIterator clone(*this);
-        ++m_loc;
-        return clone;
+        unbindBuffers();
     }
 };

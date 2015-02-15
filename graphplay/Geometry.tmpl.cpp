@@ -169,9 +169,11 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 
-#include "Geometry.h"
-#include "Shader.h"
 #include <iostream>
+
+#include "Geometry.h"
+#include "OpenGLUtils.h"
+#include "Shader.h"
 
 namespace graphplay {
     template <typename V>
@@ -336,9 +338,14 @@ namespace graphplay {
 
     template <typename V>
     void Geometry<V>::render() const {
+        static int i = 0;
         glBindVertexArray(m_array_object);
+        if (i % 100 == 0) {
+            dumpOpenGLState();
+        }
         glDrawElements(GL_TRIANGLES, m_elems.size(), elem_gl_type, BUFFER_OFFSET_BYTES(0));
         glBindVertexArray(0);
+        ++i;
     }
 };
 

@@ -243,4 +243,102 @@ namespace graphplay {
 
         delete[] name;
     }
+
+    std::string translateGLType(GLenum type) {
+        std::string rv;
+
+        switch (type) {
+        case GL_FLOAT:        rv = "float"; break;
+        case GL_FLOAT_VEC2:   rv = "float vec2"; break;
+        case GL_FLOAT_VEC3:   rv = "float vec3"; break;
+        case GL_FLOAT_VEC4:   rv = "float vec4"; break;
+        case GL_FLOAT_MAT2:   rv = "float mat2x2"; break;
+        case GL_FLOAT_MAT2x3: rv = "float mat2x3"; break;
+        case GL_FLOAT_MAT2x4: rv = "float mat2x4"; break;
+        case GL_FLOAT_MAT3x2: rv = "float mat3x2"; break;
+        case GL_FLOAT_MAT3:   rv = "float mat3x3"; break;
+        case GL_FLOAT_MAT3x4: rv = "float mat3x4"; break;
+        case GL_FLOAT_MAT4x2: rv = "float mat4x2"; break;
+        case GL_FLOAT_MAT4x3: rv = "float mat4x3"; break;
+        case GL_FLOAT_MAT4:   rv = "float mat4x4"; break;
+
+        case GL_INT:        rv = "int"; break;
+        case GL_INT_VEC2:   rv = "int vec2"; break;
+        case GL_INT_VEC3:   rv = "int vec3"; break;
+        case GL_INT_VEC4:   rv = "int vec4"; break;
+
+        case GL_UNSIGNED_INT:        rv = "unsigned int"; break;
+        case GL_UNSIGNED_INT_VEC2:   rv = "unsigned int vec2"; break;
+        case GL_UNSIGNED_INT_VEC3:   rv = "unsigned int vec3"; break;
+        case GL_UNSIGNED_INT_VEC4:   rv = "unsigned int vec4"; break;
+
+        case GL_DOUBLE:        rv = "double"; break;
+        case GL_DOUBLE_VEC2:   rv = "double vec2"; break;
+        case GL_DOUBLE_VEC3:   rv = "double vec3"; break;
+        case GL_DOUBLE_VEC4:   rv = "double vec4"; break;
+        case GL_DOUBLE_MAT2:   rv = "double mat2x2"; break;
+        case GL_DOUBLE_MAT2x3: rv = "double mat2x3"; break;
+        case GL_DOUBLE_MAT2x4: rv = "double mat2x4"; break;
+        case GL_DOUBLE_MAT3x2: rv = "double mat3x2"; break;
+        case GL_DOUBLE_MAT3:   rv = "double mat3x3"; break;
+        case GL_DOUBLE_MAT3x4: rv = "double mat3x4"; break;
+        case GL_DOUBLE_MAT4x2: rv = "double mat4x2"; break;
+        case GL_DOUBLE_MAT4x3: rv = "double mat4x3"; break;
+        case GL_DOUBLE_MAT4:   rv = "double mat4x4"; break;
+
+        default:
+            rv = "Unknown OpenGL type";
+        }
+
+        return rv;
+    }
+
+    void dumpOpenGLState() {
+        GLint progid = 0;
+        GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0;
+        GLenum type = 0;
+        char *name = nullptr;
+
+        glGetIntegerv(GL_CURRENT_PROGRAM, &progid);
+        std::cout << "OpenGL State:" << std::endl;
+        std::cout << "  GL_CURRENT_PROGRAM: " << progid << std::endl;
+
+        glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTES, &num_things);
+        glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_len);
+        name = new char[max_name_len];
+        std::cout << "    Attributes: " << num_things << std::endl;
+        for (auto i = 0; i < num_things; ++i) {
+            glGetActiveAttrib(progid, i, max_name_len, &name_len, &size, &type, name);
+            std::cout << "      " << i << ": " << name << " type: " << translateGLType(type) << " size: " << size << std::endl;
+
+            VAPState array_state;
+            glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
+            if (array_state.enabled != GL_FALSE) {
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &array_state.array_buffer_binding);
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_SIZE, &array_state.size);
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &array_state.stride);
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_TYPE, &array_state.type);
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &array_state.is_normalized);
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &array_state.is_integer);
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &array_state.divisor);
+                glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER, &array_state.offset);
+                std::cout << "         "
+                          << "array: enabled"
+                          << " size: " << array_state.size
+                          << " stride: " << array_state.stride
+                          << " type: " << translateGLType(array_state.type)
+                          << " normalized: " << array_state.is_normalized
+                          << " integral: " << array_state.is_integer
+                          << " divisor: " << array_state.divisor
+                          << " offset: " << array_state.offset
+                          << std::endl;
+            } else {
+                std::cout << "         array: disabled" << std::endl;
+            }
+
+        }
+        delete [] name;
+
+        std::cout << std::endl;
+    }
 }

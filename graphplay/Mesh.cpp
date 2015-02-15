@@ -6,15 +6,15 @@
 
 namespace graphplay {
     Mesh::Mesh()
-        : m_geometry(),
-          m_program(),
-          m_model_transform()
+        : m_model_transform(),
+          m_geometry(),
+          m_program()
     {}
 
     Mesh::Mesh(AbstractGeometry::sptr_type geo, Program::sptr_type program)
-        : m_geometry(geo),
-          m_program(program),
-          m_model_transform()
+        : m_model_transform(),
+          m_geometry(geo),
+          m_program(program)
     {
         m_geometry->createVertexArray(*m_program);
     }
@@ -45,9 +45,9 @@ namespace graphplay {
         const IndexMap &unifs = m_program->getUniforms();
 
         glUseProgram(m_program->getProgramId());
-        auto vp_elem = unifs.find("model");
-        if (vp_elem != unifs.end()) {
-            glUniformMatrix4fv(vp_elem->second, 1, GL_FALSE, glm::value_ptr(m_model_transform));
+        auto model_tf_elem = unifs.find("model");
+        if (model_tf_elem != unifs.end()) {
+            glUniformMatrix4fv(model_tf_elem->second, 1, GL_FALSE, glm::value_ptr(m_model_transform));
         }
 
         m_geometry->render();
