@@ -34,8 +34,6 @@ namespace graphplay {
         void setTransform(const glm::mat4x4 &new_transform);
         inline const glm::mat4x4& getTransform() const { return m_model_transform; }
 
-        void setUpProgramUniforms(GLuint uniform_buffer);
-
         void render() const;
 
     private:

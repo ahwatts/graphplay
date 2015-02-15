@@ -1,5 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <iostream>
+
 #include "Shader.h"
 
 namespace graphplay {
@@ -95,38 +97,38 @@ namespace graphplay {
         return *this;
     }
 
-    //void Shader::dump() const {
-    //    std::cout << "<Shader m_program = " << m_program;
+    void Program::dump() const {
+        std::cout << "<Program m_program = " << m_program;
 
-    //    std::cout << " attributes = { ";
-    //    for (const auto a : m_attributes) {
-    //        std::cout << a.first << ": " << a.second;
-    //        if (a != *m_attributes.crbegin()) {
-    //            std::cout << ", ";
-    //        }
-    //    }
-    //    std::cout << " }";
+        std::cout << " attributes = { ";
+        for (const auto a : m_attributes) {
+            std::cout << a.first << ": " << a.second;
+            if (a != *m_attributes.crbegin()) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << " }";
 
-    //    std::cout << " uniforms = { ";
-    //    for (auto a : m_uniforms) {
-    //        std::cout << a.first << ": " << a.second;
-    //        if (a != *m_uniforms.crbegin()) {
-    //            std::cout << ", ";
-    //        }
-    //    }
-    //    std::cout << " }";
+        std::cout << " uniforms = { ";
+        for (auto a : m_uniforms) {
+            std::cout << a.first << ": " << a.second;
+            if (a != *m_uniforms.crbegin()) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << " }";
 
-    //    std::cout << " uniform blocks = { ";
-    //    for (auto a : m_uniform_blocks) {
-    //        std::cout << a.first << ": " << a.second;
-    //        if (a != *m_uniform_blocks.crbegin()) {
-    //            std::cout << ", ";
-    //        }
-    //    }
-    //    std::cout << " }";
+        std::cout << " uniform blocks = { ";
+        for (auto a : m_uniform_blocks) {
+            std::cout << a.first << ": " << a.second;
+            if (a != *m_uniform_blocks.crbegin()) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << " }";
 
-    //    std::cout << ">" << std::endl;
-    //}
+        std::cout << ">" << std::endl;
+    }
 
     // Actual shader code.
     const char *Shader::unlit_vertex_shader_source = R"glsl(

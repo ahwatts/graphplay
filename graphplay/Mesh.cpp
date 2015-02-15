@@ -41,11 +41,17 @@ namespace graphplay {
         m_model_transform = new_transform;
     }
 
-    void Mesh::setUpProgramUniforms(GLuint uniform_buffer) {
-
-    }
-
     void Mesh::render() const {
+        const IndexMap &unifs = m_program->getUniforms();
+
+        glUseProgram(m_program->getProgramId());
+        auto vp_elem = unifs.find("model");
+        if (vp_elem != unifs.end()) {
+            glUniformMatrix4fv(vp_elem->second, 1, GL_FALSE, glm::value_ptr(m_model_transform));
+        }
+
         m_geometry->render();
+
+        glUseProgram(0);
     }
 };

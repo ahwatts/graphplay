@@ -64,6 +64,7 @@ int main(int argc, char **argv) {
     // Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, unlit_shader);
 
     Scene scene(pixel_width, pixel_height);
+    scene.createBuffer();
     scene.addMesh(octo);
     // scene.addMesh(sphere);
 

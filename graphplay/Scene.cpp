@@ -38,9 +38,30 @@ namespace graphplay {
 
     void Scene::addMesh(Mesh::wptr_type mesh) {
         m_meshes.push_back(mesh);
-        Mesh::sptr_type sm = mesh.lock();
-        if (sm) {
-            sm->setUpProgramUniforms(m_uniform_buffer);
+        Mesh::sptr_type smesh = mesh.lock();
+
+        if (smesh) {
+            Program::sptr_type sprogram = smesh->getProgram().lock();
+            if (sprogram) {
+                const IndexMap &blocks = sprogram->getUniformBlocks();
+                std::map<GLuint, GLuint> buffer_bindings;
+                GLuint binding_index = 0;
+
+                auto vp_elem = blocks.find("view_and_projection");
+                if (vp_elem != blocks.end()) {
+                    auto binding = buffer_bindings.find(m_uniform_buffer);
+                    if (binding == buffer_bindings.end()) {
+                        glBindBufferBase(GL_UNIFORM_BUFFER, binding_index, m_uniform_buffer);
+                        buffer_bindings[m_uniform_buffer] = binding_index;
+                        ++binding_index;
+                        binding = buffer_bindings.find(m_uniform_buffer);
+                    }
+
+                    glUniformBlockBinding(sprogram->getProgramId(), vp_elem->second, binding->second);
+                }
+
+                // Bind other uniform buffers...
+            }
         }
     }
 
@@ -69,10 +90,13 @@ namespace graphplay {
         glm::mat4x4 view = m_camera.getViewTransform();
         glm::mat4x4 view_inv = glm::inverse(view);
         ViewAndProjectionBlock block;
+        float *view_ptr = glm::value_ptr(view);
+        float *view_inv_ptr = glm::value_ptr(view_inv);
+        float *proj_ptr = glm::value_ptr(m_projection);
 
-        std::copy(glm::value_ptr(view), glm::value_ptr(view) + 16 * sizeof(float), block.view);
-        std::copy(glm::value_ptr(view_inv), glm::value_ptr(view_inv) + 16 * sizeof(float), block.view_inv);
-        std::copy(glm::value_ptr(m_projection), glm::value_ptr(m_projection) + 16 * sizeof(float), block.projection);
+        std::copy(view_ptr, view_ptr + 16, block.view);
+        std::copy(view_inv_ptr, view_inv_ptr + 16, block.view_inv);
+        std::copy(proj_ptr, proj_ptr + 16, block.projection);
 
         if (!glIsBuffer(m_uniform_buffer)) createBuffer();
         glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer);
@@ -88,30 +112,9 @@ namespace graphplay {
 
     void Scene::render() {
         updateBuffer();
-        // glm::vec3 light_pos(0, 10, 10);
-        // glm::vec4 light_color(1, 1, 1, 1);
-        // unsigned int specular_exponent = 10;
 
         for (auto wm : m_meshes) {
             if (auto sm = wm.lock()) {
-                Program::sptr_type program = sm->getProgram().lock();
-                // if (mat) {
-                //     GLuint program = mat->getProgram();
-                //     GLint view_loc = mat->getViewLocation();
-                //     GLint view_inv_loc = mat->getViewInverseLocation();
-                //     GLint projection_loc = mat->getProjectionLocation();
-                //     GLint light_pos_loc = mat->getLightPositionLocation();
-                //     GLint light_color_loc = mat->getLightColorLocation();
-                //     GLint specular_exp_loc = mat->getSpecularExponentLocation();
-
-                //     glUseProgram(program);
-                //     if (view_loc >= 0) glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(m_view));
-                //     if (view_inv_loc >= 0) glUniformMatrix4fv(view_inv_loc, 1, GL_FALSE, glm::value_ptr(m_view_inv));
-                //     if (projection_loc >= 0) glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(m_projection));
-                //     if (light_pos_loc >= 0) glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
-                //     if (light_color_loc >= 0) glUniform4fv(light_color_loc, 1, glm::value_ptr(light_color));
-                //     if (specular_exp_loc >= 0) glUniform1ui(specular_exp_loc, specular_exponent);
-                // }
                 sm->render();
             }
         }
