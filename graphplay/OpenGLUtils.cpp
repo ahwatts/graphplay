@@ -448,13 +448,16 @@ namespace graphplay {
 
     void dumpOpenGLState() {
         GLint progid = 0;
-        GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0;
+        GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0, element_array_buffer = 0;
         GLenum type = 0;
         char *name = nullptr;
 
         glGetIntegerv(GL_CURRENT_PROGRAM, &progid);
         std::cout << "OpenGL State:" << std::endl;
-        std::cout << "  GL_CURRENT_PROGRAM: " << progid << std::endl;
+        std::cout << "  Current program: " << progid << std::endl;
+
+        glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &element_array_buffer);
+        std::cout << "    Element array buffer: " << element_array_buffer << std::endl;
 
         glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTES, &num_things);
         glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_len);
@@ -462,7 +465,7 @@ namespace graphplay {
         std::cout << "    Attributes: " << num_things << std::endl;
         for (auto i = 0; i < num_things; ++i) {
             glGetActiveAttrib(progid, i, max_name_len, &name_len, &size, &type, name);
-            std::cout << "      " << i << ": " << name << " type: " << translateGLType(type) << " size: " << size << std::endl;
+            std::cout << "      " << i << ": " << name << ": type: " << translateGLType(type) << " size: " << size << std::endl;
 
             VAPState array_state;
             glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
@@ -476,14 +479,15 @@ namespace graphplay {
                 glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &array_state.divisor);
                 glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER, &array_state.offset);
                 std::cout << "         "
-                          << "array: enabled"
+                          << "array value: enabled"
+                          << " buffer binding: " << array_state.array_buffer_binding
                           << " size: " << array_state.size
                           << " stride: " << array_state.stride
                           << " type: " << translateGLType(array_state.type)
                           << " normalized: " << array_state.is_normalized
                           << " integral: " << array_state.is_integer
                           << " divisor: " << array_state.divisor
-                          << " offset: " << array_state.offset
+                          << " offset: " << (long)array_state.offset
                           << std::endl;
             } else {
                 std::cout << "         array: disabled" << std::endl;
@@ -502,11 +506,24 @@ namespace graphplay {
             if (block_index == -1) {
                 glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_SIZE, &size);
                 glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_TYPE, &itype);
-                std::cout << "      " << i << ": " << name << " type: " << translateGLType((GLenum)itype) << " size: " << size;
-                std::cout << " value: " << getUniformValue(progid, i) << std::endl;
+                std::cout << "      " << i << ": " << name << ": type: " << translateGLType((GLenum)itype) << " size: " << size << std::endl;
+                std::cout << "         value: " << getUniformValue(progid, i) << std::endl;
             } else {
                 std::cout << "      " << i << ": (in block)" << std::endl;
             }
+        }
+        delete [] name;
+
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCKS, &num_things);
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
+        name = new char[max_name_len];
+        std::cout << "    Uniform blocks: " << num_things << std::endl;
+        for (GLuint i = 0; i < num_things; ++i) {
+            GLint binding = -1, bound_buffer = -1;
+            glGetActiveUniformBlockiv(progid, i, GL_UNIFORM_BLOCK_BINDING, &binding);
+            glGetActiveUniformBlockName(progid, i, max_name_len, nullptr, name);
+            glGetIntegeri_v(GL_UNIFORM_BUFFER_BINDING, binding, &bound_buffer);
+            std::cout << "      " << i << ": " << name << ": binding: " << binding << " buffer: " << bound_buffer << std::endl;
         }
         delete [] name;
 
