@@ -343,11 +343,11 @@ namespace graphplay {
     void Geometry<V>::render() const {
         glBindVertexArray(m_array_object);
 
-        static int i = 0;
-        if (i % 500 == 0) {
-            dumpOpenGLState();
-        }
-        ++i;
+        // static int i = 0;
+        // if (i % 500 == 0) {
+        //     dumpOpenGLState();
+        // }
+        // ++i;
 
         glDrawElements(GL_TRIANGLES, m_elems.size(), elem_gl_type, BUFFER_OFFSET_BYTES(0));
         glBindVertexArray(0);
