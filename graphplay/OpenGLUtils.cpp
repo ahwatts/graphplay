@@ -205,8 +205,10 @@ namespace graphplay {
         for (auto i = 0; i < num_attrs; ++i) {
             GLsizei name_len = 0, size = 0;
             GLenum type = 0;
+            GLint location = -1;
             glGetActiveAttrib(program, i, max_name_len, &name_len, &size, &type, name);
-            attributes[name] = i;
+            location = glGetAttribLocation(program, name);
+            attributes[name] = location;
         }
 
         delete[] name;
@@ -222,8 +224,10 @@ namespace graphplay {
         for (auto i = 0; i < num_unifs; ++i) {
             GLsizei name_len = 0, size = 0;
             GLenum type = 0;
+            GLint location = -1;
             glGetActiveUniform(program, i, max_name_len, &name_len, &size, &type, name);
-            uniforms[name] = i;
+            location = glGetUniformLocation(program, name);
+            uniforms[name] = location;
         }
 
         delete[] name;
@@ -231,6 +235,7 @@ namespace graphplay {
 
     void getUniformBlockInfo(GLuint program, IndexMap &uniform_blocks) {
         GLint num_unifbs, max_name_len;
+        GLuint index = 0;
         glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &num_unifbs);
         glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
 
@@ -239,7 +244,8 @@ namespace graphplay {
         for (auto i = 0; i < num_unifbs; ++i) {
             GLsizei name_len = 0;
             glGetActiveUniformBlockName(program, i, max_name_len, &name_len, name);
-            uniform_blocks[name] = i;
+            index = glGetUniformBlockIndex(program, name);
+            uniform_blocks[name] = index;
         }
 
         delete[] name;
@@ -345,7 +351,8 @@ namespace graphplay {
 
     std::string getUniformValue(GLuint program, GLint location) {
         std::stringstream out;
-        GLint size = 0, total_size = 0;
+        GLint size = 0;
+        unsigned int total_size = 0;
         GLenum type = 0, error = GL_NO_ERROR;
         glGetActiveUniform(program, location, 0, nullptr, &size, &type, nullptr);
         total_size = size*sizeOfGLType(type);
@@ -369,7 +376,7 @@ namespace graphplay {
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (auto i = 0; i < total_size / sizeof(float); ++i) {
+                for (unsigned int i = 0; i < total_size / sizeof(float); ++i) {
                     out << ((float*)buffer)[i] << ", ";
                 }
                 out << "]";
@@ -386,7 +393,7 @@ namespace graphplay {
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (auto i = 0; i < total_size / sizeof(int); ++i) {
+                for (unsigned int i = 0; i < total_size / sizeof(int); ++i) {
                     out << ((int*)buffer)[i] << ", ";
                 }
                 out << "]";
@@ -403,7 +410,7 @@ namespace graphplay {
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (auto i = 0; i < total_size / sizeof(unsigned int); ++i) {
+                for (unsigned int i = 0; i < total_size / sizeof(unsigned int); ++i) {
                     out << ((unsigned int*)buffer)[i] << ", ";
                 }
                 out << "]";
@@ -429,7 +436,7 @@ namespace graphplay {
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (auto i = 0; i < total_size / sizeof(double); ++i) {
+                for (unsigned int i = 0; i < total_size / sizeof(double); ++i) {
                     out << ((double*)buffer)[i] << ", ";
                 }
                 out << "]";
@@ -464,8 +471,10 @@ namespace graphplay {
         name = new char[max_name_len];
         std::cout << "    Attributes: " << num_things << std::endl;
         for (auto i = 0; i < num_things; ++i) {
+            GLint location = -1;
             glGetActiveAttrib(progid, i, max_name_len, &name_len, &size, &type, name);
-            std::cout << "      " << i << ": " << name << ": type: " << translateGLType(type) << " size: " << size << std::endl;
+            location = glGetAttribLocation(progid, name);
+            std::cout << "      " << i << ": " << name << ": type: " << translateGLType(type) << " size: " << size << " location: " << location << std::endl;
 
             VAPState array_state;
             glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
@@ -499,14 +508,15 @@ namespace graphplay {
         glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
         name = new char[max_name_len];
         std::cout << "    Uniforms: " << num_things << std::endl;
-        for (GLuint i = 0; i < num_things; ++i) {
-            GLint block_index = 0, itype = 0;
+        for (GLuint i = 0; i < (GLuint)num_things; ++i) {
+            GLint block_index = 0, itype = 0, location = -1;
             glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_BLOCK_INDEX, &block_index);
             glGetActiveUniformName(progid, i, max_name_len, nullptr, name);
+            location = glGetUniformLocation(progid, name);
             if (block_index == -1) {
                 glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_SIZE, &size);
                 glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_TYPE, &itype);
-                std::cout << "      " << i << ": " << name << ": type: " << translateGLType((GLenum)itype) << " size: " << size << std::endl;
+                std::cout << "      " << i << ": " << name << ": type: " << translateGLType((GLenum)itype) << " size: " << size << " location: " << location << std::endl;
                 std::cout << "         value: " << getUniformValue(progid, i) << std::endl;
             } else {
                 std::cout << "      " << i << ": (in block)" << std::endl;
@@ -518,12 +528,14 @@ namespace graphplay {
         glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
         name = new char[max_name_len];
         std::cout << "    Uniform blocks: " << num_things << std::endl;
-        for (GLuint i = 0; i < num_things; ++i) {
+        for (GLuint i = 0; i < (GLuint)num_things; ++i) {
             GLint binding = -1, bound_buffer = -1;
+            GLuint index = 0;
             glGetActiveUniformBlockiv(progid, i, GL_UNIFORM_BLOCK_BINDING, &binding);
             glGetActiveUniformBlockName(progid, i, max_name_len, nullptr, name);
             glGetIntegeri_v(GL_UNIFORM_BUFFER_BINDING, binding, &bound_buffer);
-            std::cout << "      " << i << ": " << name << ": binding: " << binding << " buffer: " << bound_buffer << std::endl;
+            index = glGetUniformBlockIndex(progid, name);
+            std::cout << "      " << i << ": " << name << ": index: " << index << " binding: " << binding << " buffer: " << bound_buffer << std::endl;
         }
         delete [] name;
 
