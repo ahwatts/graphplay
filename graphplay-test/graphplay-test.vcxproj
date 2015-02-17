@@ -9,6 +9,7 @@
   <ItemGroup>
     <ClCompile Include="..\graphplay\Camera.cpp" />
     <ClCompile Include="..\graphplay\Geometry.cpp" />
+    <ClCompile Include="..\graphplay\Geometry.tmpl.cpp" />
     <ClCompile Include="..\graphplay\Material.cpp" />
     <ClCompile Include="..\graphplay\Mesh.cpp" />
     <ClCompile Include="..\graphplay\OpenGLUtils.cpp" />
