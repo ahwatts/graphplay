@@ -58,7 +58,7 @@ namespace graphplay {
     {
     public:
         typedef V vertex_type;
-        typedef unsigned int elem_type;
+        typedef GLuint elem_type;
         const static GLenum elem_gl_type = GL_UNSIGNED_INT;
         typedef std::vector<vertex_type> vertex_array_type;
         typedef std::vector<elem_type> elem_array_type;

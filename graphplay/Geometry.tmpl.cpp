@@ -328,7 +328,7 @@ namespace graphplay {
                     geo_attr.second.count,
                     geo_attr.second.type,
                     GL_FALSE,
-                    sizeof(V),
+                    sizeof(Geometry<V>::vertex_type),
                     BUFFER_OFFSET_BYTES(geo_attr.second.offset));
             }
         }
