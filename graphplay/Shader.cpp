@@ -97,39 +97,6 @@ namespace graphplay {
         return *this;
     }
 
-    void Program::dump() const {
-        std::cout << "<Program m_program = " << m_program;
-
-        std::cout << " attributes = { ";
-        for (const auto a : m_attributes) {
-            std::cout << a.first << ": " << a.second;
-            if (a != *m_attributes.crbegin()) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << " }";
-
-        std::cout << " uniforms = { ";
-        for (auto a : m_uniforms) {
-            std::cout << a.first << ": " << a.second;
-            if (a != *m_uniforms.crbegin()) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << " }";
-
-        std::cout << " uniform blocks = { ";
-        for (auto a : m_uniform_blocks) {
-            std::cout << a.first << ": " << a.second;
-            if (a != *m_uniform_blocks.crbegin()) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << " }";
-
-        std::cout << ">" << std::endl;
-    }
-
     // Actual shader code.
     const char *Shader::unlit_vertex_shader_source = R"glsl(
         #version 410 core

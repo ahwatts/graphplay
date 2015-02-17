@@ -50,8 +50,6 @@ namespace graphplay {
         Program& operator=(const Program &other);
         Program& operator=(Program &&other);
 
-        void dump() const;
-
         inline const GLuint getProgramId() const { return m_program; }
         inline const Shader::sptr_type getVertexShader()   const { return m_vertex_shader; }
         inline const Shader::sptr_type getFragmentShader() const { return m_fragment_shader; }
