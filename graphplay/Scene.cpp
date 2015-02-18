@@ -16,12 +16,19 @@ namespace graphplay {
           m_vp_height(0),
           m_camera(),
           m_projection(),
+          m_lights(),
           m_meshes(),
           m_view_projection_uniform_buffer(0),
           m_uniform_buffer_bindings()
     {
         m_uniform_buffer_bindings["view_and_projection"] = 0;
+        m_uniform_buffer_bindings["light_list"] = 1;
         setViewport(vp_width, vp_height);
+
+        for (auto i = 0; i < MAX_LIGHTS; ++i) {
+            m_lights.lights[i].enabled = 0;
+        }
+
         createBuffers();
     }
 
@@ -73,10 +80,19 @@ namespace graphplay {
     }
 
     void Scene::createBuffers() {
+        GLuint bufids[2];
+
         deleteBuffers();
-        glGenBuffers(1, &m_view_projection_uniform_buffer);
+        glGenBuffers(2, bufids);
+
+        m_view_projection_uniform_buffer = bufids[0];
         glBindBuffer(GL_UNIFORM_BUFFER, m_view_projection_uniform_buffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewAndProjectionBlock), nullptr, GL_DYNAMIC_DRAW);
+
+        m_light_uniform_buffer = bufids[1];
+        glBindBuffer(GL_UNIFORM_BUFFER, m_light_uniform_buffer);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(LightListBlock), nullptr, GL_DYNAMIC_DRAW);
+
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
@@ -94,6 +110,10 @@ namespace graphplay {
 
         glBindBuffer(GL_UNIFORM_BUFFER, m_view_projection_uniform_buffer);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ViewAndProjectionBlock), &block);
+
+        glBindBuffer(GL_UNIFORM_BUFFER, m_light_uniform_buffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(LightListBlock), &m_lights);
+
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
@@ -102,16 +122,29 @@ namespace graphplay {
             GL_UNIFORM_BUFFER,
             m_uniform_buffer_bindings["view_and_projection"],
             m_view_projection_uniform_buffer);
+
+        glBindBufferBase(
+            GL_UNIFORM_BUFFER,
+            m_uniform_buffer_bindings["light_list"],
+            m_light_uniform_buffer);
     }
 
     void Scene::unbindBuffers() {
         glBindBufferBase(GL_UNIFORM_BUFFER, m_uniform_buffer_bindings["view_and_projection"], 0);
+        glBindBufferBase(GL_UNIFORM_BUFFER, m_uniform_buffer_bindings["light_list"], 0);
     }
 
     void Scene::deleteBuffers() {
         if (glIsBuffer(m_view_projection_uniform_buffer)) {
             glDeleteBuffers(1, &m_view_projection_uniform_buffer);
         }
+
+        if (glIsBuffer(m_light_uniform_buffer)) {
+            glDeleteBuffers(1, &m_light_uniform_buffer);
+        }
+
+        m_view_projection_uniform_buffer = 0;
+        m_light_uniform_buffer = 0;
     }
 
     void Scene::render() {

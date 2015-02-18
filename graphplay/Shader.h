@@ -7,10 +7,23 @@
 #include "OpenGLUtils.h"
 
 namespace graphplay {
+    constexpr unsigned int MAX_LIGHTS = 10;
+
     struct ViewAndProjectionBlock {
-        float view[16];
-        float view_inv[16];
-        float projection[16];
+        GLfloat view[16];
+        GLfloat view_inv[16];
+        GLfloat projection[16];
+    };
+
+    struct LightPropertiesBlock {
+        GLuint enabled;
+        GLfloat position[3];
+        GLfloat color[4];
+        GLuint specular_exp;
+    };
+
+    struct LightListBlock {
+        LightPropertiesBlock lights[MAX_LIGHTS];
     };
 
     class Shader {

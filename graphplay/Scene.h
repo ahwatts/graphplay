@@ -53,10 +53,12 @@ namespace graphplay {
 
         Camera m_camera;
         glm::mat4x4 m_projection;
+        LightListBlock m_lights;
 
         mesh_list_type m_meshes;
 
         GLuint m_view_projection_uniform_buffer;
+        GLuint m_light_uniform_buffer;
         IndexMap m_uniform_buffer_bindings;
     };
 };
