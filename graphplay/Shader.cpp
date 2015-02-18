@@ -178,11 +178,11 @@ namespace graphplay {
             gl_Position = projection * view * wld_vert_position4;
             v_color = color;
             v_eye_dir = wld_vert_eye_dir;
-            vNormal = wld_vert_normal;
+            v_normal = wld_vert_normal;
             for (int i = 0; i < MAX_LIGHTS; ++i) {
                 if (lights[i].enabled) {
                     v_light_dir[i] = normalize(lights[i].position - wld_vert_position);
-                    v_light_reflect_dir[I] = normalize(reflect(-1 * v_light_dir[i], wld_vert_normal));
+                    v_light_reflect_dir[i] = normalize(reflect(-1 * v_light_dir[i], wld_vert_normal));
                 }
             }
         }
@@ -207,25 +207,31 @@ namespace graphplay {
 
         uniform light_list {
             LightProperties lights[MAX_LIGHTS];
-        }
+        };
 
         out vec4 frag_color;
 
         void main(void) {
-            vec3 color_combination = uLightColor.rgb * vColor.rgb;
+            frag_color = vec4(0.0, 0.0, 0.0, 1.0);
 
-            vec3 ambient_color = 0.1 * color_combination;
+            for (int i = 0; i < MAX_LIGHTS; ++i) {
+                if (lights[i].enabled) {
+                    vec3 color_combination = lights[i].color.rgb * v_color.rgb;
 
-            float diffuse_coeff = 0.7 * max(0.0, dot(vNormal, vLightDir));
-            vec3 diffuse_color = diffuse_coeff * color_combination;
+                    vec3 ambient_color = 0.1 * color_combination;
 
-            vec3 specular_color = vec3(0.0);
-            if (dot(vNormal, vLightDir) >= 0.0) {
-                float spec_coeff = 0.7 * pow(max(0.0, dot(vLightReflectDir, vEyeDir)), uSpecularExponent);
-                specular_color = spec_coeff * color_combination;
+                    float diffuse_coeff = 0.7 * max(0.0, dot(v_normal, v_light_dir[i]));
+                    vec3 diffuse_color = diffuse_coeff * color_combination;
+
+                    vec3 specular_color = vec3(0.0, 0.0, 0.0);
+                    if (dot(v_normal, v_light_dir[i]) >= 0.0) {
+                        float spec_coeff = 0.7 * pow(max(0.0, dot(v_light_reflect_dir[i], v_eye_dir)), lights[i].specular_exp);
+                        specular_color = spec_coeff * color_combination;
+                    }
+
+                    frag_color = clamp(frag_color + vec4(clamp(ambient_color + diffuse_color + specular_color, 0.0, 1.0), v_color.a), 0.0, 1.0);
+                }
             }
-
-            FragColor = vec4(clamp(ambient_color + diffuse_color + specular_color, 0.0, 1.0), vColor.a);
         }
     )glsl";
 }
