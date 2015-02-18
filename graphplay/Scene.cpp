@@ -29,6 +29,15 @@ namespace graphplay {
             m_lights.lights[i].enabled = 0;
         }
 
+        LightPropertiesBlock &light = m_lights.lights[0];
+        glm::vec4 color_vec(1.0, 1.0, 1.0, 1.0);
+        glm::vec3 position_vec(0.0, 10.0, 0.0);
+        float *color = glm::value_ptr(color_vec), *position = glm::value_ptr(position_vec);
+        light.enabled = 1;
+        std::copy(color, color + 4, light.color);
+        std::copy(position, position + 3, light.position);
+        light.specular_exp = 4;
+
         createBuffers();
     }
 

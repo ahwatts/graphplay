@@ -7,7 +7,12 @@
 #include "OpenGLUtils.h"
 
 namespace graphplay {
-    constexpr unsigned int MAX_LIGHTS = 10;
+#ifdef MSVC
+    const
+#else
+    constexpr
+#endif
+    unsigned int MAX_LIGHTS = 10;
 
     struct ViewAndProjectionBlock {
         GLfloat view[16];

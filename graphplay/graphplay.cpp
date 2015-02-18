@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     Program::sptr_type unlit_program = std::make_shared<Program>(unlit_vertex_shader, unlit_fragment_shader);
     Program::sptr_type lit_program = std::make_shared<Program>(lit_vertex_shader, lit_fragment_shader);
 
-    Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, unlit_program);
+    Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, lit_program);
     // Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, unlit_shader);
 
     Scene scene(pixel_width, pixel_height);

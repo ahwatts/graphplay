@@ -106,7 +106,7 @@ namespace graphplay {
 
         uniform mat4x4 model;
         uniform mat3x3 model_inv_trans_3;
-        uniform view_and_projection {
+        layout (shared) uniform view_and_projection {
             mat4x4 view;
             mat4x4 view_inv;
             mat4x4 projection;
@@ -149,12 +149,12 @@ namespace graphplay {
 
         uniform mat4x4 model;
         uniform mat3x3 model_inv_trans_3;
-        uniform view_and_projection {
+        layout (shared) uniform view_and_projection {
             mat4x4 view;
             mat4x4 view_inv;
             mat4x4 projection;
         };
-        uniform light_list {
+        layout (shared) uniform light_list {
             LightProperties lights[MAX_LIGHTS];
         };
 
@@ -205,7 +205,7 @@ namespace graphplay {
         in vec3 v_light_dir[MAX_LIGHTS];
         in vec3 v_light_reflect_dir[MAX_LIGHTS];
 
-        uniform light_list {
+        layout (shared) uniform light_list {
             LightProperties lights[MAX_LIGHTS];
         };
 

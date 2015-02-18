@@ -3,6 +3,7 @@
 #include "graphplay.h"
 #include "Mesh.h"
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 namespace graphplay {
     Mesh::Mesh()
@@ -45,9 +46,15 @@ namespace graphplay {
         const IndexMap &unifs = m_program->getUniforms();
 
         glUseProgram(m_program->getProgramId());
-        auto model_tf_elem = unifs.find("model");
-        if (model_tf_elem != unifs.end()) {
-            glUniformMatrix4fv(model_tf_elem->second, 1, GL_FALSE, glm::value_ptr(m_model_transform));
+        auto tf_elem = unifs.find("model");
+        if (tf_elem != unifs.end()) {
+            glUniformMatrix4fv(tf_elem->second, 1, GL_FALSE, glm::value_ptr(m_model_transform));
+        }
+
+        tf_elem = unifs.find("model_inv_trans_3");
+        if (tf_elem != unifs.end()) {
+            glm::mat3x3 model_inv_trans_3 = glm::inverseTranspose(glm::mat3x3(m_model_transform));
+            glUniformMatrix3fv(tf_elem->second, 1, GL_FALSE, glm::value_ptr(model_inv_trans_3));
         }
 
         m_geometry->render();

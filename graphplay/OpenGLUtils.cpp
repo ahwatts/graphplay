@@ -519,7 +519,7 @@ namespace graphplay {
                 std::cout << "      " << i << ": " << name << ": type: " << translateGLType((GLenum)itype) << " size: " << size << " location: " << location << std::endl;
                 std::cout << "         value: " << getUniformValue(progid, i) << std::endl;
             } else {
-                std::cout << "      " << i << ": (in block)" << std::endl;
+                std::cout << "      " << i << ": " << name << " (in block)" << std::endl;
             }
         }
         delete [] name;
