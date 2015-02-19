@@ -464,14 +464,8 @@ namespace graphplay {
         GLenum type = GL_INVALID_ENUM;
         char *name = nullptr;
         const char *sep = " | ";
-        auto wleft = [](int width, const char *str) {
-            return (std::stringstream()
-                << std::setw(width)
-                << std::setiosflags(std::ios::left)
-                << str
-                << std::resetiosflags(std::ios::left)
-            ).str();
-        };
+        VAPState array_state;
+        int num_array = 0, num_non_array = 0;
 
         if (!glIsProgram(progid)) return;
 
@@ -480,35 +474,114 @@ namespace graphplay {
         name = new char[max_name_len];
 
         std::cout << prefix << "Attributes (" << num_attribs << "):" << std::endl;
-        std::cout << prefix << sep
-                  << wleft(5, "Index") << sep
-                  << wleft(max_name_len, "Name") << sep
-                  << wleft(8, "Location") << sep
-                  << wleft(17, "Type") << sep
-                  << wleft(5, "Size") << sep
+
+        // Table headers.
+        std::cout << std::left << prefix << sep
+                  << std::setw(5)            << "Index"    << sep
+                  << std::setw(max_name_len) << "Name"     << sep
+                  << std::setw(8)            << "Location" << sep
+                  << std::setw(17)           << "Type"     << sep
+                  << std::setw(4)            << "Size"     << sep
                   << std::endl;
 
+        // Vertical separator.
         std::cout << std::setfill('-');
         std::cout << prefix << sep
-                  << std::setw(5) << "" << sep
+                  << std::setw(5)            << "" << sep
                   << std::setw(max_name_len) << "" << sep
-                  << std::setw(8) << "" << sep
-                  << std::setw(17) << "" << sep
-                  << std::setw(5) << "" << sep
+                  << std::setw(8)            << "" << sep
+                  << std::setw(17)           << "" << sep
+                  << std::setw(4)            << "" << sep
                   << std::endl;
         std::cout << std::setfill(' ');
 
         for (auto i = 0; i < num_attribs; ++i) {
+            glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
             glGetActiveAttrib(progid, i, max_name_len, nullptr, &size, &type, name);
             location = glGetAttribLocation(progid, name);
 
+            // Table row.
             std::cout << prefix << sep
-                      << std::setw(5) << i << sep
-                      << wleft(max_name_len, name) << sep
-                      << std::setw(8) << location << sep
-                      << wleft(17, translateGLType(type).c_str()) << sep
-                      << std::setw(5) << size << sep
+                      << std::right << std::setw(5)            << i        << sep
+                      << std::left  << std::setw(max_name_len) << name     << sep
+                      << std::right << std::setw(8)            << location << sep
+                      << std::left  << std::setw(17)           << translateGLType(type) << sep
+                      << std::right << std::setw(4)            << size     << sep
                       << std::endl;
+
+            if (array_state.enabled != GL_FALSE) {
+                num_array += 1;
+            } else {
+                num_non_array += 1;
+            }
+        }
+
+        std::cout << std::endl;
+
+        if (num_array > 0) {
+            std::cout << prefix << "Vertex Attribute Array State (" << num_array << " attributes)" << std::endl;
+
+            std::cout << std::left << prefix << sep
+                      << std::setw(max_name_len) << "Name"           << sep
+                      << std::setw(8)            << "Location"       << sep
+                      << std::setw(17)           << "Type"           << sep
+                      << std::setw(4)            << "Size"           << sep
+                      << std::setw(6)            << "Stride"         << sep
+                      << std::setw(6)            << "Offset"         << sep
+                      << std::setw(11)           << "Normalized?"    << sep
+                      << std::setw(8)            << "Integer?"       << sep
+                      << std::setw(7)            << "Divisor"        << sep
+                      << std::setw(14)           << "Buffer Binding" << sep
+                      << std::endl;
+
+            std::cout << std::setfill('-');
+            std::cout << prefix << sep
+                << std::setw(max_name_len) << "" << sep
+                << std::setw(8)            << "" << sep
+                << std::setw(17)           << "" << sep
+                << std::setw(4)            << "" << sep
+                << std::setw(6)            << "" << sep
+                << std::setw(6)            << "" << sep
+                << std::setw(11)           << "" << sep
+                << std::setw(8)            << "" << sep
+                << std::setw(7)            << "" << sep
+                << std::setw(14)           << "" << sep
+                << std::endl;
+            std::cout << std::setfill(' ');
+
+            for (auto i = 0; i < num_attribs; ++i) {
+                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
+                glGetActiveAttrib(progid, i, max_name_len, nullptr, &size, &type, name);
+                location = glGetAttribLocation(progid, name);
+
+                if (array_state.enabled != GL_FALSE) {
+                    glGetVertexAttribIuiv(location, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &array_state.array_buffer_binding);
+                    glGetVertexAttribIuiv(location, GL_VERTEX_ATTRIB_ARRAY_SIZE, &array_state.size);
+                    glGetVertexAttribIuiv(location, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &array_state.stride);
+                    glGetVertexAttribIuiv(location, GL_VERTEX_ATTRIB_ARRAY_TYPE, &array_state.type);
+                    glGetVertexAttribIuiv(location, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &array_state.is_normalized);
+                    glGetVertexAttribIuiv(location, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &array_state.is_integer);
+                    glGetVertexAttribIuiv(location, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &array_state.divisor);
+                    glGetVertexAttribPointerv(location, GL_VERTEX_ATTRIB_ARRAY_POINTER, &array_state.offset);
+
+                    std::cout << std::boolalpha << prefix << sep
+                              << std::left  << std::setw(max_name_len) << name                                    << sep
+                              << std::right << std::setw(8)            << location                                << sep
+                              << std::left  << std::setw(17)           << translateGLType(array_state.type)       << sep
+                              << std::right << std::setw(4)            << array_state.size                        << sep
+                              << std::right << std::setw(6)            << array_state.stride                      << sep
+                              << std::right << std::setw(6)            << (long)array_state.offset                << sep
+                              << std::left  << std::setw(11)           << (array_state.is_normalized != GL_FALSE) << sep
+                              << std::left  << std::setw(8)            << (array_state.is_integer != GL_FALSE)    << sep
+                              << std::right << std::setw(7)            << array_state.divisor                     << sep
+                              << std::right << std::setw(14)           << array_state.array_buffer_binding        << sep
+                              << std::endl;
+                }
+            }
+        }
+
+        if (num_non_array > 0) {
+            std::cout << prefix << "Vertex Attribute Generic State (" << num_non_array << " attributes)" << std::endl;
         }
 
         delete [] name;
@@ -516,7 +589,7 @@ namespace graphplay {
 
     void dumpOpenGLState() {
         GLint progid = 0;
-        GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0, element_array_buffer = 0;
+        GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0, element_array_buffer = -1, vao = -1;
         GLenum type = 0;
         char *name = nullptr;
 
@@ -524,48 +597,15 @@ namespace graphplay {
         std::cout << "OpenGL State:" << std::endl;
         std::cout << "  Current program: " << progid << std::endl;
 
+        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+        std::cout << "    Vertex array object: " << vao << std::endl;
+        std::cout << std::endl;
+
         glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &element_array_buffer);
         std::cout << "    Element array buffer: " << element_array_buffer << std::endl;
+        std::cout << std::endl;
 
         dumpProgramAttributes(progid, "    ");
-
-        // glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTES, &num_things);
-        // glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_len);
-        // name = new char[max_name_len];
-        // std::cout << "    Attributes: " << num_things << std::endl;
-        // for (auto i = 0; i < num_things; ++i) {
-        //     GLint location = -1;
-        //     glGetActiveAttrib(progid, i, max_name_len, &name_len, &size, &type, name);
-        //     location = glGetAttribLocation(progid, name);
-        //     std::cout << "      " << i << ": " << name << ": type: " << translateGLType(type) << " size: " << size << " location: " << location << std::endl;
-
-        //     VAPState array_state;
-        //     glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
-        //     if (array_state.enabled != GL_FALSE) {
-        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &array_state.array_buffer_binding);
-        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_SIZE, &array_state.size);
-        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &array_state.stride);
-        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_TYPE, &array_state.type);
-        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &array_state.is_normalized);
-        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &array_state.is_integer);
-        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &array_state.divisor);
-        //         glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER, &array_state.offset);
-        //         std::cout << "         "
-        //                   << "array value: enabled"
-        //                   << " buffer binding: " << array_state.array_buffer_binding
-        //                   << " size: " << array_state.size
-        //                   << " stride: " << array_state.stride
-        //                   << " type: " << translateGLType(array_state.type)
-        //                   << " normalized: " << array_state.is_normalized
-        //                   << " integral: " << array_state.is_integer
-        //                   << " divisor: " << array_state.divisor
-        //                   << " offset: " << (long)array_state.offset
-        //                   << std::endl;
-        //     } else {
-        //         std::cout << "         array: disabled" << std::endl;
-        //     }
-        // }
-        // delete [] name;
 
         // glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_things);
         // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
