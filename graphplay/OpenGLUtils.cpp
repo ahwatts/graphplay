@@ -1,6 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include <cstring>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -252,52 +253,57 @@ namespace graphplay {
     }
 
     std::string translateGLType(GLenum type) {
-        std::string rv;
+        std::stringstream out;
 
         switch (type) {
-        case GL_FLOAT:        rv = "float"; break;
-        case GL_FLOAT_VEC2:   rv = "float vec2"; break;
-        case GL_FLOAT_VEC3:   rv = "float vec3"; break;
-        case GL_FLOAT_VEC4:   rv = "float vec4"; break;
-        case GL_FLOAT_MAT2:   rv = "float mat2x2"; break;
-        case GL_FLOAT_MAT2x3: rv = "float mat2x3"; break;
-        case GL_FLOAT_MAT2x4: rv = "float mat2x4"; break;
-        case GL_FLOAT_MAT3x2: rv = "float mat3x2"; break;
-        case GL_FLOAT_MAT3:   rv = "float mat3x3"; break;
-        case GL_FLOAT_MAT3x4: rv = "float mat3x4"; break;
-        case GL_FLOAT_MAT4x2: rv = "float mat4x2"; break;
-        case GL_FLOAT_MAT4x3: rv = "float mat4x3"; break;
-        case GL_FLOAT_MAT4:   rv = "float mat4x4"; break;
+        case GL_BOOL:        out << "bool"; break;
+        case GL_BOOL_VEC2:   out << "bool vec2"; break;
+        case GL_BOOL_VEC3:   out << "bool vec3"; break;
+        case GL_BOOL_VEC4:   out << "bool vec4"; break;
 
-        case GL_INT:        rv = "int"; break;
-        case GL_INT_VEC2:   rv = "int vec2"; break;
-        case GL_INT_VEC3:   rv = "int vec3"; break;
-        case GL_INT_VEC4:   rv = "int vec4"; break;
+        case GL_FLOAT:        out << "float"; break;
+        case GL_FLOAT_VEC2:   out << "float vec2"; break;
+        case GL_FLOAT_VEC3:   out << "float vec3"; break;
+        case GL_FLOAT_VEC4:   out << "float vec4"; break;
+        case GL_FLOAT_MAT2:   out << "float mat2x2"; break;
+        case GL_FLOAT_MAT2x3: out << "float mat2x3"; break;
+        case GL_FLOAT_MAT2x4: out << "float mat2x4"; break;
+        case GL_FLOAT_MAT3x2: out << "float mat3x2"; break;
+        case GL_FLOAT_MAT3:   out << "float mat3x3"; break;
+        case GL_FLOAT_MAT3x4: out << "float mat3x4"; break;
+        case GL_FLOAT_MAT4x2: out << "float mat4x2"; break;
+        case GL_FLOAT_MAT4x3: out << "float mat4x3"; break;
+        case GL_FLOAT_MAT4:   out << "float mat4x4"; break;
 
-        case GL_UNSIGNED_INT:        rv = "unsigned int"; break;
-        case GL_UNSIGNED_INT_VEC2:   rv = "unsigned int vec2"; break;
-        case GL_UNSIGNED_INT_VEC3:   rv = "unsigned int vec3"; break;
-        case GL_UNSIGNED_INT_VEC4:   rv = "unsigned int vec4"; break;
+        case GL_INT:        out << "int"; break;
+        case GL_INT_VEC2:   out << "int vec2"; break;
+        case GL_INT_VEC3:   out << "int vec3"; break;
+        case GL_INT_VEC4:   out << "int vec4"; break;
 
-        case GL_DOUBLE:        rv = "double"; break;
-        case GL_DOUBLE_VEC2:   rv = "double vec2"; break;
-        case GL_DOUBLE_VEC3:   rv = "double vec3"; break;
-        case GL_DOUBLE_VEC4:   rv = "double vec4"; break;
-        case GL_DOUBLE_MAT2:   rv = "double mat2x2"; break;
-        case GL_DOUBLE_MAT2x3: rv = "double mat2x3"; break;
-        case GL_DOUBLE_MAT2x4: rv = "double mat2x4"; break;
-        case GL_DOUBLE_MAT3x2: rv = "double mat3x2"; break;
-        case GL_DOUBLE_MAT3:   rv = "double mat3x3"; break;
-        case GL_DOUBLE_MAT3x4: rv = "double mat3x4"; break;
-        case GL_DOUBLE_MAT4x2: rv = "double mat4x2"; break;
-        case GL_DOUBLE_MAT4x3: rv = "double mat4x3"; break;
-        case GL_DOUBLE_MAT4:   rv = "double mat4x4"; break;
+        case GL_UNSIGNED_INT:        out << "unsigned int"; break;
+        case GL_UNSIGNED_INT_VEC2:   out << "unsigned int vec2"; break;
+        case GL_UNSIGNED_INT_VEC3:   out << "unsigned int vec3"; break;
+        case GL_UNSIGNED_INT_VEC4:   out << "unsigned int vec4"; break;
+
+        case GL_DOUBLE:        out << "double"; break;
+        case GL_DOUBLE_VEC2:   out << "double vec2"; break;
+        case GL_DOUBLE_VEC3:   out << "double vec3"; break;
+        case GL_DOUBLE_VEC4:   out << "double vec4"; break;
+        case GL_DOUBLE_MAT2:   out << "double mat2x2"; break;
+        case GL_DOUBLE_MAT2x3: out << "double mat2x3"; break;
+        case GL_DOUBLE_MAT2x4: out << "double mat2x4"; break;
+        case GL_DOUBLE_MAT3x2: out << "double mat3x2"; break;
+        case GL_DOUBLE_MAT3:   out << "double mat3x3"; break;
+        case GL_DOUBLE_MAT3x4: out << "double mat3x4"; break;
+        case GL_DOUBLE_MAT4x2: out << "double mat4x2"; break;
+        case GL_DOUBLE_MAT4x3: out << "double mat4x3"; break;
+        case GL_DOUBLE_MAT4:   out << "double mat4x4"; break;
 
         default:
-            rv = "Unknown OpenGL type";
+            out << "Unknown OpenGL type (" << type << ")";
         }
 
-        return rv;
+        return out.str();
     }
 
     int sizeOfGLType(GLenum type) {
@@ -453,6 +459,61 @@ namespace graphplay {
         return out.str();
     }
 
+    void dumpProgramAttributes(GLuint progid, const char *prefix) {
+        GLint num_attribs = 0, max_name_len = 0, size = 0, location = -1;
+        GLenum type = GL_INVALID_ENUM;
+        char *name = nullptr;
+        const char *sep = " | ";
+        auto wleft = [](int width, const char *str) {
+            return (std::stringstream()
+                << std::setw(width)
+                << std::setiosflags(std::ios::left)
+                << str
+                << std::resetiosflags(std::ios::left)
+            ).str();
+        };
+
+        if (!glIsProgram(progid)) return;
+
+        glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTES, &num_attribs);
+        glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_len);
+        name = new char[max_name_len];
+
+        std::cout << prefix << "Attributes (" << num_attribs << "):" << std::endl;
+        std::cout << prefix << sep
+                  << wleft(5, "Index") << sep
+                  << wleft(max_name_len, "Name") << sep
+                  << wleft(8, "Location") << sep
+                  << wleft(17, "Type") << sep
+                  << wleft(5, "Size") << sep
+                  << std::endl;
+
+        std::cout << std::setfill('-');
+        std::cout << prefix << sep
+                  << std::setw(5) << "" << sep
+                  << std::setw(max_name_len) << "" << sep
+                  << std::setw(8) << "" << sep
+                  << std::setw(17) << "" << sep
+                  << std::setw(5) << "" << sep
+                  << std::endl;
+        std::cout << std::setfill(' ');
+
+        for (auto i = 0; i < num_attribs; ++i) {
+            glGetActiveAttrib(progid, i, max_name_len, nullptr, &size, &type, name);
+            location = glGetAttribLocation(progid, name);
+
+            std::cout << prefix << sep
+                      << std::setw(5) << i << sep
+                      << wleft(max_name_len, name) << sep
+                      << std::setw(8) << location << sep
+                      << wleft(17, translateGLType(type).c_str()) << sep
+                      << std::setw(5) << size << sep
+                      << std::endl;
+        }
+
+        delete [] name;
+    }
+
     void dumpOpenGLState() {
         GLint progid = 0;
         GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0, element_array_buffer = 0;
@@ -466,78 +527,135 @@ namespace graphplay {
         glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &element_array_buffer);
         std::cout << "    Element array buffer: " << element_array_buffer << std::endl;
 
-        glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTES, &num_things);
-        glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_len);
-        name = new char[max_name_len];
-        std::cout << "    Attributes: " << num_things << std::endl;
-        for (auto i = 0; i < num_things; ++i) {
-            GLint location = -1;
-            glGetActiveAttrib(progid, i, max_name_len, &name_len, &size, &type, name);
-            location = glGetAttribLocation(progid, name);
-            std::cout << "      " << i << ": " << name << ": type: " << translateGLType(type) << " size: " << size << " location: " << location << std::endl;
+        dumpProgramAttributes(progid, "    ");
 
-            VAPState array_state;
-            glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
-            if (array_state.enabled != GL_FALSE) {
-                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &array_state.array_buffer_binding);
-                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_SIZE, &array_state.size);
-                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &array_state.stride);
-                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_TYPE, &array_state.type);
-                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &array_state.is_normalized);
-                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &array_state.is_integer);
-                glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &array_state.divisor);
-                glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER, &array_state.offset);
-                std::cout << "         "
-                          << "array value: enabled"
-                          << " buffer binding: " << array_state.array_buffer_binding
-                          << " size: " << array_state.size
-                          << " stride: " << array_state.stride
-                          << " type: " << translateGLType(array_state.type)
-                          << " normalized: " << array_state.is_normalized
-                          << " integral: " << array_state.is_integer
-                          << " divisor: " << array_state.divisor
-                          << " offset: " << (long)array_state.offset
-                          << std::endl;
-            } else {
-                std::cout << "         array: disabled" << std::endl;
-            }
-        }
-        delete [] name;
+        // glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTES, &num_things);
+        // glGetProgramiv(progid, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_len);
+        // name = new char[max_name_len];
+        // std::cout << "    Attributes: " << num_things << std::endl;
+        // for (auto i = 0; i < num_things; ++i) {
+        //     GLint location = -1;
+        //     glGetActiveAttrib(progid, i, max_name_len, &name_len, &size, &type, name);
+        //     location = glGetAttribLocation(progid, name);
+        //     std::cout << "      " << i << ": " << name << ": type: " << translateGLType(type) << " size: " << size << " location: " << location << std::endl;
 
-        glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_things);
-        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
-        name = new char[max_name_len];
-        std::cout << "    Uniforms: " << num_things << std::endl;
-        for (GLuint i = 0; i < (GLuint)num_things; ++i) {
-            GLint block_index = 0, itype = 0, location = -1;
-            glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_BLOCK_INDEX, &block_index);
-            glGetActiveUniformName(progid, i, max_name_len, nullptr, name);
-            location = glGetUniformLocation(progid, name);
-            if (block_index == -1) {
-                glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_SIZE, &size);
-                glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_TYPE, &itype);
-                std::cout << "      " << i << ": " << name << ": type: " << translateGLType((GLenum)itype) << " size: " << size << " location: " << location << std::endl;
-                std::cout << "         value: " << getUniformValue(progid, i) << std::endl;
-            } else {
-                std::cout << "      " << i << ": " << name << " (in block)" << std::endl;
-            }
-        }
-        delete [] name;
+        //     VAPState array_state;
+        //     glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &array_state.enabled);
+        //     if (array_state.enabled != GL_FALSE) {
+        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &array_state.array_buffer_binding);
+        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_SIZE, &array_state.size);
+        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &array_state.stride);
+        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_TYPE, &array_state.type);
+        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &array_state.is_normalized);
+        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_INTEGER, &array_state.is_integer);
+        //         glGetVertexAttribIuiv(i, GL_VERTEX_ATTRIB_ARRAY_DIVISOR, &array_state.divisor);
+        //         glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER, &array_state.offset);
+        //         std::cout << "         "
+        //                   << "array value: enabled"
+        //                   << " buffer binding: " << array_state.array_buffer_binding
+        //                   << " size: " << array_state.size
+        //                   << " stride: " << array_state.stride
+        //                   << " type: " << translateGLType(array_state.type)
+        //                   << " normalized: " << array_state.is_normalized
+        //                   << " integral: " << array_state.is_integer
+        //                   << " divisor: " << array_state.divisor
+        //                   << " offset: " << (long)array_state.offset
+        //                   << std::endl;
+        //     } else {
+        //         std::cout << "         array: disabled" << std::endl;
+        //     }
+        // }
+        // delete [] name;
 
-        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCKS, &num_things);
-        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
-        name = new char[max_name_len];
-        std::cout << "    Uniform blocks: " << num_things << std::endl;
-        for (GLuint i = 0; i < (GLuint)num_things; ++i) {
-            GLint binding = -1, bound_buffer = -1;
-            GLuint index = 0;
-            glGetActiveUniformBlockiv(progid, i, GL_UNIFORM_BLOCK_BINDING, &binding);
-            glGetActiveUniformBlockName(progid, i, max_name_len, nullptr, name);
-            glGetIntegeri_v(GL_UNIFORM_BUFFER_BINDING, binding, &bound_buffer);
-            index = glGetUniformBlockIndex(progid, name);
-            std::cout << "      " << i << ": " << name << ": index: " << index << " binding: " << binding << " buffer: " << bound_buffer << std::endl;
-        }
-        delete [] name;
+        // glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_things);
+        // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
+        // name = new char[max_name_len];
+        // std::cout << "    Uniforms: " << num_things << std::endl;
+        // for (GLuint i = 0; i < (GLuint)num_things; ++i) {
+        //     GLint block_index = 0, itype = 0, location = -1;
+        //     glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_BLOCK_INDEX, &block_index);
+        //     glGetActiveUniformName(progid, i, max_name_len, nullptr, name);
+        //     location = glGetUniformLocation(progid, name);
+        //     if (block_index == -1) {
+        //         glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_SIZE, &size);
+        //         glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_TYPE, &itype);
+        //         std::cout << "      " << i << ": " << name << ": type: " << translateGLType((GLenum)itype) << " size: " << size << " location: " << location << std::endl;
+        //         std::cout << "         value: " << getUniformValue(progid, i) << std::endl;
+        //     // } else {
+        //     //     std::cout << "      " << i << ": " << name << " (in block)" << std::endl;
+        //     }
+        // }
+        // delete [] name;
+
+        // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCKS, &num_things);
+        // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
+        // name = new char[max_name_len];
+        // std::cout << "    Uniform blocks: " << num_things << std::endl;
+        // for (auto i = 0; i < num_things; ++i) {
+        //     GLint binding = -1, bound_buffer = -1, num_uniforms = 0, data_size = 0;
+        //     GLuint index = 0;
+        //     glGetActiveUniformBlockiv(progid, i, GL_UNIFORM_BLOCK_BINDING, &binding);
+        //     glGetActiveUniformBlockiv(progid, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &num_uniforms);
+        //     glGetActiveUniformBlockiv(progid, i, GL_UNIFORM_BLOCK_DATA_SIZE, &data_size);
+        //     glGetActiveUniformBlockName(progid, i, max_name_len, nullptr, name);
+        //     glGetIntegeri_v(GL_UNIFORM_BUFFER_BINDING, binding, &bound_buffer);
+        //     index = glGetUniformBlockIndex(progid, name);
+        //     std::cout << "      " << i << ":"
+        //               << " " << name << ":"
+        //               << " index: " << index
+        //               << " binding: " << binding
+        //               << " num_uniforms: " << num_uniforms
+        //               << " data_size: " << data_size
+        //               << std::endl;
+
+        //     GLint *int_uniform_indices = new GLint[num_uniforms];
+        //     GLuint *uniform_indices = new GLuint[num_uniforms];
+        //     GLint *sizes = new GLint[num_uniforms];
+        //     GLint *itypes = new GLint[num_uniforms];
+        //     GLint *offsets = new GLint[num_uniforms];
+        //     GLint *array_strides = new GLint[num_uniforms];
+        //     GLint *matrix_strides = new GLint[num_uniforms];
+        //     GLint *row_majors = new GLint[num_uniforms];
+        //     GLint max_name_len_2 = -1;
+
+        //     glGetActiveUniformBlockiv(progid, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, int_uniform_indices);
+        //     for (auto j = 0; j < num_uniforms; ++j) { uniform_indices[j] = (GLuint)int_uniform_indices[j]; }
+            
+        //     glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_TYPE, itypes);
+        //     glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_SIZE, sizes);
+        //     glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_OFFSET, offsets);
+        //     glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_ARRAY_STRIDE, array_strides);
+        //     glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_MATRIX_STRIDE, matrix_strides);
+        //     glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_IS_ROW_MAJOR, row_majors);
+
+        //     glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len_2);
+        //     char *name_2 = new char[max_name_len_2];
+
+        //     for (auto j = 0; j < num_uniforms; ++j) {
+        //         glGetActiveUniformName(progid, uniform_indices[j], max_name_len_2, nullptr, name_2);
+
+        //         std::cout << "        " << j << ":"
+        //                   << " " << name_2 << ":"
+        //                   << " type: " << translateGLType(itypes[j])
+        //                   << " size: " << sizes[j]
+        //                   << " offset: " << offsets[j]
+        //                   << " array stride: " << array_strides[j]
+        //                   << " matrix stride: " << matrix_strides[j]
+        //                   << " is row major: " << row_majors[j]
+        //                   << std::endl;
+        //     }
+
+        //     delete [] int_uniform_indices;
+        //     delete [] uniform_indices;
+        //     delete [] sizes;
+        //     delete [] itypes;
+        //     delete [] offsets;
+        //     delete [] array_strides;
+        //     delete [] matrix_strides;
+        //     delete [] row_majors;
+        //     delete [] name_2;
+        // }
+        // delete [] name;
 
         std::cout << std::endl;
     }
