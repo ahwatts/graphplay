@@ -310,43 +310,43 @@ namespace graphplay {
         int rv;
 
         switch (type) {
-        case GL_FLOAT:        rv =  1*sizeof(float); break;
-        case GL_FLOAT_VEC2:   rv =  2*sizeof(float); break;
-        case GL_FLOAT_VEC3:   rv =  3*sizeof(float); break;
-        case GL_FLOAT_VEC4:   rv =  4*sizeof(float); break;
-        case GL_FLOAT_MAT2:   rv =  4*sizeof(float); break;
-        case GL_FLOAT_MAT2x3: rv =  6*sizeof(float); break;
-        case GL_FLOAT_MAT2x4: rv =  8*sizeof(float); break;
-        case GL_FLOAT_MAT3x2: rv =  6*sizeof(float); break;
-        case GL_FLOAT_MAT3:   rv =  9*sizeof(float); break;
-        case GL_FLOAT_MAT3x4: rv = 12*sizeof(float); break;
-        case GL_FLOAT_MAT4x2: rv =  8*sizeof(float); break;
-        case GL_FLOAT_MAT4x3: rv = 12*sizeof(float); break;
-        case GL_FLOAT_MAT4:   rv = 16*sizeof(float); break;
+        case GL_FLOAT:        rv =  1*sizeof(GLfloat); break;
+        case GL_FLOAT_VEC2:   rv =  2*sizeof(GLfloat); break;
+        case GL_FLOAT_VEC3:   rv =  3*sizeof(GLfloat); break;
+        case GL_FLOAT_VEC4:   rv =  4*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT2:   rv =  4*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT2x3: rv =  6*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT2x4: rv =  8*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT3x2: rv =  6*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT3:   rv =  9*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT3x4: rv = 12*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT4x2: rv =  8*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT4x3: rv = 12*sizeof(GLfloat); break;
+        case GL_FLOAT_MAT4:   rv = 16*sizeof(GLfloat); break;
 
-        case GL_INT:        rv =  1*sizeof(int); break;
-        case GL_INT_VEC2:   rv =  2*sizeof(int); break;
-        case GL_INT_VEC3:   rv =  3*sizeof(int); break;
-        case GL_INT_VEC4:   rv =  4*sizeof(int); break;
+        case GL_INT:        rv =  1*sizeof(GLint); break;
+        case GL_INT_VEC2:   rv =  2*sizeof(GLint); break;
+        case GL_INT_VEC3:   rv =  3*sizeof(GLint); break;
+        case GL_INT_VEC4:   rv =  4*sizeof(GLint); break;
 
-        case GL_UNSIGNED_INT:        rv =  1*sizeof(unsigned int); break;
-        case GL_UNSIGNED_INT_VEC2:   rv =  2*sizeof(unsigned int); break;
-        case GL_UNSIGNED_INT_VEC3:   rv =  3*sizeof(unsigned int); break;
-        case GL_UNSIGNED_INT_VEC4:   rv =  4*sizeof(unsigned int); break;
+        case GL_UNSIGNED_INT:        rv =  1*sizeof(GLuint); break;
+        case GL_UNSIGNED_INT_VEC2:   rv =  2*sizeof(GLuint); break;
+        case GL_UNSIGNED_INT_VEC3:   rv =  3*sizeof(GLuint); break;
+        case GL_UNSIGNED_INT_VEC4:   rv =  4*sizeof(GLuint); break;
 
-        case GL_DOUBLE:        rv =  1*sizeof(double); break;
-        case GL_DOUBLE_VEC2:   rv =  2*sizeof(double); break;
-        case GL_DOUBLE_VEC3:   rv =  3*sizeof(double); break;
-        case GL_DOUBLE_VEC4:   rv =  4*sizeof(double); break;
-        case GL_DOUBLE_MAT2:   rv =  4*sizeof(double); break;
-        case GL_DOUBLE_MAT2x3: rv =  6*sizeof(double); break;
-        case GL_DOUBLE_MAT2x4: rv =  8*sizeof(double); break;
-        case GL_DOUBLE_MAT3x2: rv =  6*sizeof(double); break;
-        case GL_DOUBLE_MAT3:   rv =  9*sizeof(double); break;
-        case GL_DOUBLE_MAT3x4: rv = 12*sizeof(double); break;
-        case GL_DOUBLE_MAT4x2: rv =  8*sizeof(double); break;
-        case GL_DOUBLE_MAT4x3: rv = 12*sizeof(double); break;
-        case GL_DOUBLE_MAT4:   rv = 16*sizeof(double); break;
+        case GL_DOUBLE:        rv =  1*sizeof(GLdouble); break;
+        case GL_DOUBLE_VEC2:   rv =  2*sizeof(GLdouble); break;
+        case GL_DOUBLE_VEC3:   rv =  3*sizeof(GLdouble); break;
+        case GL_DOUBLE_VEC4:   rv =  4*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT2:   rv =  4*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT2x3: rv =  6*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT2x4: rv =  8*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT3x2: rv =  6*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT3:   rv =  9*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT3x4: rv = 12*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT4x2: rv =  8*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT4x3: rv = 12*sizeof(GLdouble); break;
+        case GL_DOUBLE_MAT4:   rv = 16*sizeof(GLdouble); break;
 
         default:
             rv = 0;
@@ -357,9 +357,10 @@ namespace graphplay {
 
     std::string getUniformValue(GLuint program, GLint location) {
         std::stringstream out;
+        int total_size = 0;
         GLint size = 0;
-        unsigned int total_size = 0;
-        GLenum type = 0, error = GL_NO_ERROR;
+        GLenum type = GL_INVALID_ENUM, error = GL_NO_ERROR;
+
         glGetActiveUniform(program, location, 0, nullptr, &size, &type, nullptr);
         total_size = size*sizeOfGLType(type);
         char *buffer = new char[total_size];
@@ -378,12 +379,12 @@ namespace graphplay {
         case GL_FLOAT_MAT4x2:
         case GL_FLOAT_MAT4x3:
         case GL_FLOAT_MAT4:
-            glGetUniformfv(program, location, (float*)buffer);
+            glGetUniformfv(program, location, (GLfloat*)buffer);
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (unsigned int i = 0; i < total_size / sizeof(float); ++i) {
-                    out << ((float*)buffer)[i] << ", ";
+                for (int i = 0; i < (int)(total_size / sizeof(GLfloat)); ++i) {
+                    out << ((GLfloat*)buffer)[i] << ", ";
                 }
                 out << "]";
             } else {
@@ -395,11 +396,11 @@ namespace graphplay {
         case GL_INT_VEC2:
         case GL_INT_VEC3:
         case GL_INT_VEC4:
-            glGetUniformiv(program, location, (int*)buffer);
+            glGetUniformiv(program, location, (GLint*)buffer);
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (unsigned int i = 0; i < total_size / sizeof(int); ++i) {
+                for (int i = 0; i < (int)(total_size / sizeof(GLint)); ++i) {
                     out << ((int*)buffer)[i] << ", ";
                 }
                 out << "]";
@@ -412,12 +413,12 @@ namespace graphplay {
         case GL_UNSIGNED_INT_VEC2:
         case GL_UNSIGNED_INT_VEC3:
         case GL_UNSIGNED_INT_VEC4:
-            glGetUniformuiv(program, location, (unsigned int*)buffer);
+            glGetUniformuiv(program, location, (GLuint*)buffer);
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (unsigned int i = 0; i < total_size / sizeof(unsigned int); ++i) {
-                    out << ((unsigned int*)buffer)[i] << ", ";
+                for (int i = 0; i < (int)(total_size / sizeof(GLuint)); ++i) {
+                    out << ((GLuint*)buffer)[i] << ", ";
                 }
                 out << "]";
             } else {
@@ -438,12 +439,12 @@ namespace graphplay {
         case GL_DOUBLE_MAT4x2:
         case GL_DOUBLE_MAT4x3:
         case GL_DOUBLE_MAT4:
-            glGetUniformdv(program, location, (double*)buffer);
+            glGetUniformdv(program, location, (GLdouble*)buffer);
             error = glGetError();
             if (error == GL_NO_ERROR) {
                 out << "[ ";
-                for (unsigned int i = 0; i < total_size / sizeof(double); ++i) {
-                    out << ((double*)buffer)[i] << ", ";
+                for (int i = 0; i < (int)(total_size / sizeof(GLdouble)); ++i) {
+                    out << ((GLdouble*)buffer)[i] << ", ";
                 }
                 out << "]";
             } else {

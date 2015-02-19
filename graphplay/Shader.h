@@ -12,7 +12,7 @@ namespace graphplay {
 #else
     constexpr
 #endif
-    unsigned int MAX_LIGHTS = 10;
+    int MAX_LIGHTS = 10;
 
     struct ViewAndProjectionBlock {
         GLfloat view[16];
