@@ -102,7 +102,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collada.cpp" />
     <ClCompile Include="Geometry.cpp" />
-    <ClCompile Include="Geometry.tmpl.cpp" />
+    <ClInclude Include="Geometry.tmpl.cpp" />
     <ClCompile Include="graphplay.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
