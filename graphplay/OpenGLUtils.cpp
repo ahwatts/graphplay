@@ -355,110 +355,110 @@ namespace graphplay {
         return rv;
     }
 
-    std::string getUniformValue(GLuint program, GLint location) {
-        std::stringstream out;
-        int total_size = 0;
-        GLint size = 0;
-        GLenum type = GL_INVALID_ENUM, error = GL_NO_ERROR;
+    // std::string getUniformValue(GLuint program, GLint location) {
+    //     std::stringstream out;
+    //     int total_size = 0;
+    //     GLint size = 0;
+    //     GLenum type = GL_INVALID_ENUM, error = GL_NO_ERROR;
 
-        glGetActiveUniform(program, location, 0, nullptr, &size, &type, nullptr);
-        total_size = size*sizeOfGLType(type);
-        char *buffer = new char[total_size];
+    //     glGetActiveUniform(program, location, 0, nullptr, &size, &type, nullptr);
+    //     total_size = size*sizeOfGLType(type);
+    //     char *buffer = new char[total_size];
 
-        switch (type) {
-        case GL_FLOAT:
-        case GL_FLOAT_VEC2:
-        case GL_FLOAT_VEC3:
-        case GL_FLOAT_VEC4:
-        case GL_FLOAT_MAT2:
-        case GL_FLOAT_MAT2x3:
-        case GL_FLOAT_MAT2x4:
-        case GL_FLOAT_MAT3x2:
-        case GL_FLOAT_MAT3:
-        case GL_FLOAT_MAT3x4:
-        case GL_FLOAT_MAT4x2:
-        case GL_FLOAT_MAT4x3:
-        case GL_FLOAT_MAT4:
-            glGetUniformfv(program, location, (GLfloat*)buffer);
-            error = glGetError();
-            if (error == GL_NO_ERROR) {
-                out << "[ ";
-                for (int i = 0; i < (int)(total_size / sizeof(GLfloat)); ++i) {
-                    out << ((GLfloat*)buffer)[i] << ", ";
-                }
-                out << "]";
-            } else {
-                out << "Error: " << error;
-            }
-            break;
+    //     switch (type) {
+    //     case GL_FLOAT:
+    //     case GL_FLOAT_VEC2:
+    //     case GL_FLOAT_VEC3:
+    //     case GL_FLOAT_VEC4:
+    //     case GL_FLOAT_MAT2:
+    //     case GL_FLOAT_MAT2x3:
+    //     case GL_FLOAT_MAT2x4:
+    //     case GL_FLOAT_MAT3x2:
+    //     case GL_FLOAT_MAT3:
+    //     case GL_FLOAT_MAT3x4:
+    //     case GL_FLOAT_MAT4x2:
+    //     case GL_FLOAT_MAT4x3:
+    //     case GL_FLOAT_MAT4:
+    //         glGetUniformfv(program, location, (GLfloat*)buffer);
+    //         error = glGetError();
+    //         if (error == GL_NO_ERROR) {
+    //             out << "[ ";
+    //             for (int i = 0; i < (int)(total_size / sizeof(GLfloat)); ++i) {
+    //                 out << ((GLfloat*)buffer)[i] << ", ";
+    //             }
+    //             out << "]";
+    //         } else {
+    //             out << "Error: " << error;
+    //         }
+    //         break;
 
-        case GL_INT:
-        case GL_INT_VEC2:
-        case GL_INT_VEC3:
-        case GL_INT_VEC4:
-            glGetUniformiv(program, location, (GLint*)buffer);
-            error = glGetError();
-            if (error == GL_NO_ERROR) {
-                out << "[ ";
-                for (int i = 0; i < (int)(total_size / sizeof(GLint)); ++i) {
-                    out << ((int*)buffer)[i] << ", ";
-                }
-                out << "]";
-            } else {
-                out << "Error: " << error;
-            }
-            break;
+    //     case GL_INT:
+    //     case GL_INT_VEC2:
+    //     case GL_INT_VEC3:
+    //     case GL_INT_VEC4:
+    //         glGetUniformiv(program, location, (GLint*)buffer);
+    //         error = glGetError();
+    //         if (error == GL_NO_ERROR) {
+    //             out << "[ ";
+    //             for (int i = 0; i < (int)(total_size / sizeof(GLint)); ++i) {
+    //                 out << ((int*)buffer)[i] << ", ";
+    //             }
+    //             out << "]";
+    //         } else {
+    //             out << "Error: " << error;
+    //         }
+    //         break;
 
-        case GL_UNSIGNED_INT:
-        case GL_UNSIGNED_INT_VEC2:
-        case GL_UNSIGNED_INT_VEC3:
-        case GL_UNSIGNED_INT_VEC4:
-            glGetUniformuiv(program, location, (GLuint*)buffer);
-            error = glGetError();
-            if (error == GL_NO_ERROR) {
-                out << "[ ";
-                for (int i = 0; i < (int)(total_size / sizeof(GLuint)); ++i) {
-                    out << ((GLuint*)buffer)[i] << ", ";
-                }
-                out << "]";
-            } else {
-                out << "Error: " << error;
-            }
-            break;
+    //     case GL_UNSIGNED_INT:
+    //     case GL_UNSIGNED_INT_VEC2:
+    //     case GL_UNSIGNED_INT_VEC3:
+    //     case GL_UNSIGNED_INT_VEC4:
+    //         glGetUniformuiv(program, location, (GLuint*)buffer);
+    //         error = glGetError();
+    //         if (error == GL_NO_ERROR) {
+    //             out << "[ ";
+    //             for (int i = 0; i < (int)(total_size / sizeof(GLuint)); ++i) {
+    //                 out << ((GLuint*)buffer)[i] << ", ";
+    //             }
+    //             out << "]";
+    //         } else {
+    //             out << "Error: " << error;
+    //         }
+    //         break;
 
-        case GL_DOUBLE:
-        case GL_DOUBLE_VEC2:
-        case GL_DOUBLE_VEC3:
-        case GL_DOUBLE_VEC4:
-        case GL_DOUBLE_MAT2:
-        case GL_DOUBLE_MAT2x3:
-        case GL_DOUBLE_MAT2x4:
-        case GL_DOUBLE_MAT3x2:
-        case GL_DOUBLE_MAT3:
-        case GL_DOUBLE_MAT3x4:
-        case GL_DOUBLE_MAT4x2:
-        case GL_DOUBLE_MAT4x3:
-        case GL_DOUBLE_MAT4:
-            glGetUniformdv(program, location, (GLdouble*)buffer);
-            error = glGetError();
-            if (error == GL_NO_ERROR) {
-                out << "[ ";
-                for (int i = 0; i < (int)(total_size / sizeof(GLdouble)); ++i) {
-                    out << ((GLdouble*)buffer)[i] << ", ";
-                }
-                out << "]";
-            } else {
-                out << "Error: " << error;
-            }
-            break;
+    //     case GL_DOUBLE:
+    //     case GL_DOUBLE_VEC2:
+    //     case GL_DOUBLE_VEC3:
+    //     case GL_DOUBLE_VEC4:
+    //     case GL_DOUBLE_MAT2:
+    //     case GL_DOUBLE_MAT2x3:
+    //     case GL_DOUBLE_MAT2x4:
+    //     case GL_DOUBLE_MAT3x2:
+    //     case GL_DOUBLE_MAT3:
+    //     case GL_DOUBLE_MAT3x4:
+    //     case GL_DOUBLE_MAT4x2:
+    //     case GL_DOUBLE_MAT4x3:
+    //     case GL_DOUBLE_MAT4:
+    //         glGetUniformdv(program, location, (GLdouble*)buffer);
+    //         error = glGetError();
+    //         if (error == GL_NO_ERROR) {
+    //             out << "[ ";
+    //             for (int i = 0; i < (int)(total_size / sizeof(GLdouble)); ++i) {
+    //                 out << ((GLdouble*)buffer)[i] << ", ";
+    //             }
+    //             out << "]";
+    //         } else {
+    //             out << "Error: " << error;
+    //         }
+    //         break;
 
-        default:
-            out << "Unknown OpenGL Type: " << type;
-        }
+    //     default:
+    //         out << "Unknown OpenGL Type: " << type;
+    //     }
 
-        delete [] buffer;
-        return out.str();
-    }
+    //     delete [] buffer;
+    //     return out.str();
+    // }
 
     void dumpProgramAttributes(GLuint progid, const char *prefix) {
         GLint num_attribs = 0, max_name_len = 0, size = 0, location = -1;
@@ -589,16 +589,105 @@ namespace graphplay {
     }
 
     void dumpProgramUniforms(GLuint progid, const char *prefix) {
-        GLint num_unifs = 0, max_name_len = 0;
+        GLint num_unifs = 0, max_name_len = 0, location = -1;
         char *name = nullptr;
+        const char *sep = " | ";
+        GLuint *indices = nullptr;
+        GLint *types = nullptr, *sizes = nullptr, *block_indices = nullptr, *offsets = nullptr,
+            *array_strides = nullptr, *matrix_strides = nullptr, *row_majors = nullptr;
+        int in_block = 0, not_in_block = 0;
 
         glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_unifs);
         glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
         name = new char[max_name_len];
+        indices = new GLuint[num_unifs];
+        types = new GLint[num_unifs];
+        sizes = new GLint[num_unifs];
+        block_indices = new GLint[num_unifs];
+        offsets = new GLint[num_unifs];
+        array_strides = new GLint[num_unifs];
+        matrix_strides = new GLint[num_unifs];
+        row_majors = new GLint[num_unifs];
+        for (auto i = 0; i < num_unifs; ++i) { indices[i] = i; }
 
-        std::cout << prefix << "Uniforms (" << num_unifs << ")" << std::endl;
+        glGetActiveUniformsiv(progid, num_unifs, indices, GL_UNIFORM_TYPE, types);
+        glGetActiveUniformsiv(progid, num_unifs, indices, GL_UNIFORM_SIZE, sizes);
+        glGetActiveUniformsiv(progid, num_unifs, indices, GL_UNIFORM_BLOCK_INDEX, block_indices);
+        glGetActiveUniformsiv(progid, num_unifs, indices, GL_UNIFORM_OFFSET, offsets);
+        glGetActiveUniformsiv(progid, num_unifs, indices, GL_UNIFORM_ARRAY_STRIDE, array_strides);
+        glGetActiveUniformsiv(progid, num_unifs, indices, GL_UNIFORM_MATRIX_STRIDE, matrix_strides);
+        glGetActiveUniformsiv(progid, num_unifs, indices, GL_UNIFORM_IS_ROW_MAJOR, row_majors);
+
+        for (auto i = 0; i < num_unifs; ++i) {
+            if (block_indices[i] == -1) {
+                not_in_block += 1;
+            } else {
+                in_block += 1;
+            }
+        }
+
+        std::cout << prefix << "Uniforms ("
+                  << num_unifs << " total, "
+                  << not_in_block << " not in a block, "
+                  << in_block << " in blocks)"
+                  << std::endl;
+
+        std::cout << std::left << prefix << sep
+                  << std::setw(5)            << "Index"         << sep
+                  << std::setw(max_name_len) << "Name"          << sep
+                  << std::setw(8)            << "Location"      << sep
+                  << std::setw(11)           << "Block Index"   << sep
+                  << std::setw(17)           << "Type"          << sep
+                  << std::setw(4)            << "Size"          << sep
+                  << std::setw(6)            << "Offset"        << sep
+                  << std::setw(12)           << "Array Stride"  << sep
+                  << std::setw(13)           << "Matrix Stride" << sep
+                  << std::setw(10)           << "Row Major?"    << sep
+                  << std::endl;
+
+        std::cout << std::setfill('-');
+        std::cout << prefix << sep
+                  << std::setw(5)            << "" << sep
+                  << std::setw(max_name_len) << "" << sep
+                  << std::setw(8)            << "" << sep
+                  << std::setw(11)           << "" << sep
+                  << std::setw(17)           << "" << sep
+                  << std::setw(4)            << "" << sep
+                  << std::setw(6)            << "" << sep
+                  << std::setw(12)           << "" << sep
+                  << std::setw(13)           << "" << sep
+                  << std::setw(10)           << "" << sep
+                  << std::endl;
+        std::cout << std::setfill(' ');
+
+        for (auto i = 0; i < num_unifs; ++i) {
+            glGetActiveUniformName(progid, i, max_name_len, nullptr, name);
+            location = glGetUniformLocation(progid, name);
+
+            std::cout << std::boolalpha << prefix << sep
+                      << std::right << std::setw(5)            << i                         << sep
+                      << std::left  << std::setw(max_name_len) << name                      << sep
+                      << std::right << std::setw(8)            << location                  << sep
+                      << std::right << std::setw(11)           << block_indices[i]          << sep
+                      << std::left  << std::setw(17)           << translateGLType(types[i]) << sep
+                      << std::right << std::setw(4)            << sizes[i]                  << sep
+                      << std::right << std::setw(6)            << offsets[i]                << sep
+                      << std::right << std::setw(12)           << array_strides[i]          << sep
+                      << std::right << std::setw(13)           << matrix_strides[i]         << sep
+                      << std::left  << std::setw(10)           << (row_majors[i] != GL_FALSE) << sep
+                      << std::endl;
+        }
+
 
         delete [] name;
+        delete [] indices;
+        delete [] types;
+        delete [] sizes;
+        delete [] block_indices;
+        delete [] offsets;
+        delete [] array_strides;
+        delete [] matrix_strides;
+        delete [] row_majors;
     }
 
     void dumpOpenGLState() {

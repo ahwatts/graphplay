@@ -20,6 +20,7 @@ namespace graphplay {
     void getUniformInfo(GLuint program, IndexMap &uniforms);
     void getUniformBlockInfo(GLuint program, IndexMap &uniform_blocks);
 
+    int sizeOfGLType(GLenum type);
     std::string translateGLType(GLenum type);
     void dumpOpenGLState();
 }
