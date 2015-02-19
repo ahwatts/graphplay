@@ -587,18 +587,32 @@ namespace graphplay {
         delete [] name;
     }
 
-    void dumpOpenGLState() {
-        GLint progid = 0;
-        GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0, element_array_buffer = -1, vao = -1;
-        GLenum type = 0;
+    void dumpProgramUniforms(GLuint progid, const char *prefix) {
+        GLint num_unifs = 0, max_name_len = 0;
         char *name = nullptr;
+
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_unifs);
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
+        name = new char[max_name_len];
+
+        std::cout << prefix << "Uniforms (" << num_unifs << ")" << std::endl;
+
+        delete [] name;
+    }
+
+    void dumpOpenGLState() {
+        GLint progid = -1, element_array_buffer = -1, vertex_array = -1;
+        // GLint progid = 0;
+        // GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0, element_array_buffer = -1, vao = -1;
+        // GLenum type = 0;
+        // char *name = nullptr;
 
         glGetIntegerv(GL_CURRENT_PROGRAM, &progid);
         std::cout << "OpenGL State:" << std::endl;
         std::cout << "  Current program: " << progid << std::endl;
 
-        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
-        std::cout << "    Vertex array object: " << vao << std::endl;
+        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vertex_array);
+        std::cout << "    Vertex array object: " << vertex_array << std::endl;
         std::cout << std::endl;
 
         glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &element_array_buffer);
@@ -606,6 +620,10 @@ namespace graphplay {
         std::cout << std::endl;
 
         dumpProgramAttributes(progid, "    ");
+        std::cout << std::endl;
+
+        dumpProgramUniforms(progid, "    ");
+        std::cout << std::endl;
 
         // glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_things);
         // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
@@ -697,6 +715,6 @@ namespace graphplay {
         // }
         // delete [] name;
 
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
 }
