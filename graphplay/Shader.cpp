@@ -5,6 +5,30 @@
 #include "Shader.h"
 
 namespace graphplay {
+    // ViewAndProjectionBlock class.
+    ViewAndProjectionBlock::ViewAndProjectionBlock()
+        : m_offsets(),
+          m_data_size(0)
+    {
+        Shader::sptr_type vert = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::lit_vertex_shader_source);
+        Shader::sptr_type frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::lit_fragment_shader_source);
+        Program::sptr_type prog = std::make_shared<Program>(vert, frag);
+
+        // TODO: you know, stuff.
+    }
+
+    const ViewAndProjectionBlock& ViewAndProjectionBlock::getDescriptor() {
+        static std::unique_ptr<ViewAndProjectionBlock> instance_ptr;
+
+        // We don't want to do this at static initialization time,
+        // because the OpenGL context probably won't be created yet.
+        if (!instance_ptr) {
+            instance_ptr.reset(new ViewAndProjectionBlock());
+        }
+
+        return *instance_ptr;
+    }
+
     // Shader class.
     Shader::Shader(GLenum type, const char *source) : m_shader{0} {
         m_shader = createAndCompileShader(type, source);
