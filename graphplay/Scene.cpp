@@ -19,6 +19,7 @@ namespace graphplay {
           m_lights(),
           m_meshes(),
           m_view_projection_uniform_buffer(0),
+          m_light_uniform_buffer(0),
           m_uniform_buffer_bindings()
     {
         m_uniform_buffer_bindings["view_and_projection"] = 0;
@@ -26,17 +27,13 @@ namespace graphplay {
         setViewport(vp_width, vp_height);
 
         for (auto i = 0; i < MAX_LIGHTS; ++i) {
-            m_lights.lights[i].enabled = 0;
+            m_lights[i].enabled = false;
         }
 
-        LightPropertiesBlock &light = m_lights.lights[0];
-        glm::vec4 color_vec(1.0, 1.0, 1.0, 1.0);
-        glm::vec3 position_vec(0.0, 10.0, 0.0);
-        float *color = glm::value_ptr(color_vec), *position = glm::value_ptr(position_vec);
-        light.enabled = 1;
-        std::copy(color, color + 4, light.color);
-        std::copy(position, position + 3, light.position);
-        light.specular_exp = 4;
+        m_lights[0].enabled = true;
+        m_lights[0].position = glm::vec3(0.0, 10.0, 0.0);
+        m_lights[0].color = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        m_lights[0].specular_exp = 4;
 
         createBuffers();
     }
@@ -94,34 +91,68 @@ namespace graphplay {
         deleteBuffers();
         glGenBuffers(2, bufids);
 
+        const ViewAndProjectionBlock &vp_block = ViewAndProjectionBlock::getDescriptor();
+        const LightListBlock &light_block = LightListBlock::getDescriptor();
+
         m_view_projection_uniform_buffer = bufids[0];
         glBindBuffer(GL_UNIFORM_BUFFER, m_view_projection_uniform_buffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(ViewAndProjectionBlock), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, vp_block.getDataSize(), nullptr, GL_DYNAMIC_DRAW);
 
         m_light_uniform_buffer = bufids[1];
         glBindBuffer(GL_UNIFORM_BUFFER, m_light_uniform_buffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(LightListBlock), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, light_block.getDataSize(), nullptr, GL_DYNAMIC_DRAW);
 
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
     void Scene::updateBuffers() {
+        const ViewAndProjectionBlock &vp_block = ViewAndProjectionBlock::getDescriptor();
+        const LightListBlock &light_block = LightListBlock::getDescriptor();
+
         glm::mat4x4 view = m_camera.getViewTransform();
         glm::mat4x4 view_inv = glm::inverse(view);
-        ViewAndProjectionBlock block;
-        float *view_ptr = glm::value_ptr(view);
-        float *view_inv_ptr = glm::value_ptr(view_inv);
-        float *proj_ptr = glm::value_ptr(m_projection);
-
-        std::copy(view_ptr, view_ptr + 16, block.view);
-        std::copy(view_inv_ptr, view_inv_ptr + 16, block.view_inv);
-        std::copy(proj_ptr, proj_ptr + 16, block.projection);
 
         glBindBuffer(GL_UNIFORM_BUFFER, m_view_projection_uniform_buffer);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ViewAndProjectionBlock), &block);
+        for (auto off_ptr : vp_block.getOffsets()) {
+            switch (off_ptr.first) {
+            case ViewAndProjectionBlock::field_name::VIEW:
+                glBufferSubData(GL_UNIFORM_BUFFER, off_ptr.second, sizeof(view), glm::value_ptr(view));
+                break;
+            case ViewAndProjectionBlock::field_name::VIEW_INV:
+                glBufferSubData(GL_UNIFORM_BUFFER, off_ptr.second, sizeof(view_inv), glm::value_ptr(view_inv));
+                break;
+            case ViewAndProjectionBlock::field_name::PROJECTION:
+                glBufferSubData(GL_UNIFORM_BUFFER, off_ptr.second, sizeof(m_projection), glm::value_ptr(m_projection));
+                break;
+            }
+        }
 
         glBindBuffer(GL_UNIFORM_BUFFER, m_light_uniform_buffer);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(LightListBlock), &m_lights);
+        for (auto i = 0; i < MAX_LIGHTS; ++i) {
+            GLuint enabled = m_lights[i].enabled ? GL_TRUE : GL_FALSE;
+
+            if (m_lights[i].enabled) {
+                for (auto off_ptr : light_block.getOffsets()[i]) {
+                    switch (off_ptr.first) {
+                    case LightListBlock::field_name::ENABLED:
+                        glBufferSubData(GL_UNIFORM_BUFFER, off_ptr.second, sizeof(GLuint), &enabled);
+                        break;
+                    case LightListBlock::field_name::POSITION:
+                        glBufferSubData(GL_UNIFORM_BUFFER, off_ptr.second, sizeof(m_lights[i].position), glm::value_ptr(m_lights[i].position));
+                        break;
+                    case LightListBlock::field_name::COLOR:
+                        glBufferSubData(GL_UNIFORM_BUFFER, off_ptr.second, sizeof(m_lights[i].color), glm::value_ptr(m_lights[i].color));
+                        break;
+                    case LightListBlock::field_name::SPECULAR_EXP:
+                        glBufferSubData(GL_UNIFORM_BUFFER, off_ptr.second, sizeof(m_lights[i].specular_exp), &m_lights[i].specular_exp);
+                        break;
+                    }
+                }
+            } else {
+                auto off_ptr = light_block.getOffsets()[i].find(LightListBlock::field_name::ENABLED);
+                glBufferSubData(GL_UNIFORM_BUFFER, off_ptr->second, sizeof(GLuint), &enabled);
+            }
+        }
 
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }

@@ -3,32 +3,63 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_SHADER_H_
 #define _GRAPHPLAY_GRAPHPLAY_SHADER_H_
 
+#include <map>
 #include <memory>
+#include <vector>
 #include "OpenGLUtils.h"
 
 namespace graphplay {
-#ifdef MSVC
-    const
-#else
-    constexpr
-#endif
-    int MAX_LIGHTS = 10;
+    class ViewAndProjectionBlock {
+    public:
+        enum field_name {
+            VIEW,
+            VIEW_INV,
+            PROJECTION,
+        };
+        typedef std::map<field_name, GLuint> offset_map_type;
 
-    struct ViewAndProjectionBlock {
-        GLfloat view[16];
-        GLfloat view_inv[16];
-        GLfloat projection[16];
+        static const ViewAndProjectionBlock& getDescriptor();
+
+        const offset_map_type& getOffsets() const;
+        long getDataSize() const;
+
+    private:
+        ViewAndProjectionBlock();
+        ViewAndProjectionBlock(const ViewAndProjectionBlock &other) = delete;
+        ViewAndProjectionBlock(ViewAndProjectionBlock &&other) = delete;
+        ViewAndProjectionBlock& operator=(const ViewAndProjectionBlock &other) = delete;
+        ViewAndProjectionBlock& operator=(ViewAndProjectionBlock &&other) = delete;
+
+        offset_map_type m_offsets;
+        long m_data_size;
     };
 
-    struct LightPropertiesBlock {
-        GLuint enabled;
-        GLfloat position[3];
-        GLfloat color[4];
-        GLuint specular_exp;
-    };
+    class LightListBlock {
+    public:
+        static const int MAX_LIGHTS = 10;
 
-    struct LightListBlock {
-        LightPropertiesBlock lights[MAX_LIGHTS];
+        enum field_name {
+            ENABLED,
+            POSITION,
+            COLOR,
+            SPECULAR_EXP,
+        };
+        typedef std::map<field_name, GLuint> offset_map_type;
+
+        static const LightListBlock& getDescriptor();
+
+        const std::vector<offset_map_type>& getOffsets() const;
+        long getDataSize() const;
+
+    private:
+        LightListBlock();
+        LightListBlock(const LightListBlock &other) = delete;
+        LightListBlock(LightListBlock &&other) = delete;
+        LightListBlock& operator=(const LightListBlock &other) = delete;
+        LightListBlock& operator=(LightListBlock &&other) = delete;
+
+        std::vector<offset_map_type> m_offsets;
+        long m_data_size;
     };
 
     class Shader {

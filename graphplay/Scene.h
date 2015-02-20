@@ -3,8 +3,12 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_SCENE_H_
 #define _GRAPHPLAY_GRAPHPLAY_SCENE_H_
 
+#include "graphplay.h"
+
 #include <memory>
 #include <vector>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include "opengl.h"
 
@@ -12,6 +16,20 @@
 #include "Mesh.h"
 
 namespace graphplay {
+#ifdef MSVC
+    const
+#else
+    constexpr
+#endif
+    int MAX_LIGHTS = 10;
+
+    struct Light {
+        bool enabled;
+        glm::vec3 position;
+        glm::vec4 color;
+        int specular_exp;
+    };
+
     class Scene
     {
     public:
@@ -53,7 +71,7 @@ namespace graphplay {
 
         Camera m_camera;
         glm::mat4x4 m_projection;
-        LightListBlock m_lights;
+        Light m_lights[MAX_LIGHTS];
 
         mesh_list_type m_meshes;
 
