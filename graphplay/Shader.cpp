@@ -80,7 +80,7 @@ namespace graphplay {
 
     // LightListBlock class.
     LightListBlock::LightListBlock()
-        : m_offsets(),
+        : m_offsets(MAX_LIGHTS),
           m_data_size(0)
     {
         Shader::sptr_type vert = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::lit_vertex_shader_source);
@@ -92,7 +92,7 @@ namespace graphplay {
         GLint light_data_size = -1, num_uniforms = -1, *uniform_indices_int = nullptr, *uniform_offsets = nullptr, max_name_len = -1;
         GLuint *uniform_indices = nullptr;
         char *name = nullptr;
-        std::regex light_field_name("^lights[(\\d+)]\\.(\\S+)$");
+        std::regex light_field_name("^lights\\[(\\d+)\\]\\.(\\w+)$");
         std::cmatch light_field_parts;
 
         glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);

@@ -571,7 +571,7 @@ namespace graphplay {
                               << std::left  << std::setw(17)           << translateGLType(array_state.type)       << sep
                               << std::right << std::setw(4)            << array_state.size                        << sep
                               << std::right << std::setw(6)            << array_state.stride                      << sep
-                              << std::right << std::setw(6)            << (long)array_state.offset                << sep
+                              << std::right << std::setw(6)            << (long long)array_state.offset                << sep
                               << std::left  << std::setw(11)           << (array_state.is_normalized != GL_FALSE) << sep
                               << std::left  << std::setw(8)            << (array_state.is_integer != GL_FALSE)    << sep
                               << std::right << std::setw(7)            << array_state.divisor                     << sep
