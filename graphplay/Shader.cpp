@@ -1,6 +1,9 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <cstdlib>
 #include <iostream>
+#include <regex>
+#include <string>
 
 #include "Shader.h"
 
@@ -14,7 +17,45 @@ namespace graphplay {
         Shader::sptr_type frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::lit_fragment_shader_source);
         Program::sptr_type prog = std::make_shared<Program>(vert, frag);
 
-        // TODO: you know, stuff.
+        GLuint progid = prog->getProgramId();
+        GLuint vp_block_index = glGetUniformBlockIndex(progid, "view_and_projection");
+        GLint vp_data_size = -1, num_uniforms = -1, *uniform_indices_int = nullptr, *uniform_offsets = nullptr, max_name_len = -1;
+        GLuint *uniform_indices = nullptr;
+        char *name = nullptr;
+
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
+        name = new char[max_name_len];
+
+        glGetActiveUniformBlockiv(progid, vp_block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &vp_data_size);
+        m_data_size = vp_data_size;
+
+        glGetActiveUniformBlockiv(progid, vp_block_index, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &num_uniforms);
+        uniform_indices_int = new GLint[num_uniforms];
+        uniform_offsets = new GLint[num_uniforms];
+        uniform_indices = new GLuint[num_uniforms];
+
+        // Oy. Why do I have to get the list of indices as a GLint but pass it as a GLuint?
+        glGetActiveUniformBlockiv(progid, vp_block_index, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniform_indices_int);
+        for (auto i = 0; i < num_uniforms; ++i) { uniform_indices[i] = uniform_indices_int[i]; }
+        glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_OFFSET, uniform_offsets);
+
+        for (auto i = 0; i < num_uniforms; ++i) {
+            glGetActiveUniformName(progid, uniform_indices[i], max_name_len, nullptr, name);
+            std::string name_str(name);
+
+            if (name_str == "view") {
+                m_offsets[field_name::VIEW] = uniform_offsets[i];
+            } else if (name_str == "view_inv") {
+                m_offsets[field_name::VIEW_INV] = uniform_offsets[i];
+            } else if (name_str == "projection") {
+                m_offsets[field_name::PROJECTION] = uniform_offsets[i];
+            }
+        }
+
+        delete [] name;
+        delete [] uniform_indices_int;
+        delete [] uniform_indices;
+        delete [] uniform_offsets;
     }
 
     const ViewAndProjectionBlock& ViewAndProjectionBlock::getDescriptor() {
@@ -27,6 +68,91 @@ namespace graphplay {
         }
 
         return *instance_ptr;
+    }
+
+    const ViewAndProjectionBlock::offset_map_type& ViewAndProjectionBlock::getOffsets() const {
+        return m_offsets;
+    }
+
+    long ViewAndProjectionBlock::getDataSize() const {
+        return m_data_size;
+    }
+
+    // LightListBlock class.
+    LightListBlock::LightListBlock()
+        : m_offsets(),
+          m_data_size(0)
+    {
+        Shader::sptr_type vert = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::lit_vertex_shader_source);
+        Shader::sptr_type frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::lit_fragment_shader_source);
+        Program::sptr_type prog = std::make_shared<Program>(vert, frag);
+
+        GLuint progid = prog->getProgramId();
+        GLuint light_block_index = glGetUniformBlockIndex(progid, "light_list");
+        GLint light_data_size = -1, num_uniforms = -1, *uniform_indices_int = nullptr, *uniform_offsets = nullptr, max_name_len = -1;
+        GLuint *uniform_indices = nullptr;
+        char *name = nullptr;
+        std::regex light_field_name("^lights[(\\d+)]\\.(\\S+)$");
+        std::cmatch light_field_parts;
+
+        glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
+        name = new char[max_name_len];
+
+        glGetActiveUniformBlockiv(progid, light_block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &light_data_size);
+        m_data_size = light_data_size;
+
+        glGetActiveUniformBlockiv(progid, light_block_index, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &num_uniforms);
+        uniform_indices_int = new GLint[num_uniforms];
+        uniform_offsets = new GLint[num_uniforms];
+        uniform_indices = new GLuint[num_uniforms];
+
+        // Oy. Why do I have to get the list of indices as a GLint but pass it as a GLuint?
+        glGetActiveUniformBlockiv(progid, light_block_index, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniform_indices_int);
+        for (auto i = 0; i < num_uniforms; ++i) { uniform_indices[i] = uniform_indices_int[i]; }
+        glGetActiveUniformsiv(progid, num_uniforms, uniform_indices, GL_UNIFORM_OFFSET, uniform_offsets);
+
+        for (auto i = 0; i < num_uniforms; ++i) {
+            glGetActiveUniformName(progid, uniform_indices[i], max_name_len, nullptr, name);
+            if (std::regex_search(name, light_field_parts, light_field_name)) { \
+                int light_index = std::stoi(light_field_parts[1]);
+                std::string field_str(light_field_parts[2]);
+
+                if (field_str == "enabled") {
+                    m_offsets[light_index][field_name::ENABLED] = uniform_offsets[i];
+                } else if (field_str == "position") {
+                    m_offsets[light_index][field_name::POSITION] = uniform_offsets[i];
+                } else if (field_str == "color") {
+                    m_offsets[light_index][field_name::COLOR] = uniform_offsets[i];
+                } else if (field_str == "specular_exp") {
+                    m_offsets[light_index][field_name::SPECULAR_EXP] = uniform_offsets[i];
+                }
+            }
+        }
+
+        delete [] name;
+        delete [] uniform_indices_int;
+        delete [] uniform_indices;
+        delete [] uniform_offsets;
+    }
+
+    const LightListBlock& LightListBlock::getDescriptor() {
+        static std::unique_ptr<LightListBlock> instance_ptr;
+
+        // We don't want to do this at static initialization time,
+        // because the OpenGL context probably won't be created yet.
+        if (!instance_ptr) {
+            instance_ptr.reset(new LightListBlock());
+        }
+
+        return *instance_ptr;
+    }
+
+    const std::vector<LightListBlock::offset_map_type>& LightListBlock::getOffsets() const {
+        return m_offsets;
+    }
+
+    long LightListBlock::getDataSize() const {
+        return m_data_size;
     }
 
     // Shader class.

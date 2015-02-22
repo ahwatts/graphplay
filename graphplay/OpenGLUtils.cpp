@@ -692,10 +692,6 @@ namespace graphplay {
 
     void dumpOpenGLState() {
         GLint progid = -1, element_array_buffer = -1, vertex_array = -1;
-        // GLint progid = 0;
-        // GLint num_things = 0, max_name_len = 0, name_len = 0, size = 0, element_array_buffer = -1, vao = -1;
-        // GLenum type = 0;
-        // char *name = nullptr;
 
         glGetIntegerv(GL_CURRENT_PROGRAM, &progid);
         std::cout << "OpenGL State:" << std::endl;
@@ -714,26 +710,6 @@ namespace graphplay {
 
         dumpProgramUniforms(progid, "    ");
         std::cout << std::endl;
-
-        // glGetProgramiv(progid, GL_ACTIVE_UNIFORMS, &num_things);
-        // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
-        // name = new char[max_name_len];
-        // std::cout << "    Uniforms: " << num_things << std::endl;
-        // for (GLuint i = 0; i < (GLuint)num_things; ++i) {
-        //     GLint block_index = 0, itype = 0, location = -1;
-        //     glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_BLOCK_INDEX, &block_index);
-        //     glGetActiveUniformName(progid, i, max_name_len, nullptr, name);
-        //     location = glGetUniformLocation(progid, name);
-        //     if (block_index == -1) {
-        //         glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_SIZE, &size);
-        //         glGetActiveUniformsiv(progid, 1, &i, GL_UNIFORM_TYPE, &itype);
-        //         std::cout << "      " << i << ": " << name << ": type: " << translateGLType((GLenum)itype) << " size: " << size << " location: " << location << std::endl;
-        //         std::cout << "         value: " << getUniformValue(progid, i) << std::endl;
-        //     // } else {
-        //     //     std::cout << "      " << i << ": " << name << " (in block)" << std::endl;
-        //     }
-        // }
-        // delete [] name;
 
         // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCKS, &num_things);
         // glGetProgramiv(progid, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
