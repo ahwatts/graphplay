@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
-    Geometry<PCNVertex>::sptr_type octo_geo = makeOctohedronGeometry();
-    // Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
+    // Geometry<PCNVertex>::sptr_type octo_geo = makeOctohedronGeometry();
+    Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
 
     Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
     Shader::sptr_type unlit_fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::unlit_fragment_shader_source);
@@ -63,12 +63,12 @@ int main(int argc, char **argv) {
     Program::sptr_type unlit_program = std::make_shared<Program>(unlit_vertex_shader, unlit_fragment_shader);
     Program::sptr_type lit_program = std::make_shared<Program>(lit_vertex_shader, lit_fragment_shader);
 
-    Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, lit_program);
-    // Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, unlit_shader);
+    // Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, lit_program);
+    Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, lit_program);
 
     Scene scene(pixel_width, pixel_height);
-    scene.addMesh(octo);
-    // scene.addMesh(sphere);
+    // scene.addMesh(octo);
+    scene.addMesh(sphere);
 
     Camera &camera = scene.getCamera();
     camera.setLocation(glm::vec3(0, 0, 3));
@@ -136,8 +136,8 @@ int main(int argc, char **argv) {
         mv = glm::rotate(mv, (float)xrot, xhat);
 
         // Make the meshes use the modelview matrix.
-        octo->setTransform(mv);
-        // sphere->setTransform(mv);
+        // octo->setTransform(mv);
+        sphere->setTransform(mv);
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

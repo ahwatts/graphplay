@@ -31,9 +31,14 @@ namespace graphplay {
         }
 
         m_lights[0].enabled = true;
-        m_lights[0].position = glm::vec3(0.0, 10.0, 0.0);
+        m_lights[0].position = glm::vec3(0.0, 10.0, 10.0);
         m_lights[0].color = glm::vec4(1.0, 1.0, 1.0, 1.0);
         m_lights[0].specular_exp = 4;
+
+        // m_lights[1].enabled = true;
+        // m_lights[1].position = glm::vec3(10.0, 10.0, 0.0);
+        // m_lights[1].color = glm::vec4(1.0, 0.0, 0.0, 1.0);
+        // m_lights[1].specular_exp = 4;
 
         createBuffers();
     }
