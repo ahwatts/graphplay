@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>08E45046-FC9B-4553-8CC5-E802CCA71E5E</string>
+	<key>IDESourceControlProjectName</key>
+	<string>graphplay</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>AF87F49792DDEFE53F21F0F486D58D9D94409B5C</key>
+		<string>bitbucket.org:ahwatts/graphplay.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>graphplay.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>AF87F49792DDEFE53F21F0F486D58D9D94409B5C</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>bitbucket.org:ahwatts/graphplay.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>AF87F49792DDEFE53F21F0F486D58D9D94409B5C</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>AF87F49792DDEFE53F21F0F486D58D9D94409B5C</string>
+			<key>IDESourceControlWCCName</key>
+			<string>graphplay</string>
+		</dict>
+	</array>
+</dict>
+</plist>
