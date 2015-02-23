@@ -194,11 +194,7 @@ void bailout(const std::string &msg) {
     std::exit(1);
 }
 
-#if GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR == 0 && GLFW_VERSION_REVISION == 0
-void keypress(GLFWwindow *wnd, int key, int action) {
-#else
 void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
-#endif
     if (action == 1) {
         switch (key) {
         case GLFW_KEY_ESCAPE:
@@ -227,7 +223,9 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
         //     break;
         default:
             std::cout << "key: " << key
+                      << " scancode: " << scancode
                       << " action: " << action
+                      << " mods: " << mods
                       << std::endl;
         }
     }
