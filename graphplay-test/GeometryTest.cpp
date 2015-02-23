@@ -237,4 +237,19 @@ namespace graphplay {
         ASSERT_EQ(GL_FALSE, glIsBuffer(vbuf));
         ASSERT_EQ(GL_FALSE, glIsBuffer(ebuf));
     }
+
+    TEST_F(GeometryTest, CreateOctohedron) {
+        Geometry<PCNVertex>::sptr_type octo = makeOctohedronGeometry();
+
+        assertBuffersCreated(*octo);
+        ASSERT_LT(0, static_cast<int>(octo->getElems().size()));
+        ASSERT_LT(0, static_cast<int>(octo->getVertices().size()));
+    }
+
+    TEST_F(GeometryTest, CreateSphere) {
+        Geometry<PCNVertex>::sptr_type sphere = makeSphereGeometry();
+        assertBuffersCreated(*sphere);
+        ASSERT_LT(0, static_cast<int>(sphere->getElems().size()));
+        ASSERT_LT(0, static_cast<int>(sphere->getVertices().size()));
+    }
 };
