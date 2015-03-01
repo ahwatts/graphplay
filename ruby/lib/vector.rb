@@ -8,14 +8,15 @@ class Vector
       args = args.first
     end
 
-    if Hash === args && args.values.all? { |v| Numeric === v }
+    if Hash === args &&
+        args.values_at(:x, :y, :z, :w, :r, :g, :b, :a, "x", "y", "z", "w", "r", "g", "b", "a").compact.all? { |v| Numeric === v }
       self.comps = [
         args[:x] || args["x"] || args[:r] || args["r"],
         args[:y] || args["y"] || args[:g] || args["g"],
         args[:z] || args["z"] || args[:b] || args["b"],
         args[:w] || args["w"] || args[:a] || args["a"],
-      ]
-    elsif Array === args && args.all { |v| Numeric === v }
+      ].compact
+    elsif Array === args && args.all? { |v| Numeric === v }
       self.comps = args
     else
       raise ArgumentError, "Cannot construct Vector from #{args.inspect}"
@@ -91,7 +92,7 @@ class Vector
   end
 
   def -(other)
-    self + (-1 * other)
+    self + (other * -1)
   end
 
   def /(val)
