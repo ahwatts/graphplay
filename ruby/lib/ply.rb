@@ -1,6 +1,4 @@
-#!/usr/bin/env ruby
-
-require "zlib"
+# -*- encoding: utf-8; -*-
 
 module Ply
   class Element
@@ -216,24 +214,5 @@ module Ply
       end
     end
 
-  end
-end
-
-ARGV.each do |filename|
-  file_klass = File
-  open_opts = [ filename, "rb" ]
-
-  if filename =~ /\.gz$/
-    file_klass = Zlib::GzipReader
-    open_opts = [ filename ]
-  end
-
-  file_klass.open(*open_opts) do |f|
-    doc = Ply::Document.new(f)
-
-    doc.elements.each do |elem|
-      i = rand(elem.count)
-      puts "#{elem.name}[#{i}] = #{elem.data[i].inspect}"
-    end
   end
 end

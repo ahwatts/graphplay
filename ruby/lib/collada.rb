@@ -1,18 +1,18 @@
-#!/usr/bin/env ruby
 # -*- encoding: utf-8 -*-
 
-require 'rubygems'
-require 'nokogiri'
-require 'pp'
-require 'pathname'
+module StringExtensions
+  refine String do
+    def camelize
+      split("_").map { |s| s.capitalize }.join  
+    end
 
-def camelize(string)
-  string.split("_").map { |s| s.capitalize }.join  
+    def underscore
+      scan(/[A-Z][a-z0-9]*/).map { |s| s.downcase }.join("_")
+    end
+  end
 end
 
-def underscore(string)
-  string.scan(/[A-Z][a-z0-9]*/).map { |s| s.downcase }.join("_")
-end
+using StringExtensions
 
 module Collada
   class Geometry
@@ -20,7 +20,7 @@ module Collada
 
     def self.from_node(node)
       child = node.xpath("*").first
-      klass = Collada.const_get("#{camelize(child.name)}Geometry")
+      klass = Collada.const_get("#{child.name.camelize}Geometry")
       if klass.nil?
         raise "Could not find class for #{child.name}"
       end
@@ -75,7 +75,7 @@ module Collada
       @primitives = []
       mesh_node.children.each do |child_node|
         next if child_node.text? || %w{ source vertices }.include?(child_node.name)
-        primitive_klass = Collada.const_get("#{camelize(child_node.name)}Primitive")
+        primitive_klass = Collada.const_get("#{child_node.name.camelize}Primitive")
         @primitives << primitive_klass.new(child_node)
       end
     end
@@ -300,11 +300,4 @@ module Collada
       @set = node["set"].to_i
     end
   end
-end
-
-doc = Nokogiri::XML(ARGF)
-geometries = doc.xpath("//xmlns:geometry").map { |n| Collada::Geometry.from_node(n) }
-geometries.each do |g|
-  g.print_structure
-  File.open("#{g.name}.mesh", "wb") { |f| f.write(g.packed_string) }
 end
