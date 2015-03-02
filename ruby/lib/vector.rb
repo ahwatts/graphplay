@@ -3,6 +3,10 @@
 class Vector
   attr_accessor :comps
 
+  def self.zero(dim = 3)
+    new(Array.new(dim, 0.0))
+  end
+
   def initialize(*args)
     if Array === args && args.size == 1 && !(Numeric === args.first)
       args = args.first

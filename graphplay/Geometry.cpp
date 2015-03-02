@@ -3,8 +3,12 @@
 #include "graphplay.h"
 
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include <memory>
+#include <random>
 #include <vector>
+
 #include <glm/vec3.hpp>
 #include <glm/gtc/epsilon.hpp>
 
@@ -253,6 +257,36 @@ namespace graphplay {
 
         rv->setVertexData(std::move(pne.elems), std::move(verts));
         rv->createBuffers();
+        return rv;
+    }
+
+    Geometry<PCNVertex>::sptr_type loadPCNFile(const char *filename) {
+        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex>>();
+        std::fstream file(filename, std::ios::in | std::ios::binary);
+        unsigned int num_things = 0;
+        char magic_arr[4];
+        std::string magic;
+
+        file.read(magic_arr, 4);
+        magic = magic_arr;
+        if (magic == "pcn") {
+            file.read(reinterpret_cast<char *>(&num_things), 4);
+            std::cout << "Reading " << num_things << " vertices from " << filename << std::endl;
+            Geometry<PCNVertex>::vertex_array_type verts(num_things);
+            file.read(reinterpret_cast<char *>(verts.data()), num_things*sizeof(PCNVertex));
+
+            file.read(reinterpret_cast<char *>(&num_things), 4);
+            std::cout << "Reading " << num_things << " elements from " << filename << std::endl;
+            Geometry<PCNVertex>::elem_array_type elems(num_things);
+            file.read(reinterpret_cast<char *>(elems.data()), num_things*sizeof(unsigned int));
+
+            rv->setVertexData(std::move(elems), std::move(verts));
+            rv->createBuffers();
+        } else {
+            std::cerr << "File " << filename << " does not appear to be a PCN file." << std::endl;
+        }
+        
+        file.close();
         return rv;
     }
 }

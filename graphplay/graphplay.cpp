@@ -54,7 +54,8 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
     // Geometry<PCNVertex>::sptr_type octo_geo = makeOctohedronGeometry();
-    Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
+    // Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
+    Geometry<PCNVertex>::sptr_type bunny_geo = loadPCNFile("/Users/awatts/Projects/graphplay/assets/stanford_armadillo.pcn");
 
     Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
     Shader::sptr_type unlit_fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::unlit_fragment_shader_source);
@@ -64,11 +65,13 @@ int main(int argc, char **argv) {
     Program::sptr_type lit_program = std::make_shared<Program>(lit_vertex_shader, lit_fragment_shader);
 
     // Mesh::sptr_type octo = std::make_shared<Mesh>(octo_geo, lit_program);
-    Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, lit_program);
+    // Mesh::sptr_type sphere = std::make_shared<Mesh>(sphere_geo, lit_program);
+    Mesh::sptr_type bunny = std::make_shared<Mesh>(bunny_geo, lit_program);
 
     Scene scene(pixel_width, pixel_height);
     // scene.addMesh(octo);
-    scene.addMesh(sphere);
+    // scene.addMesh(sphere);
+    scene.addMesh(bunny);
 
     Camera &camera = scene.getCamera();
     camera.setLocation(glm::vec3(0, 0, 3));
@@ -84,7 +87,7 @@ int main(int argc, char **argv) {
     glm::vec3 yhat = glm::vec3(0, 1, 0);
     glm::vec3 xhat = glm::vec3(1, 0, 0);
     // glm::vec3 offset = glm::vec3(-1, -1, -1);
-    // glm::vec3 scale = glm::vec3(2, 2, 2);
+    glm::vec3 scale = glm::vec3(15, 15, 15);
     double yrot = 0, xrot = 0;
     
 #ifdef MSVC
@@ -132,12 +135,14 @@ int main(int argc, char **argv) {
 
         // Create the modelview matrix.
         mv = glm::mat4x4();
+        mv = glm::scale(mv, scale);
         mv = glm::rotate(mv, (float)yrot, yhat);
         mv = glm::rotate(mv, (float)xrot, xhat);
 
         // Make the meshes use the modelview matrix.
         // octo->setTransform(mv);
-        sphere->setTransform(mv);
+        // sphere->setTransform(mv);
+        bunny->setTransform(mv);
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
