@@ -40,7 +40,7 @@ doc.elements_by_name["face"].add_property("nz", :float32)
 doc.elements_by_name["face"].data.each_with_index do |face, i|
   p1, p2, p3 = doc.elements_by_name["vertex"].data.values_at(*face["vertex_indices"])
   v1, v2, v3 = [ p1, p2, p3 ].map { |p| Vector.new(p) }
-  norm = (v2 - v1).cross(v3 - v1).normalize
+  norm = (v3 - v1).cross(v2 - v1).normalize
 
   face["nx"] = norm.x
   face["ny"] = norm.y
@@ -101,6 +101,9 @@ puts "centroid = #{PP.pp(centroid, '')}"
 puts "bounding-box minimum = #{PP.pp(bb_min, '')}"
 puts "bounding-box maximum = #{PP.pp(bb_max, '')}"
 
+bb_max = bb_max - centroid
+bb_min = bb_min - centroid
+
 basename = File.basename(filename).match(/^(.*)\.ply(?:\.gz)?$/).captures.first
 pcn_filename = File.join(File.dirname(filename), "#{basename}.pcn")
 
@@ -108,8 +111,12 @@ File.open(pcn_filename, "wb") do |f|
   f.write("pcn\0")
   f.write([ doc.elements_by_name["vertex"].count ].pack("L"))
   doc.elements_by_name["vertex"].data.each do |v|
-    vp = Vector.new(v["x"], v["y"], v["z"])
-    vc = Vector.new(1.0, 0.0, 1.0, 1.0)
+    vp = Vector.new(v["x"], v["y"], v["z"]) - centroid
+    vc = Vector.new(
+      0.5*(vp.x.abs / bb_max.x.abs) + 0.5,
+      0.5*(vp.y.abs / bb_max.y.abs) + 0.5,
+      0.5*(vp.z.abs / bb_max.z.abs) + 0.5,
+      1.0)
     vn = Vector.new(v["nx"], v["ny"], v["nz"])
     f.write(vp.comps.pack("f3"))
     f.write(vc.comps.pack("f4"))

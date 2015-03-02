@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     glm::vec3 yhat = glm::vec3(0, 1, 0);
     glm::vec3 xhat = glm::vec3(1, 0, 0);
     // glm::vec3 offset = glm::vec3(-1, -1, -1);
-    glm::vec3 scale = glm::vec3(15, 15, 15);
+    glm::vec3 scale = glm::vec3(0.02, 0.02, 0.02);
     double yrot = 0, xrot = 0;
     
 #ifdef MSVC
