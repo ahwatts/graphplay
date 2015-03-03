@@ -59,8 +59,12 @@ int main(int argc, char **argv) {
 
     // Geometry<PCNVertex>::sptr_type octo_geo = makeOctohedronGeometry();
     // Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
-    // Geometry<PCNVertex>::sptr_type bunny_geo = loadPCNFile("/Users/awatts/Projects/graphplay/assets/stanford_armadillo.pcn");
-    Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("/Users/awatts/Projects/graphplay/assets/stanford_bunny.pcn");
+
+#ifdef _WIN32
+    Geometry<PCNVertex>::sptr_type bunny_geo = loadPCNFile("assets\\stanford_armadillo.pcn");
+#else
+    Geometry<PCNVertex>::sptr_type bunny_geo = loadPCNFile("assets/stanford_armadillo.pcn");
+#endif
 
     Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
     Shader::sptr_type unlit_fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::unlit_fragment_shader_source);

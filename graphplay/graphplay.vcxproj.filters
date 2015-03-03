@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Geometry Files">
-      <UniqueIdentifier>{d4e84a71-28dc-4172-9229-288b7a6de727}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphplay.cpp">
@@ -50,9 +47,6 @@
     </ClCompile>
     <ClCompile Include="OpenGLUtils.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry.tmpl.cpp">
-      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,13 +89,8 @@
     <ClInclude Include="OpenGLUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\chair.dae">
-      <Filter>Geometry Files</Filter>
-    </None>
-    <None Include="..\octohedron.dae">
-      <Filter>Geometry Files</Filter>
-    </None>
+    <ClInclude Include="Geometry.tmpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
