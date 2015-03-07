@@ -57,13 +57,15 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
-    // Geometry<PCNVertex>::sptr_type octo_geo = makeOctohedronGeometry();
-    // Geometry<PCNVertex>::sptr_type sphere_geo = makeSphereGeometry();
+    // Geometry<PCNVertex>::sptr_type object_geo = makeOctohedronGeometry();
+    // Geometry<PCNVertex>::sptr_type object_geo = makeSphereGeometry();
 
 #ifdef _WIN32
-    Geometry<PCNVertex>::sptr_type bunny_geo = loadPCNFile("assets\\stanford_armadillo.pcn");
+    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets\\stanford_armadillo.pcn");
+    Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets\\stanford_bunny.pcn");
 #else
-    Geometry<PCNVertex>::sptr_type bunny_geo = loadPCNFile("assets/stanford_armadillo.pcn");
+    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets/stanford_armadillo.pcn");
+    Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets/stanford_bunny.pcn");
 #endif
 
     Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
