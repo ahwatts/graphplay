@@ -3,7 +3,6 @@ add_executable(graphplay WIN32
   Camera.cpp
   Collada.cpp
   Geometry.cpp
-  Material.cpp
   Mesh.cpp
   OpenGLUtils.cpp
   Scene.cpp
@@ -22,7 +21,6 @@ if (WIN32)
     Camera.cpp
     Collada.cpp
     Geometry.cpp
-    Material.cpp
     Mesh.cpp
     OpenGLUtils.cpp
     Scene.cpp

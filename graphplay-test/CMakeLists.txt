@@ -1,14 +1,12 @@
 add_executable(graphplay-test
   CameraTest.cpp
   GeometryTest.cpp
-  MaterialTest.cpp
   MeshTest.cpp
   SceneTest.cpp
   ShaderTest.cpp
   TestOpenGLContext.cpp
   ../graphplay/Camera.cpp
   ../graphplay/Geometry.cpp
-  ../graphplay/Material.cpp
   ../graphplay/Mesh.cpp
   ../graphplay/OpenGLUtils.cpp
   ../graphplay/Scene.cpp

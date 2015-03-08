@@ -6,7 +6,6 @@
 #include <gtest/gtest.h>
 
 #include "../graphplay/Geometry.h"
-#include "../graphplay/Material.h"
 #include "../graphplay/Mesh.h"
 #include "TestOpenGLContext.h"
 

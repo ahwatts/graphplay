@@ -11,21 +11,30 @@ namespace graphplay {
     class Camera {
     public:
         Camera();
-        Camera(const glm::vec3 &location, const glm::vec3 &direction, const glm::vec3 &up);
+        Camera(const glm::vec3 &position, const glm::vec3 &focus);
         Camera(const Camera &other);
         Camera(Camera &&other);
 
         Camera& operator=(const Camera &other);
         Camera& operator=(Camera &&other);
 
+        inline const glm::vec3& getFocusPoint() const { return m_focus_point; }
+        void setFocusPoint(const glm::vec3 &new_focus);
+
+        inline const glm::vec3& getPosition() const { return m_position; }
+        void setPosition(const glm::vec3 &new_position);
+
+        void reset();
+        void rotate(double dtheta, double dphi);
+        void zoom(double dr);
+
         glm::mat4x4 getViewTransform() const;
 
-        inline void setLocation(const glm::vec3 &new_location) { m_location = new_location; }
-        inline void setDirection(const glm::vec3 &new_direction) { m_direction = new_direction; }
-        inline void setUpDirection(const glm::vec3 &new_up) { m_up = new_up; }
+        static const glm::vec3 DEFAULT_POSITION, DEFAULT_FOCUS_POINT;
 
     private:
-        glm::vec3 m_location, m_direction, m_up;
+        glm::vec3 m_focus_point, m_position;
+        // double m_radius, m_theta, m_phi;
     };
 
     typedef std::unique_ptr<Camera> up_Camera;

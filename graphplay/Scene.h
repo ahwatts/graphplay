@@ -48,6 +48,8 @@ namespace graphplay {
 
         // Update the projection transformation for the new viewport.
         void setViewport(unsigned int new_width, unsigned int new_height);
+        inline unsigned int getViewportWidth() const { return m_vp_width; }
+        inline unsigned int getViewportHeight() const { return m_vp_height; }
 
         // Manage the list of meshes.
         void addMesh(Mesh::wptr_type mesh);

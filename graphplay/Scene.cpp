@@ -12,8 +12,8 @@
 
 namespace graphplay {
     Scene::Scene(unsigned int vp_width, unsigned int vp_height)
-        : m_vp_width(0),
-          m_vp_height(0),
+        : m_vp_width(vp_width),
+          m_vp_height(vp_height),
           m_camera(),
           m_projection(),
           m_lights(),
@@ -24,7 +24,6 @@ namespace graphplay {
     {
         m_uniform_buffer_bindings["view_and_projection"] = 0;
         m_uniform_buffer_bindings["light_list"] = 1;
-        setViewport(vp_width, vp_height);
 
         for (auto i = 0; i < MAX_LIGHTS; ++i) {
             m_lights[i].enabled = false;
@@ -39,8 +38,6 @@ namespace graphplay {
         // m_lights[1].position = glm::vec3(10.0, 10.0, 0.0);
         // m_lights[1].color = glm::vec4(1.0, 0.0, 0.0, 1.0);
         // m_lights[1].specular_exp = 4;
-
-        createBuffers();
     }
 
     Scene::~Scene() {

@@ -11,15 +11,14 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
 
 #ifndef MSVC
 #include <sys/time.h>
 #endif
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Geometry.h"
-#include "Material.h"
 #include "Mesh.h"
 #include "Scene.h"
 #include "Shader.h"
@@ -35,22 +34,24 @@ void mouse_click(GLFWwindow *wnd, int button, int action, int mods);
 void mouse_scroll(GLFWwindow *wnd, double xoffset, double yoffset);
 void mouse_move(GLFWwindow *wnd, double xpos, double ypos);
 
-// typedef enum { OCTOHEDRON, CUBE } view_state_t;
-// static view_state_t view_state = OCTOHEDRON, new_view_state = OCTOHEDRON;
-
-// typedef enum { GOURAUD, LAMBERT, PHONG } lighting_state_t;
-// static lighting_state_t light_state = PHONG, new_light_state = PHONG;
-
 using namespace graphplay;
 
-int main(int argc, char **argv) {
-    int screen_width = 800, screen_height = 600;
-    int pixel_width = screen_width, pixel_height = screen_height;
-    GLFWwindow *window;
+Scene SCENE(800, 600);
+double MOUSE_X = 0.0, MOUSE_Y = 0.0;
+bool ROTATING = false;
 
-    initGLFW(screen_width, screen_height, "Graphplay", &window);
+int main(int argc, char **argv) {
+    int pixel_width = SCENE.getViewportWidth(), pixel_height = SCENE.getViewportHeight();
+    GLFWwindow *window = nullptr;
+
+    initGLFW(pixel_width, pixel_height, "Graphplay", &window);
     initGLEW();
+
     glfwGetFramebufferSize(window, &pixel_width, &pixel_height);
+    SCENE.setViewport(pixel_width, pixel_height);
+    SCENE.createBuffers();
+
+    glfwGetCursorPos(window, &MOUSE_X, &MOUSE_Y);
 
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
@@ -76,14 +77,12 @@ int main(int argc, char **argv) {
     Program::sptr_type lit_program = std::make_shared<Program>(lit_vertex_shader, lit_fragment_shader);
 
     Mesh::sptr_type object = std::make_shared<Mesh>(object_geo, lit_program);
+    object->setTransform(glm::scale(glm::mat4x4(), glm::vec3(10, 10, 10)));
+    SCENE.addMesh(object);
 
-    Scene scene(pixel_width, pixel_height);
-    scene.addMesh(object);
-
-    Camera &camera = scene.getCamera();
-    camera.setLocation(glm::vec3(0, 0, 3));
-    camera.setDirection(glm::vec3(0, 0, 0));
-    camera.setUpDirection(glm::vec3(0, 1, 0));
+    Camera &camera = SCENE.getCamera();
+    camera.setFocusPoint(glm::vec3(0.0, 0.0, 0.0));
+    camera.setPosition(glm::vec3(0.0, 0.0, 5.0));
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, pixel_width, pixel_height);
@@ -93,67 +92,33 @@ int main(int argc, char **argv) {
     glfwSetMouseButtonCallback(window, mouse_click);
     glfwSetScrollCallback(window, mouse_scroll);
 
-    glm::mat4x4 mv;
-    glm::vec3 yhat = glm::vec3(0, 1, 0);
-    glm::vec3 xhat = glm::vec3(1, 0, 0);
-    glm::vec3 scale = glm::vec3(10.0, 10.0, 10.0);
-    double yrot = 0, xrot = 0;
-    
 #ifdef MSVC
-    LARGE_INTEGER time, ptime, frequency, tick_delta;
-    QueryPerformanceFrequency(&frequency);
-    QueryPerformanceCounter(&ptime);
+    // LARGE_INTEGER time, ptime, frequency, tick_delta;
+    // QueryPerformanceFrequency(&frequency);
+    // QueryPerformanceCounter(&ptime);
 #else
-    struct timeval tod, ptod;
-    gettimeofday(&ptod, NULL);
+    // struct timeval tod, ptod;
+    // gettimeofday(&ptod, NULL);
 #endif
 
     while (!glfwWindowShouldClose(window)) {
-
         // Calculate the time delta.
 #ifdef MSVC
-        QueryPerformanceCounter(&time);
-        tick_delta.QuadPart = time.QuadPart - ptime.QuadPart;
-        auto delta = tick_delta.QuadPart * 1000000 / frequency.QuadPart; // delta is now in usec.
-        ptime = time;
+        // QueryPerformanceCounter(&time);
+        // tick_delta.QuadPart = time.QuadPart - ptime.QuadPart;
+        // auto delta = tick_delta.QuadPart * 1000000 / frequency.QuadPart; // delta is now in usec.
+        // ptime = time;
 #else
-        gettimeofday(&tod, NULL);
-        auto delta = (tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec); // delta in usec.
-        ptod = tod;
+        // gettimeofday(&tod, NULL);
+        // auto delta = (tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec); // delta in usec.
+        // ptod = tod;
 #endif
 
-        double dtime = delta / 1e6;
-        // std::cout << "delta = " << delta << " dtime = " << dtime << std::endl;
-
-        // Update the rotation based on the time delta.
-        yrot += M_PI / 20.0 * dtime;
-        if (yrot >= 2*M_PI) { yrot -= 2*M_PI; }
-
-        xrot += M_PI / 60.0 * dtime;
-        if (xrot >= 2*M_PI) { xrot -= 2*M_PI; }
-
-        // Handle input.
-        // if (new_light_state != light_state) {
-        //     light_state = new_light_state;
-        //     switch (new_light_state) {
-        //     case GOURAUD: sphere->setMaterial(gour_mat); break;
-        //     case LAMBERT: sphere->setMaterial(lamb_mat); break;
-        //     case PHONG: sphere->setMaterial(phong_mat); break;
-        //     }
-        // }
-
-        // Create the modelview matrix.
-        mv = glm::mat4x4();
-        mv = glm::scale(mv, scale);
-        mv = glm::rotate(mv, (float)yrot, yhat);
-        mv = glm::rotate(mv, (float)xrot, xhat);
-
-        // Make the meshes use the modelview matrix.
-        object->setTransform(mv);
+        // double dtime = delta / 1e6;
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        scene.render();
+        SCENE.render();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -212,27 +177,6 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(wnd, true);
             break;
-        //case 'S':
-        //case 's':
-        //    if (vew_state == OCTOHEDRON) {
-        //        view_state = CUBE;
-        //    }
-        //    else if (view_state == CUBE) {
-        //        view_state = OCTOHEDRON;
-        //    }
-        //    break;
-        // case 'Q':
-        // case 'q':
-        //     new_light_state = GOURAUD;
-        //     break;
-        // case 'W':
-        // case 'w':
-        //     new_light_state = LAMBERT;
-        //     break;
-        // case 'E':
-        // case 'e':
-        //     new_light_state = PHONG;
-        //     break;
         default:
             std::cout << "key: " << key
                       << " scancode: " << scancode
@@ -243,40 +187,28 @@ void keypress(GLFWwindow *wnd, int key, int scancode, int action, int mods) {
     }
 }
 
-void mouse_click(GLFWwindow *wnd, int button, int action, int mods) {
-    if (action == GLFW_PRESS) {
-        switch (button) {
-        case GLFW_MOUSE_BUTTON_LEFT:
-            std::cout << "Pressed LMB. mods = " << mods << std::endl;
-            break;
-        case GLFW_MOUSE_BUTTON_RIGHT:
-            std::cout << "Pressed RMB. mods = " << mods << std::endl;
-            break;
-        default:
-            std::cout << "Pressed mouse button = " << button << " mods = " << mods << std::endl;
-            break;
+void mouse_click(GLFWwindow *window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            ROTATING = true;
+            glfwGetCursorPos(window, &MOUSE_X, &MOUSE_Y);
+        } else if (action == GLFW_RELEASE) {
+            ROTATING = false;
         }
-    } else if (action == GLFW_RELEASE) {
-        switch (button) {
-        case GLFW_MOUSE_BUTTON_LEFT:
-            std::cout << "Released LMB. mods = " << mods << std::endl;
-            break;
-        case GLFW_MOUSE_BUTTON_RIGHT:
-            std::cout << "Released RMB. mods = " << mods << std::endl;
-            break;
-        default:
-            std::cout << "Released mouse button = " << button << " mods = " << mods << std::endl;
-            break;
-        }
-    } else {
-        std::cout << "button: " << button << " action: " << action << " mods = " << mods << std::endl;
     }
 }
 
 void mouse_scroll(GLFWwindow *wnd, double xoffset, double yoffset) {
-    std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl;
+    SCENE.getCamera().zoom(yoffset);
 }
 
 void mouse_move(GLFWwindow *wnd, double xpos, double ypos) {
-    std::cout << "xpos: " << xpos << " ypos: " << ypos << std::endl;
+    if (ROTATING) {
+        double theta = -1 * 2 * M_PI * ((xpos - MOUSE_X) / SCENE.getViewportWidth());
+        double phi = -1 * M_PI * ((ypos - MOUSE_Y) / SCENE.getViewportHeight());
+
+        SCENE.getCamera().rotate(theta, phi);
+        MOUSE_X = xpos;
+        MOUSE_Y = ypos;
+    }
 }

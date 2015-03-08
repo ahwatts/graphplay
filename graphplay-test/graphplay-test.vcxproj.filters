@@ -21,12 +21,6 @@
     <ClCompile Include="..\graphplay\Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\graphplay\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TestOpenGLContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,9 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\graphplay\Geometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\graphplay\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestOpenGLContext.h">

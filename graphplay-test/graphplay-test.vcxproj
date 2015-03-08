@@ -10,14 +10,12 @@
     <ClCompile Include="..\graphplay\Camera.cpp" />
     <ClCompile Include="..\graphplay\Geometry.cpp" />
     <ClInclude Include="..\graphplay\Geometry.tmpl.cpp" />
-    <ClCompile Include="..\graphplay\Material.cpp" />
     <ClCompile Include="..\graphplay\Mesh.cpp" />
     <ClCompile Include="..\graphplay\OpenGLUtils.cpp" />
     <ClCompile Include="..\graphplay\Scene.cpp" />
     <ClCompile Include="..\graphplay\Shader.cpp" />
     <ClCompile Include="CameraTest.cpp" />
     <ClCompile Include="GeometryTest.cpp" />
-    <ClCompile Include="MaterialTest.cpp" />
     <ClCompile Include="MeshTest.cpp" />
     <ClCompile Include="SceneTest.cpp" />
     <ClCompile Include="ShaderTest.cpp" />
@@ -26,7 +24,6 @@
   <ItemGroup>
     <ClInclude Include="..\graphplay\Camera.h" />
     <ClInclude Include="..\graphplay\Geometry.h" />
-    <ClInclude Include="..\graphplay\Material.h" />
     <ClInclude Include="..\graphplay\Mesh.h" />
     <ClInclude Include="..\graphplay\opengl.h" />
     <ClInclude Include="..\graphplay\OpenGLUtils.h" />

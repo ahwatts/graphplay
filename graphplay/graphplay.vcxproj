@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug - Console|Win32">
@@ -104,7 +104,6 @@
     <ClCompile Include="Geometry.cpp" />
     <ClInclude Include="Geometry.tmpl.cpp" />
     <ClCompile Include="graphplay.cpp" />
-    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OpenGLUtils.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -120,7 +119,6 @@
     <ClInclude Include="Collada.h" />
     <ClInclude Include="OpenGLUtils.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="opengl.h" />
     <ClInclude Include="tinyxml2.h" />
