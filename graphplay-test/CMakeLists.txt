@@ -2,6 +2,7 @@ add_executable(graphplay-test
   CameraTest.cpp
   GeometryTest.cpp
   MeshTest.cpp
+  PlyFileTest.cpp
   SceneTest.cpp
   ShaderTest.cpp
   TestOpenGLContext.cpp
@@ -9,6 +10,7 @@ add_executable(graphplay-test
   ../graphplay/Geometry.cpp
   ../graphplay/Mesh.cpp
   ../graphplay/OpenGLUtils.cpp
+  ../graphplay/PlyFile.cpp
   ../graphplay/Scene.cpp
   ../graphplay/Shader.cpp)
 
