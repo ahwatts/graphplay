@@ -7,19 +7,17 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <iostream>
 
 namespace graphplay {
     class PlyFile {
     public:
         enum PropertyType {
-            CHAR, UCHAR,
-            INT_8, UINT_8,
-            SHORT, USHORT,
+            INT_8,  UINT_8,
             INT_16, UINT_16,
-            INT, UINT,
             INT_32, UINT_32,
-            FLOAT, FLOAT_32,
-            DOUBLE, DOUBLE_32
+            FLOAT_32,
+            FLOAT_64,
         };
 
         struct PropertyDesc {
@@ -32,24 +30,24 @@ namespace graphplay {
             };
         };
 
-        union Value {
-            std::int8_t char_val;
-            std::uint8_t uchar_val;
-            std::int16_t short_val;
-            std::uint16_t ushort_val;
-            std::int32_t int_val;
-            std::uint32_t uint_val;
-            float float_val;
-            double double_val;
-        };
+        // union Value {
+        //     std::int8_t char_val;
+        //     std::uint8_t uchar_val;
+        //     std::int16_t short_val;
+        //     std::uint16_t ushort_val;
+        //     std::int32_t int_val;
+        //     std::uint32_t uint_val;
+        //     float float_val;
+        //     double double_val;
+        // };
 
         typedef std::map<std::string, PropertyDesc> prop_desc_map;
-        typedef std::map<std::string, Value> prop_val_map;
+        // typedef std::map<std::string, Value> prop_val_map;
 
         struct Element {
             std::string name;
             prop_desc_map props;
-            std::vector<prop_val_map> values;
+            // std::vector<prop_val_map> values;
         };
 
         PlyFile();
@@ -61,7 +59,8 @@ namespace graphplay {
         PlyFile& operator=(const PlyFile &other);
         PlyFile& operator=(PlyFile &&other);
 
-        void open(const char *filename);
+        void load(const char *filename);
+        void load(std::istream &stream);
 
     private:
         std::vector<std::string> m_comments;

@@ -2,6 +2,8 @@
 
 #include "PlyFile.h"
 
+#include <fstream>
+
 namespace graphplay {
     PlyFile::PlyFile()
         : m_comments(),
@@ -10,7 +12,13 @@ namespace graphplay {
 
     PlyFile::~PlyFile() {}
 
-    void PlyFile::open(const char *filename) {
+    void PlyFile::load(const char *filename) {
+        std::fstream file(filename, std::ios::in | std::ios::binary);
+        load(file);
+        file.close();
+    }
+
+    void PlyFile::load(std::istream &stream) {
         
     }
 }
