@@ -43,3 +43,6 @@ config.h
 .DS_Store
 
 /assets/*.pcn
+
+# Allow the main forwarding Makefile.
+!/Makefile
