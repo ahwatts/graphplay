@@ -12,23 +12,29 @@
 namespace graphplay {
     class PlyFile {
     public:
-        enum PropertyType {
-            INT_8,  UINT_8,
-            INT_16, UINT_16,
-            INT_32, UINT_32,
-            FLOAT_32,
-            FLOAT_64,
+        enum Format {
+            ASCII,
+            BINARY_BIG_ENDIAN,
+            BINARY_LITTLE_ENDIAN,
         };
 
-        struct PropertyDesc {
-            bool list;
-            union {
-                PropertyType type;
-                struct {
-                    PropertyType count_type, value_type;
-                };
-            };
-        };
+        // enum PropertyType {
+        //     INT_8,  UINT_8,
+        //     INT_16, UINT_16,
+        //     INT_32, UINT_32,
+        //     FLOAT_32,
+        //     FLOAT_64,
+        // };
+
+        // struct PropertyDesc {
+        //     bool list;
+        //     union {
+        //         PropertyType type;
+        //         struct {
+        //             PropertyType count_type, value_type;
+        //         };
+        //     };
+        // };
 
         // union Value {
         //     std::int8_t char_val;
@@ -41,14 +47,14 @@ namespace graphplay {
         //     double double_val;
         // };
 
-        typedef std::map<std::string, PropertyDesc> prop_desc_map;
+        // typedef std::map<std::string, PropertyDesc> prop_desc_map;
         // typedef std::map<std::string, Value> prop_val_map;
 
-        struct Element {
-            std::string name;
-            prop_desc_map props;
-            // std::vector<prop_val_map> values;
-        };
+        // struct Element {
+        //     std::string name;
+        //     prop_desc_map props;
+        //     std::vector<prop_val_map> values;
+        // };
 
         PlyFile();
         PlyFile(const char *filename);
@@ -62,9 +68,12 @@ namespace graphplay {
         void load(const char *filename);
         void load(std::istream &stream);
 
+        inline Format getFormat() const { return m_format; };
+
     private:
+        Format m_format;
         std::vector<std::string> m_comments;
-        std::map<std::string, Element> m_elements;
+        // std::map<std::string, Element> m_elements;
     };
 }
 
