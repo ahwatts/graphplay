@@ -106,6 +106,7 @@
     <ClCompile Include="graphplay.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OpenGLUtils.cpp" />
+    <ClCompile Include="PlyFile.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -118,6 +119,7 @@
     <ClInclude Include="graphplay.h" />
     <ClInclude Include="Collada.h" />
     <ClInclude Include="OpenGLUtils.h" />
+    <ClInclude Include="PlyFile.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="opengl.h" />

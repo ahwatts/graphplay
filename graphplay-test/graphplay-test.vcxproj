@@ -12,11 +12,13 @@
     <ClInclude Include="..\graphplay\Geometry.tmpl.cpp" />
     <ClCompile Include="..\graphplay\Mesh.cpp" />
     <ClCompile Include="..\graphplay\OpenGLUtils.cpp" />
+    <ClCompile Include="..\graphplay\PlyFile.cpp" />
     <ClCompile Include="..\graphplay\Scene.cpp" />
     <ClCompile Include="..\graphplay\Shader.cpp" />
     <ClCompile Include="CameraTest.cpp" />
     <ClCompile Include="GeometryTest.cpp" />
     <ClCompile Include="MeshTest.cpp" />
+    <ClCompile Include="PlyFileTest.cpp" />
     <ClCompile Include="SceneTest.cpp" />
     <ClCompile Include="ShaderTest.cpp" />
     <ClCompile Include="TestOpenGLContext.cpp" />
@@ -27,6 +29,7 @@
     <ClInclude Include="..\graphplay\Mesh.h" />
     <ClInclude Include="..\graphplay\opengl.h" />
     <ClInclude Include="..\graphplay\OpenGLUtils.h" />
+    <ClInclude Include="..\graphplay\PlyFile.h" />
     <ClInclude Include="..\graphplay\Scene.h" />
     <ClInclude Include="..\graphplay\Shader.h" />
     <ClInclude Include="config.h" />
