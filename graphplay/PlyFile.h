@@ -18,23 +18,28 @@ namespace graphplay {
             BINARY_LITTLE_ENDIAN,
         };
 
-        // enum PropertyType {
-        //     INT_8,  UINT_8,
-        //     INT_16, UINT_16,
-        //     INT_32, UINT_32,
-        //     FLOAT_32,
-        //     FLOAT_64,
-        // };
+        enum PropertyType {
+            INT_8,  UINT_8,
+            INT_16, UINT_16,
+            INT_32, UINT_32,
+            FLOAT_32,
+            FLOAT_64,
+        };
 
-        // struct PropertyDesc {
-        //     bool list;
-        //     union {
-        //         PropertyType type;
-        //         struct {
-        //             PropertyType count_type, value_type;
-        //         };
-        //     };
-        // };
+        struct PropertyDesc {
+            bool list;
+            union {
+                PropertyType type;
+                struct {
+                    PropertyType count_type, value_type;
+                };
+            };
+        };
+
+        struct Property {
+            std::string name;
+            PropertyDesc description;
+        };
 
         // union Value {
         //     std::int8_t char_val;
@@ -50,11 +55,11 @@ namespace graphplay {
         // typedef std::map<std::string, PropertyDesc> prop_desc_map;
         // typedef std::map<std::string, Value> prop_val_map;
 
-        // struct Element {
-        //     std::string name;
-        //     prop_desc_map props;
-        //     std::vector<prop_val_map> values;
-        // };
+        struct Element {
+            std::string name;
+            int count;
+            std::vector<Property> props;
+        };
 
         PlyFile();
         PlyFile(const char *filename);
@@ -69,11 +74,13 @@ namespace graphplay {
         void load(std::istream &stream);
 
         inline Format getFormat() const { return m_format; };
+        inline const std::vector<std::string>& getComments() const { return m_comments; };
+        inline const std::vector<Element>& getElements() const { return m_elements; };
 
     private:
         Format m_format;
         std::vector<std::string> m_comments;
-        // std::map<std::string, Element> m_elements;
+        std::vector<Element> m_elements;
     };
 }
 
