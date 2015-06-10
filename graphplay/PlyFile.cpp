@@ -56,8 +56,10 @@ namespace graphplay {
                 } else if (tokens[0] == "element") {
                     m_elements.emplace_back(read_element(tokens));
                 } else if (tokens[0] == "property") {
-                    auto elem = *std::prev(m_elements.end());
-                    elem.props.emplace_back(read_property(tokens));
+                    if (!m_elements.empty()) {
+                        Element &elem = m_elements.back();
+                        elem.props.emplace_back(read_property(tokens));
+                    }
                 } else if (tokens[0] == "end_header") {
                     break;
                 }
@@ -97,8 +99,6 @@ namespace graphplay {
         if (toks.size() >= 3) {
             rv.name = toks[1];
             rv.count = std::stoi(toks[2]);
-        } else {
-            // ???
         }
 
         return rv;
