@@ -26,7 +26,8 @@ namespace graphplay {
             FLOAT_64,
         };
 
-        struct PropertyDesc {
+        struct Property {
+            std::string name;
             bool list;
             union {
                 PropertyType type;
@@ -34,11 +35,6 @@ namespace graphplay {
                     PropertyType count_type, value_type;
                 };
             };
-        };
-
-        struct Property {
-            std::string name;
-            PropertyDesc description;
         };
 
         // union Value {
