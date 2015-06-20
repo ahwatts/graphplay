@@ -5,6 +5,7 @@ add_executable(graphplay WIN32
   Geometry.cpp
   Mesh.cpp
   OpenGLUtils.cpp
+  PlyFile.cpp
   Scene.cpp
   Shader.cpp
   graphplay.cpp
@@ -23,6 +24,7 @@ if (WIN32)
     Geometry.cpp
     Mesh.cpp
     OpenGLUtils.cpp
+    PlyFile.cpp
     Scene.cpp
     Shader.cpp
     graphplay.cpp
