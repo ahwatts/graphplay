@@ -51,4 +51,31 @@ element face 8
         ASSERT_EQ("face", elements[1].name);
         ASSERT_EQ(8, elements[1].count);
     }
+
+    TEST(PlyFileTest, ReadProperties) {
+        PlyFile f;
+        std::string ply_string(R"ply(ply
+element vertex 6
+property float32 x
+element face 8
+property list uint8 uint32 vertex_indices
+)ply");
+
+        std::istringstream ply_stream(ply_string);
+        f.load(ply_stream);
+
+        const std::vector<PlyFile::Element> &elements = f.getElements();
+
+        ASSERT_EQ(2, elements.size());
+        ASSERT_EQ(1, elements[0].props.size());
+        ASSERT_EQ("x", elements[0].props[0].name);
+        ASSERT_EQ(false, elements[0].props[0].list);
+        ASSERT_EQ(PlyFile::PropertyType::FLOAT_32, elements[0].props[0].type);
+
+        ASSERT_EQ(1, elements[1].props.size());
+        ASSERT_EQ("vertex_indices", elements[1].props[0].name);
+        ASSERT_EQ(true, elements[1].props[0].list);
+        ASSERT_EQ(PlyFile::PropertyType::UINT_8, elements[1].props[0].count_type);
+        ASSERT_EQ(PlyFile::PropertyType::UINT_32, elements[1].props[0].value_type);
+    }
 }

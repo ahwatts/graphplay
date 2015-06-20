@@ -107,7 +107,6 @@ namespace graphplay {
 
     PlyFile::Property read_property(StringVec &toks) {
         PlyFile::Property rv;
-        return rv;
 
         if (toks.size() >= 2) {
             if (toks[1] == "list") {
@@ -125,6 +124,8 @@ namespace graphplay {
             rv.name = toks[2];
             rv.type = read_property_type(toks[1]);
         }
+
+        return rv;
     }
 
     PlyFile::PropertyType read_property_type(std::string &type_str) {
