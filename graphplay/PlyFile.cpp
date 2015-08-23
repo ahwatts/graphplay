@@ -21,7 +21,7 @@ namespace graphplay {
     std::string read_comment(StringVec &toks);
     PlyFile::Element read_element(StringVec &toks);
     PlyFile::Property read_property(StringVec &toks);
-    PlyFile::PropertyType read_property_type(std::string &type_str);
+    PlyFile::ValueType read_value_type(std::string &type_str);
 
     // Class PlyFile.
 
@@ -31,13 +31,17 @@ namespace graphplay {
           m_elements()
     {}
 
-    PlyFile::~PlyFile() {}
-
-    void PlyFile::load(const char *filename) {
+    PlyFile::PlyFile(const char *filename) : PlyFile() {
         std::fstream file(filename, std::ios::in | std::ios::binary);
         load(file);
         file.close();
     }
+
+    PlyFile::PlyFile(std::istream &stream) : PlyFile() {
+        load(stream);
+    }
+
+    PlyFile::~PlyFile() {}
 
     void PlyFile::load(std::istream &stream) {
         std::string magic, line;
@@ -118,36 +122,36 @@ namespace graphplay {
 
         if (rv.list && toks.size() >= 5) {
             rv.name = toks[4];
-            rv.count_type = read_property_type(toks[2]);
-            rv.value_type = read_property_type(toks[3]);
+            rv.count_type = read_value_type(toks[2]);
+            rv.value_type = read_value_type(toks[3]);
         } else if (!rv.list && toks.size() >= 3) {
             rv.name = toks[2];
-            rv.type = read_property_type(toks[1]);
+            rv.type = read_value_type(toks[1]);
         }
 
         return rv;
     }
 
-    PlyFile::PropertyType read_property_type(std::string &type_str) {
+    PlyFile::ValueType read_value_type(std::string &type_str) {
         if (type_str == "uint8" || type_str == "uchar") {
-            return PlyFile::PropertyType::UINT_8;
+            return PlyFile::ValueType::UINT_8;
         } else if (type_str == "int8" || type_str == "char") {
-            return PlyFile::PropertyType::INT_8;
+            return PlyFile::ValueType::INT_8;
         } else if (type_str == "uint16" || type_str == "ushort") {
-            return PlyFile::PropertyType::UINT_16;
+            return PlyFile::ValueType::UINT_16;
         } else if (type_str == "int16" || type_str == "short") {
-            return PlyFile::PropertyType::INT_16;
+            return PlyFile::ValueType::INT_16;
         } else if (type_str == "uint32" || type_str == "uint") {
-            return PlyFile::PropertyType::UINT_32;
+            return PlyFile::ValueType::UINT_32;
         } else if (type_str == "int32" || type_str == "int") {
-            return PlyFile::PropertyType::INT_32;
+            return PlyFile::ValueType::INT_32;
         } else if (type_str == "float" || type_str == "float32") {
-            return PlyFile::PropertyType::FLOAT_32;
+            return PlyFile::ValueType::FLOAT_32;
         } else if (type_str == "double" || type_str == "float64") {
-            return PlyFile::PropertyType::FLOAT_64;
+            return PlyFile::ValueType::FLOAT_64;
         } else {
             // ???
-            return PlyFile::PropertyType::UINT_8;
+            return PlyFile::ValueType::UINT_8;
         }
     }
 

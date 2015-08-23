@@ -18,7 +18,7 @@ namespace graphplay {
             BINARY_LITTLE_ENDIAN,
         };
 
-        enum PropertyType {
+        enum ValueType {
             INT_8,  UINT_8,
             INT_16, UINT_16,
             INT_32, UINT_32,
@@ -30,26 +30,12 @@ namespace graphplay {
             std::string name;
             bool list;
             union {
-                PropertyType type;
+                ValueType type;
                 struct {
-                    PropertyType count_type, value_type;
+                    ValueType count_type, value_type;
                 };
             };
         };
-
-        // union Value {
-        //     std::int8_t char_val;
-        //     std::uint8_t uchar_val;
-        //     std::int16_t short_val;
-        //     std::uint16_t ushort_val;
-        //     std::int32_t int_val;
-        //     std::uint32_t uint_val;
-        //     float float_val;
-        //     double double_val;
-        // };
-
-        // typedef std::map<std::string, PropertyDesc> prop_desc_map;
-        // typedef std::map<std::string, Value> prop_val_map;
 
         struct Element {
             std::string name;
@@ -59,21 +45,21 @@ namespace graphplay {
 
         PlyFile();
         PlyFile(const char *filename);
-        PlyFile(const PlyFile &other);
-        PlyFile(PlyFile &&other);
+        PlyFile(std::istream &stream);
+        PlyFile(const PlyFile &other) = delete;
+        PlyFile(PlyFile &&other) = delete;
         ~PlyFile();
 
-        PlyFile& operator=(const PlyFile &other);
-        PlyFile& operator=(PlyFile &&other);
-
-        void load(const char *filename);
-        void load(std::istream &stream);
+        PlyFile& operator=(const PlyFile &other) = delete;
+        PlyFile& operator=(PlyFile &&other) = delete;
 
         inline Format getFormat() const { return m_format; };
         inline const std::vector<std::string>& getComments() const { return m_comments; };
         inline const std::vector<Element>& getElements() const { return m_elements; };
 
     private:
+        void load(std::istream &stream);
+
         Format m_format;
         std::vector<std::string> m_comments;
         std::vector<Element> m_elements;
