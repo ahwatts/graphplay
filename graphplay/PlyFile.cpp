@@ -22,6 +22,7 @@ namespace graphplay {
     PlyFile::Element read_element(StringVec &toks);
     PlyFile::Property read_property(StringVec &toks);
     PlyFile::ValueType read_value_type(std::string &type_str);
+    void read_ascii_values(PlyFile::Element &e, std::istream &stream);
 
     // Class PlyFile.
 
@@ -68,6 +69,18 @@ namespace graphplay {
                 } else if (tokens[0] == "end_header") {
                     break;
                 }
+            }
+        }
+
+        for (std::vector<PlyFile::Element>::iterator e = m_elements.begin(); e != m_elements.end(); ++e) {
+            switch (m_format) {
+            case PlyFile::ASCII:
+                read_ascii_values(*e, stream);
+                break;
+            case PlyFile::BINARY_BIG_ENDIAN:
+                break;
+            case PlyFile::BINARY_LITTLE_ENDIAN:
+                break;
             }
         }
     }
@@ -153,6 +166,76 @@ namespace graphplay {
             // ???
             return PlyFile::ValueType::UINT_8;
         }
+    }
+
+    void read_ascii_values(PlyFile::Element &elem, std::istream &stream) {
+        std::string line;
+        std::ostringstream data_stream;
+        union {
+            unsigned char  uc_value;
+            unsigned short us_value;
+            unsigned int  ui_value;
+
+            signed char  c_value;
+            short s_value;
+            int   i_value;
+
+            float  f_value;
+            double d_value;
+        } value;
+
+        while (std::getline(stream, line)) {
+            StringVec tokens = split(line, ' ');
+            auto token = tokens.begin();
+            auto prop = elem.props.begin();
+            while (token != tokens.end() && prop != elem.props.end()) {
+                if (prop->list) {
+                } else {
+                    switch (prop->type) {
+                    case PlyFile::ValueType::UINT_8:
+                        value.uc_value = (unsigned char)std::stoul(*token);
+                        data_stream.write((char *)&value, sizeof(unsigned char));
+                        break;
+                    case PlyFile::ValueType::UINT_16:
+                        value.us_value = (unsigned short)std::stoul(*token);
+                        data_stream.write((char *)&value, sizeof(unsigned short));
+                        break;
+                    case PlyFile::ValueType::UINT_32:
+                        value.ui_value = (unsigned int)std::stoul(*token);
+                        data_stream.write((char *)&value, sizeof(unsigned int));
+                        break;
+                    case PlyFile::ValueType::INT_8:
+                        value.c_value = (signed char)std::stol(*token);
+                        data_stream.write((char *)&value, sizeof(signed char));
+                        break;
+                    case PlyFile::ValueType::INT_16:
+                        value.s_value = (short)std::stol(*token);
+                        data_stream.write((char *)&value, sizeof(short));
+                        break;
+                    case PlyFile::ValueType::INT_32:
+                        value.i_value = (int)std::stol(*token);
+                        data_stream.write((char *)&value, sizeof(int));
+                        break;
+                    case PlyFile::ValueType::FLOAT_32:
+                        value.f_value = std::stof(*token);
+                        data_stream.write((char *)&value, sizeof(float));
+                        break;
+                    case PlyFile::ValueType::FLOAT_64:
+                        value.d_value = std::stod(*token);
+                        data_stream.write((char *)&value, sizeof(double));
+                        break;
+                    default:
+                        std::cerr << "Cannot handle PLY value type " << prop->type << " with value " << *token << std::endl;
+                        break;
+                    }
+                }
+
+                ++token;
+                ++prop;
+            }
+        }
+
+        elem.data += data_stream.str();
     }
 
     // Utility functions.

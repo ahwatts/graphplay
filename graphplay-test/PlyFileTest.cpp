@@ -74,4 +74,35 @@ property list uint8 uint32 vertex_indices
         ASSERT_EQ(PlyFile::ValueType::UINT_8, elements[1].props[0].count_type);
         ASSERT_EQ(PlyFile::ValueType::UINT_32, elements[1].props[0].value_type);
     }
+
+    TEST(PlyFileTest, ReadScalarAsciiData) {
+        std::string ply_string(R"ply(ply
+format ascii 1.0
+element vertex 2
+property uint8  uc
+property int8 c
+property uint16 us
+property int16 s
+property uint32 ul
+property int32 l
+property float32 f
+property float64 d
+end_header
+1 -1 2 -2 3 -3 1.0 2.3
+2 -2 4 -4 6 -6 2.1 4.0
+)ply");
+
+        std::istringstream ply_stream(ply_string);
+        PlyFile f(ply_stream);
+
+        const std::vector<PlyFile::Element> &elements = f.getElements();
+
+        ASSERT_EQ(1, elements.size());
+        ASSERT_EQ(8, elements[0].props.size());
+
+        const PlyFile::Element &elem = elements[0];
+        ASSERT_EQ(52, elem.data.size());
+
+        // std::istringstream data_stream(elem.data);
+    }
 }

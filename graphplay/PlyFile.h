@@ -41,6 +41,7 @@ namespace graphplay {
             std::string name;
             int count;
             std::vector<Property> props;
+            std::string data;
         };
 
         PlyFile();
