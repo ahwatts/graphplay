@@ -24,6 +24,7 @@ namespace graphplay {
     PlyFile::Property read_property(StringVec &toks);
     PlyFile::ValueType read_value_type(std::string &type_str);
     void read_ascii_values(PlyFile::Element &e, std::istream &stream);
+    void read_scalar_property_value(std::ostream &stream, const PlyFile::Property &prop, const std::string &value);
 
     // Class PlyFile.
 
@@ -172,6 +173,26 @@ namespace graphplay {
     void read_ascii_values(PlyFile::Element &elem, std::istream &stream) {
         std::string line;
         std::ostringstream data_stream;
+
+        while (std::getline(stream, line)) {
+            StringVec tokens = split(line, ' ');
+            auto token = tokens.begin();
+            auto prop = elem.props.begin();
+            while (token != tokens.end() && prop != elem.props.end()) {
+                if (prop->list) {
+                } else {
+                    read_scalar_property_value(data_stream, *prop, *token);
+                }
+
+                ++token;
+                ++prop;
+            }
+        }
+
+        elem.data += data_stream.str();
+    }
+
+    void read_scalar_property_value(std::ostream &to, const PlyFile::Property &prop, const std::string &from) {
         union {
             std::uint8_t  uc_value;
             std::uint16_t us_value;
@@ -185,58 +206,43 @@ namespace graphplay {
             double d_value;
         } value;
 
-        while (std::getline(stream, line)) {
-            StringVec tokens = split(line, ' ');
-            auto token = tokens.begin();
-            auto prop = elem.props.begin();
-            while (token != tokens.end() && prop != elem.props.end()) {
-                if (prop->list) {
-                } else {
-                    switch (prop->type) {
-                    case PlyFile::ValueType::UINT_8:
-                        value.uc_value = (std::uint8_t)std::stoul(*token);
-                        data_stream.write((char *)&value, 1);
-                        break;
-                    case PlyFile::ValueType::UINT_16:
-                        value.us_value = (std::uint16_t)std::stoul(*token);
-                        data_stream.write((char *)&value, 2);
-                        break;
-                    case PlyFile::ValueType::UINT_32:
-                        value.ui_value = (std::uint32_t)std::stoul(*token);
-                        data_stream.write((char *)&value, 4);
-                        break;
-                    case PlyFile::ValueType::INT_8:
-                        value.c_value = (std::int8_t)std::stol(*token);
-                        data_stream.write((char *)&value, 1);
-                        break;
-                    case PlyFile::ValueType::INT_16:
-                        value.s_value = (std::int16_t)std::stol(*token);
-                        data_stream.write((char *)&value, 2);
-                        break;
-                    case PlyFile::ValueType::INT_32:
-                        value.i_value = (std::int32_t)std::stol(*token);
-                        data_stream.write((char *)&value, 4);
-                        break;
-                    case PlyFile::ValueType::FLOAT_32:
-                        value.f_value = std::stof(*token);
-                        data_stream.write((char *)&value, sizeof(float));
-                        break;
-                    case PlyFile::ValueType::FLOAT_64:
-                        value.d_value = std::stod(*token);
-                        data_stream.write((char *)&value, sizeof(double));
-                        break;
-                    default:
-                        std::cerr << "Cannot handle PLY value type " << prop->type << " with value " << *token << std::endl;
-                        break;
-                    }
-                }
-
-                ++token;
-                ++prop;
-            }
+        switch (prop.type) {
+        case PlyFile::ValueType::UINT_8:
+            value.uc_value = (std::uint8_t)std::stoul(from);
+            to.write((char *)&value, 1);
+            break;
+        case PlyFile::ValueType::UINT_16:
+            value.us_value = (std::uint16_t)std::stoul(from);
+            to.write((char *)&value, 2);
+            break;
+        case PlyFile::ValueType::UINT_32:
+            value.ui_value = (std::uint32_t)std::stoul(from);
+            to.write((char *)&value, 4);
+            break;
+        case PlyFile::ValueType::INT_8:
+            value.c_value = (std::int8_t)std::stol(from);
+            to.write((char *)&value, 1);
+            break;
+        case PlyFile::ValueType::INT_16:
+            value.s_value = (std::int16_t)std::stol(from);
+            to.write((char *)&value, 2);
+            break;
+        case PlyFile::ValueType::INT_32:
+            value.i_value = (std::int32_t)std::stol(from);
+            to.write((char *)&value, 4);
+            break;
+        case PlyFile::ValueType::FLOAT_32:
+            value.f_value = std::stof(from);
+            to.write((char *)&value, sizeof(float));
+            break;
+        case PlyFile::ValueType::FLOAT_64:
+            value.d_value = std::stod(from);
+            to.write((char *)&value, sizeof(double));
+            break;
+        default:
+            std::cerr << "Cannot handle PLY value type " << prop.type << " with value " << from << std::endl;
+            break;
         }
-
-        elem.data += data_stream.str();
     }
 
     // Utility functions.
