@@ -2,6 +2,7 @@
 
 #include "PlyFile.h"
 
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -172,13 +173,13 @@ namespace graphplay {
         std::string line;
         std::ostringstream data_stream;
         union {
-            unsigned char  uc_value;
-            unsigned short us_value;
-            unsigned int  ui_value;
+            std::uint8_t  uc_value;
+            std::uint16_t us_value;
+            std::uint32_t ui_value;
 
-            signed char  c_value;
-            short s_value;
-            int   i_value;
+            std::int8_t  c_value;
+            std::int16_t s_value;
+            std::int32_t i_value;
 
             float  f_value;
             double d_value;
@@ -193,28 +194,28 @@ namespace graphplay {
                 } else {
                     switch (prop->type) {
                     case PlyFile::ValueType::UINT_8:
-                        value.uc_value = (unsigned char)std::stoul(*token);
-                        data_stream.write((char *)&value, sizeof(unsigned char));
+                        value.uc_value = (std::uint8_t)std::stoul(*token);
+                        data_stream.write((char *)&value, 1);
                         break;
                     case PlyFile::ValueType::UINT_16:
-                        value.us_value = (unsigned short)std::stoul(*token);
-                        data_stream.write((char *)&value, sizeof(unsigned short));
+                        value.us_value = (std::uint16_t)std::stoul(*token);
+                        data_stream.write((char *)&value, 2);
                         break;
                     case PlyFile::ValueType::UINT_32:
-                        value.ui_value = (unsigned int)std::stoul(*token);
-                        data_stream.write((char *)&value, sizeof(unsigned int));
+                        value.ui_value = (std::uint32_t)std::stoul(*token);
+                        data_stream.write((char *)&value, 4);
                         break;
                     case PlyFile::ValueType::INT_8:
-                        value.c_value = (signed char)std::stol(*token);
-                        data_stream.write((char *)&value, sizeof(signed char));
+                        value.c_value = (std::int8_t)std::stol(*token);
+                        data_stream.write((char *)&value, 1);
                         break;
                     case PlyFile::ValueType::INT_16:
-                        value.s_value = (short)std::stol(*token);
-                        data_stream.write((char *)&value, sizeof(short));
+                        value.s_value = (std::int16_t)std::stol(*token);
+                        data_stream.write((char *)&value, 2);
                         break;
                     case PlyFile::ValueType::INT_32:
-                        value.i_value = (int)std::stol(*token);
-                        data_stream.write((char *)&value, sizeof(int));
+                        value.i_value = (std::int32_t)std::stol(*token);
+                        data_stream.write((char *)&value, 4);
                         break;
                     case PlyFile::ValueType::FLOAT_32:
                         value.f_value = std::stof(*token);

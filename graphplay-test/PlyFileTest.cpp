@@ -2,6 +2,7 @@
 
 #include "../graphplay/PlyFile.h"
 
+#include <cstdint>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -79,17 +80,17 @@ property list uint8 uint32 vertex_indices
         std::string ply_string(R"ply(ply
 format ascii 1.0
 element vertex 2
-property uint8  uc
-property int8 c
+property uint8 uc
 property uint16 us
-property int16 s
 property uint32 ul
+property int8 c
+property int16 s
 property int32 l
 property float32 f
 property float64 d
 end_header
-1 -1 2 -2 3 -3 1.0 2.3
-2 -2 4 -4 6 -6 2.1 4.0
+1 2 3 -1 -2 -3 1.0 2.3
+2 4 6 -2 -4 -6 2.1 4.0
 )ply");
 
         std::istringstream ply_stream(ply_string);
@@ -101,8 +102,38 @@ end_header
         ASSERT_EQ(8, elements[0].props.size());
 
         const PlyFile::Element &elem = elements[0];
-        ASSERT_EQ(52, elem.data.size());
+        struct [[gnu::packed]] {
+            std::uint8_t  uc;
+            std::uint16_t us;
+            std::uint32_t ui;
+            std::int8_t   c;
+            std::int16_t  s;
+            std::int32_t  i;
+            float  f;
+            double d;
+        } value;
+        ASSERT_EQ(2*sizeof(value), elem.data.size());
 
-        // std::istringstream data_stream(elem.data);
+        std::istringstream data_stream(elem.data);
+
+        data_stream.read((char*)&value, sizeof(value));
+        ASSERT_EQ(1, value.uc);
+        ASSERT_EQ(2, value.us);
+        ASSERT_EQ(3, value.ui);
+        ASSERT_EQ(-1, value.c);
+        ASSERT_EQ(-2, value.s);
+        ASSERT_EQ(-3, value.i);
+        ASSERT_FLOAT_EQ(1.0, value.f);
+        ASSERT_DOUBLE_EQ(2.3, value.d);
+
+        data_stream.read((char*)&value, sizeof(value));
+        ASSERT_EQ(2, value.uc);
+        ASSERT_EQ(4, value.us);
+        ASSERT_EQ(6, value.ui);
+        ASSERT_EQ(-2, value.c);
+        ASSERT_EQ(-4, value.s);
+        ASSERT_EQ(-6, value.i);
+        ASSERT_FLOAT_EQ(2.1, value.f);
+        ASSERT_DOUBLE_EQ(4.0, value.d);
     }
 }
