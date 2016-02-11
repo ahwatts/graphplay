@@ -102,7 +102,15 @@ end_header
         ASSERT_EQ(8, elements[0].props.size());
 
         const PlyFile::Element &elem = elements[0];
-        struct [[gnu::packed]] {
+
+#ifdef _MSC_VER
+#pragma pack(1)
+#endif
+        struct
+#ifdef __GNUC__
+            [[gnu::packed]]
+#endif
+        {
             std::uint8_t  uc;
             std::uint16_t us;
             std::uint32_t ui;
@@ -133,7 +141,7 @@ end_header
         ASSERT_EQ(-2, value.c);
         ASSERT_EQ(-4, value.s);
         ASSERT_EQ(-6, value.i);
-        ASSERT_FLOAT_EQ(2.1, value.f);
+        ASSERT_FLOAT_EQ(2.1f, value.f);
         ASSERT_DOUBLE_EQ(4.0, value.d);
     }
 }
