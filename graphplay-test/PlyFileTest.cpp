@@ -9,13 +9,15 @@
 #include <gtest/gtest.h>
 
 namespace graphplay {
+    using namespace ply;
+
     TEST(PlyFileTest, ReadFormat) {
         std::string ply_string(R"ply(ply
 format ascii 1.0
 )ply");
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
-        ASSERT_EQ(PlyFile::ASCII, f.getFormat());
+        ASSERT_EQ(ASCII, f.getFormat());
     }
 
     TEST(PlyFileTest, ReadComments) {
@@ -42,7 +44,7 @@ element face 8
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<PlyFile::Element> &elements = f.getElements();
+        const std::vector<Element> &elements = f.getElements();
         ASSERT_EQ(2, elements.size());
         ASSERT_EQ("vertex", elements[0].name);
         ASSERT_EQ(6, elements[0].count);
@@ -61,19 +63,19 @@ property list uint8 uint32 vertex_indices
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<PlyFile::Element> &elements = f.getElements();
+        const std::vector<Element> &elements = f.getElements();
 
         ASSERT_EQ(2, elements.size());
         ASSERT_EQ(1, elements[0].props.size());
         ASSERT_EQ("x", elements[0].props[0].name);
         ASSERT_EQ(false, elements[0].props[0].list);
-        ASSERT_EQ(PlyFile::ValueType::FLOAT_32, elements[0].props[0].type);
+        ASSERT_EQ(ValueType::FLOAT_32, elements[0].props[0].type);
 
         ASSERT_EQ(1, elements[1].props.size());
         ASSERT_EQ("vertex_indices", elements[1].props[0].name);
         ASSERT_EQ(true, elements[1].props[0].list);
-        ASSERT_EQ(PlyFile::ValueType::UINT_8, elements[1].props[0].count_type);
-        ASSERT_EQ(PlyFile::ValueType::UINT_32, elements[1].props[0].value_type);
+        ASSERT_EQ(ValueType::UINT_8, elements[1].props[0].count_type);
+        ASSERT_EQ(ValueType::UINT_32, elements[1].props[0].value_type);
     }
 
     TEST(PlyFileTest, ReadScalarAsciiData) {
@@ -96,12 +98,12 @@ end_header
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<PlyFile::Element> &elements = f.getElements();
+        const std::vector<Element> &elements = f.getElements();
 
         ASSERT_EQ(1, elements.size());
         ASSERT_EQ(8, elements[0].props.size());
 
-        const PlyFile::Element &elem = elements[0];
+        const Element &elem = elements[0];
 
 #ifdef _MSC_VER
 #pragma pack(1)
