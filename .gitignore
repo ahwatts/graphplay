@@ -11,6 +11,8 @@
 /vendor/gtest/gtest/Debug
 /vendor/gtest/gtest_main/Debug
 
+/graphplay.VC.opendb
+
 /build
 /msvc
 /mingw
