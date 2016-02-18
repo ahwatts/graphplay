@@ -17,7 +17,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif(CMAKE_CXX_COMPILER_VERSION STRLESS "4.8")
 
   set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -pg")
-  set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
+
+  if(NOT APPLE)
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
+  endif(NOT APPLE)
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 endif(CMAKE_COMPILER_IS_GNUCXX)
