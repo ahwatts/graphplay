@@ -5,10 +5,6 @@ message(STATUS "Configuring for build type: " ${CMAKE_BUILD_TYPE})
 
 set(CMAKE_PREFIX_PATH ../graphplay-deps)
 
-if(WIN32 AND MINGW)
-  add_definitions(-DGLEW_STATIC)
-endif(WIN32 AND MINGW)
-
 if(CMAKE_COMPILER_IS_GNUCXX)
   if(CMAKE_CXX_COMPILER_VERSION STRLESS "4.8")
     set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall")
@@ -24,6 +20,15 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 endif(CMAKE_COMPILER_IS_GNUCXX)
+
+if(WIN32 AND MINGW)
+  add_definitions(-DGLEW_STATIC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+endif(WIN32 AND MINGW)
+
+find_package(Boost REQUIRED)
+message(STATUS "Found Boost version: " ${Boost_VERSION})
+message(STATUS "Found Boost headers: " ${Boost_INCLUDE_DIRS})
 
 find_package(Threads REQUIRED)
 message(STATUS "Found thread libs: " ${CMAKE_THREAD_LIBS_INIT})
@@ -61,7 +66,7 @@ message(STATUS "Found glm include: " ${GLM_INCLUDE_DIRS})
 
 configure_file(config.h.in config.h)
 
-include_directories(AFTER SYSTEM ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
+include_directories(AFTER SYSTEM ${Boost_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)
