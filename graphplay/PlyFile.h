@@ -55,8 +55,6 @@ namespace graphplay {
         bool isIntegral() const;
         const PropertyType& type() const { return m_type; }
 
-        int byteWidth() const;
-
         friend class Element;
 
     private:
@@ -105,6 +103,8 @@ namespace graphplay {
         PlyFile& operator=(PlyFile &&other) = delete;
 
         void debug(std::ostream &out) const;
+
+        inline const std::vector<std::string>& comments() const { return m_comments;  }
         inline const std::vector<Element>& elements() const { return m_elements; }
 
     private:
