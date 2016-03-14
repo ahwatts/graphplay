@@ -7,29 +7,122 @@
 #include <sstream>
 
 #include <boost/endian/conversion.hpp>
+#include <boost/variant.hpp>
 
 namespace graphplay {
     typedef std::vector<std::string> StringVec;
+    typedef boost::variant<ScalarType, ListType> InnerPropertyType;
+    typedef boost::variant<std::int64_t, double, std::vector<std::int64_t>, std::vector<double> > InnerPropertyValue;
 
-    class append_visitor : public boost::static_visitor<> {
+    class Property::_Type {
     public:
-        template<typename T>
-        void operator()(std::vector<T> &vec, const T &val) const {
-            vec.emplace_back(val);
-        }
-
-        template<typename T>
-        void operator()(std::vector<T> &vec, const std::vector<T> &val) const {
-            vec.insert(vec.end(), val.begin(), val.end());
-        }
-
-        template<typename T1, typename T2>
-        void operator()(T1 &vec, const T2 &val) const {
-            throw std::string("Cannot append mixed types.");
-        }
+        _Type(ScalarType type) : inner(type) {}
+        _Type(ListType type) : inner(type) {}
+        InnerPropertyType inner;
     };
 
-    PropertyValue create_list(ListType type);
+    class PropertyValue::_Value {
+    public:
+        _Value(InnerPropertyValue v) : inner(v) {}
+        _Value(const _Value &other) : inner(other.inner) {}
+        _Value(_Value &&other) : inner() { std::swap(inner, other.inner); }
+        InnerPropertyValue inner;
+    };
+
+    // std::ostream& operator<<(std::ostream& stream, Format value);
+    // std::ostream& operator<<(std::ostream& stream, const PropertyValue &value);
+
+    class is_list_visitor : public boost::static_visitor<bool> {
+    public:
+        // If we use this visitor on a type descriptor...
+        bool operator()(const ScalarType &t) const { return false; }
+        bool operator()(const ListType &t) const { return true; }
+
+        // If we use this visitor on a value...
+        bool operator()(const std::int64_t &v) const { return false; }
+        bool operator()(const double &v) const { return false; }
+        bool operator()(const std::vector<std::int64_t> &v) const { return true; }
+        bool operator()(const std::vector<double> &v) const { return true; }
+    };
+
+    class is_integral_visitor : public boost::static_visitor<bool> {
+    public:
+        // If we use this visitor on a type descriptor...
+        bool operator()(const ScalarType &t) const {
+            switch (t) {
+            case UINT_8:
+            case UINT_16:
+            case UINT_32:
+            case INT_8:
+            case INT_16:
+            case INT_32:
+                return true;
+            case FLOAT_32:
+            case FLOAT_64:
+                return false;
+            default:
+                return false;
+            }
+        }
+
+        bool operator()(const ListType &t) const {
+            is_integral_visitor v;
+            return v(t.value_type);
+        }
+
+        // If we use this visitor on a value...
+        bool operator()(const std::int64_t &v) const { return true; }
+        bool operator()(const double &v) const { return false; }
+        bool operator()(const std::vector<std::int64_t> &v) const { return true; }
+        bool operator()(const std::vector<double> &v) const { return false; }
+    };
+
+    // template<typename T>
+    // class casting_visitor : public boost::static_visitor<T> {
+    // public:
+    //     T operator()(const std::int64_t &v) const {
+    //         if (std::is_arithmetic<T>::value) {
+    //             return static_cast<T>(v);
+    //         } else {
+    //             throw std::string("Canot cast a scalar value to a non-arithmetic type.");
+    //         }
+    //     }
+
+    //     T operator()(const double &v) const {
+    //         if (!std::is_arithmetic<T>::value) {
+    //             throw std::string("Canot cast a scalar value to a non-arithmetic type.");
+    //         } else if (std::is_integral<T>::value) {
+    //             return static_cast<T>(std::round(v));
+    //         } else {
+    //             return static_cast<T>(v);
+    //         }
+    //     }
+
+    //     template<typename U>
+    //     T operator()(const U &v) const {
+    //         throw std::string("Cannot cast list variant value.");
+    //     }
+    // };
+
+    // class append_visitor : public boost::static_visitor<> {
+    // public:
+    //     template<typename T>
+    //     void operator()(std::vector<T> &vec, const T &val) const {
+    //         vec.emplace_back(val);
+    //     }
+
+    //     template<typename T>
+    //     void operator()(std::vector<T> &vec, const std::vector<T> &val) const {
+    //         vec.insert(vec.end(), val.begin(), val.end());
+    //     }
+
+    //     template<typename T1, typename T2>
+    //     void operator()(T1 &vec, const T2 &val) const {
+    //         throw std::string("Cannot append mixed types.");
+    //     }
+    // };
+
+    // PropertyValue create_list(ListType type);
 
     Format read_format(const StringVec &toks);
     std::string read_comment(const StringVec &toks);
@@ -37,12 +130,12 @@ namespace graphplay {
     Element read_element(const StringVec &toks);
     Property read_property(const StringVec &toks);
     PropertyValue read_ascii_value(const std::string& token, ScalarType type);
-    PropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format);
+    // PropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format);
 
-    PropertyValue read_float_binary_value(std::istream &stream, Format format);
-    PropertyValue read_double_binary_value(std::istream &stream, Format format);
-    template<typename T>
-    PropertyValue read_int_binary_value(std::istream &stream, Format format);
+    // PropertyValue read_float_binary_value(std::istream &stream, Format format);
+    // PropertyValue read_double_binary_value(std::istream &stream, Format format);
+    // template<typename T>
+    // PropertyValue read_int_binary_value(std::istream &stream, Format format);
 
     ////////////////////////////////////////////////////////////////////////////////
     // Generic utilities.
@@ -62,7 +155,7 @@ namespace graphplay {
 
     PlyFile::PlyFile(const char *filename)
         : m_comments{},
-        m_elements{}
+          m_elements{}
     {
         std::fstream stream(filename, std::ios::in | std::ios::binary);
         load(stream);
@@ -71,31 +164,19 @@ namespace graphplay {
 
     PlyFile::PlyFile(std::istream &stream)
         : m_comments{},
-        m_elements{}
+          m_elements{}
     {
         load(stream);
     }
 
     PlyFile::~PlyFile() {}
 
-    void PlyFile::debug(std::ostream &out) const {
-        std::cout << std::boolalpha;
+    const std::vector<std::string>& PlyFile::comments() const {
+        return m_comments;
+    }
 
-        std::cout << "Comments:" << std::endl;
-        for (auto&& c : m_comments) {
-            std::cout << "  " << c << std::endl;
-        }
-
-        std::cout << "Elements:" << std::endl;
-        for (auto&& e : m_elements) {
-            std::cout << "  " << e.name() << " (count: " << e.count() << ") Properties:" << std::endl;
-
-            for (auto&& p : e.properties()) {
-                std::cout << "    " << p.name() << " integral: " << p.isIntegral() << " list: " << p.isList() << std::endl;
-            }
-        }
-
-        std::cout << std::resetiosflags(std::ios_base::boolalpha);
+    const std::vector<Element>& PlyFile::elements() const {
+        return m_elements;
     }
 
     void PlyFile::load(std::istream &stream) {
@@ -134,35 +215,35 @@ namespace graphplay {
         for (auto&& e : m_elements) {
             if (format == ASCII) {
                 e.loadAsciiData(stream);
-            } else {
-                e.loadBinaryData(stream, format);
+            // } else {
+            //     e.loadBinaryData(stream, format);
             }
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Implementation of class Element.
-    ////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////
+    // // Implementation of class Element.
+    // ////////////////////////////////////////////////////////////////////////////////
 
     Element::Element(const char *name, int count)
-        : m_name{ name },
-        m_count{ count },
-        m_props{},
-        m_data{}
+        : m_name{name},
+          m_count{count},
+          m_props{},
+          m_data{}
     {}
 
     Element::Element(const Element &other)
-        : m_name{ other.m_name },
-        m_count{ other.m_count },
-        m_props{ other.m_props },
-        m_data{ other.m_data }
+        : m_name{other.m_name},
+          m_count{other.m_count},
+          m_props{other.m_props},
+          m_data{other.m_data}
     {}
 
     Element::Element(Element &&other)
         : m_name{},
-        m_count{ other.m_count },
-        m_props{},
-        m_data{}
+          m_count{other.m_count},
+          m_props{},
+          m_data{}
     {
         std::swap(m_name, other.m_name);
         std::swap(m_props, other.m_props);
@@ -170,6 +251,26 @@ namespace graphplay {
     }
 
     Element::~Element() {}
+
+    const std::string& Element::name() const {
+        return m_name;
+    }
+
+    const char* Element::name_c() const {
+        return m_name.c_str();
+    }
+
+    int Element::count() const {
+        return m_count;
+    }
+
+    const std::vector<Property>& Element::properties() const {
+        return m_props;
+    }
+
+    const std::vector<ElementValue>& Element::data() const {
+        return m_data;
+    }
 
     void Element::addProperty(Property &&prop) {
         m_props.emplace_back(prop);
@@ -189,9 +290,9 @@ namespace graphplay {
 
             while (token != tokens.end() && prop != m_props.end()) {
                 if (prop->isList()) {
-                    ListType type = boost::get<ListType>(prop->type());
+                    ListType type = boost::get<ListType>(prop->m_type->inner);
                     PropertyValue count_val = read_ascii_value(*token, type.count_type);
-                    int count = boost::apply_visitor(casting_visitor<int>(), count_val);
+                    int count = (int)count_val.intValue();
                     PropertyValue list_val = create_list(type);
 
                     for (int i = 0; i < count && token != tokens.end(); ++i) {
@@ -202,7 +303,7 @@ namespace graphplay {
 
                     elem.emplace(prop->name(), list_val);
                 } else {
-                    elem.emplace(prop->name(), read_ascii_value(*token, boost::get<ScalarType>(prop->type())));
+                    elem.m_propvals.emplace(prop->name(), read_ascii_value(*token, boost::get<ScalarType>(prop->m_type->inner)));
                 }
                 ++token;
                 ++prop;
@@ -212,145 +313,252 @@ namespace graphplay {
         }
     }
 
-    void Element::loadBinaryData(std::istream &stream, Format format) {
-        for (int row = 0; row < m_count && !stream.eof(); ++row) {
-            ElementValue elem;
+    // void Element::loadBinaryData(std::istream &stream, Format format) {
+    //     for (int row = 0; row < m_count && !stream.eof(); ++row) {
+    //         ElementValue elem;
 
-            for (auto &&prop : m_props) {
-                if (prop.isList()) {
-                    ListType type = boost::get<ListType>(prop.type());
-                    PropertyValue count_val = read_binary_value(stream, type.count_type, format);
-                    int count = boost::apply_visitor(casting_visitor<int>(), count_val);
-                    PropertyValue list_val = create_list(type);
+    //         for (auto &&prop : m_props) {
+    //             if (prop.isList()) {
+    //                 ListType type = boost::get<ListType>(prop.type());
+    //                 PropertyValue count_val = read_binary_value(stream, type.count_type, format);
+    //                 int count = boost::apply_visitor(casting_visitor<int>(), count_val);
+    //                 PropertyValue list_val = create_list(type);
 
-                    for (int i = 0; i < count; ++i) {
-                        PropertyValue val = read_binary_value(stream, type.value_type, format);
-                        boost::apply_visitor(append_visitor(), list_val, val);
-                    }
+    //                 for (int i = 0; i < count; ++i) {
+    //                     PropertyValue val = read_binary_value(stream, type.value_type, format);
+    //                     boost::apply_visitor(append_visitor(), list_val, val);
+    //                 }
 
-                    elem.emplace(prop.name(), list_val);
-                } else {
-                    elem.emplace(prop.name(), read_binary_value(stream, boost::get<ScalarType>(prop.type()), format));
-                }
-            }
+    //                 elem.emplace(prop.name(), list_val);
+    //             } else {
+    //                 elem.emplace(prop.name(), read_binary_value(stream, boost::get<ScalarType>(prop.type()), format));
+    //             }
+    //         }
 
-            m_data.emplace_back(std::move(elem));
+    //         m_data.emplace_back(std::move(elem));
+    //     }
+    // }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Implementation of class ElementValue
+    ////////////////////////////////////////////////////////////////////////////////
+
+    ElementValue::ElementValue()
+        : m_propvals{}
+    {}
+
+    ElementValue::ElementValue(const ElementValue &other)
+        : m_propvals{other.m_propvals}
+    {}
+
+    ElementValue::ElementValue(ElementValue &&other)
+        : m_propvals{}
+    {
+        std::swap(m_propvals, other.m_propvals);
+    }
+
+    ElementValue::~ElementValue() {}
+
+    const PropertyValue& ElementValue::getProperty(const std::string &pname) const {
+        auto found = m_propvals.find(pname);
+
+        if (found == m_propvals.end()) {
+            throw std::string("Could not find property.");
         }
+
+        return found->second;
+    }
+
+    const PropertyValue& ElementValue::getProperty(const char *pname) const {
+        auto found = m_propvals.find(pname);
+
+        if (found == m_propvals.end()) {
+            throw std::string("Could not find property.");
+        }
+
+        return found->second;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Implementation of class Property
     ////////////////////////////////////////////////////////////////////////////////
 
-    Property::Property(const char *name, int offset, ScalarType type)
-        : m_name{ name },
-        m_type{ type }
+    Property::Property(const char *name, ScalarType type)
+        : m_name{name},
+          m_type{new Property::_Type(type)}
     {}
 
-    Property::Property(const char *name, int offset, ListType type)
-        : m_name{ name },
-        m_type{ type }
+    Property::Property(const char *name, ListType type)
+        : m_name{name},
+          m_type{new Property::_Type(type)}
     {}
 
     Property::Property(const Property &other)
-        : m_name{ other.m_name },
-        m_type{ other.m_type }
+        : m_name{other.m_name},
+          m_type{new Property::_Type(*other.m_type)}
     {}
 
     Property::Property(Property &&other)
         : m_name{},
-        m_type{ other.m_type }
+          m_type{std::move(other.m_type)}
     {
         std::swap(m_name, other.m_name);
     }
 
     Property::~Property() {}
 
+    const std::string& Property::name() const {
+        return m_name;
+    }
+
+    const char* Property::name_c() const {
+        return m_name.c_str();
+    }
+
     bool Property::isList() const {
-        return boost::apply_visitor(is_list_visitor(), m_type);
+        return boost::apply_visitor(is_list_visitor(), m_type->inner);
     }
 
     bool Property::isIntegral() const {
-        return boost::apply_visitor(is_integral_visitor(), m_type);
+        return boost::apply_visitor(is_integral_visitor(), m_type->inner);
     }
 
-    std::ostream& operator<<(std::ostream& stream, const PropertyValue &value) {
-        bool is_list = boost::apply_visitor(is_list_visitor(), value);
-        bool is_integer = boost::apply_visitor(is_integral_visitor(), value);
+    // std::ostream& operator<<(std::ostream& stream, const PropertyValue &value) {
+    //     bool is_list = boost::apply_visitor(is_list_visitor(), value);
+    //     bool is_integer = boost::apply_visitor(is_integral_visitor(), value);
 
-        if (is_list && is_integer) {
-            const std::vector<std::int64_t> &idata = boost::get<std::vector<std::int64_t> >(value);
-            std::ostringstream itemp;
+    //     if (is_list && is_integer) {
+    //         const std::vector<std::int64_t> &idata = boost::get<std::vector<std::int64_t> >(value);
+    //         std::ostringstream itemp;
 
-            itemp << "[ ";
-            for (unsigned int i = 0; i < idata.size(); ++i) {
-                if (i == idata.size() - 1) {
-                    itemp << idata[i];
-                } else {
-                    itemp << idata[i] << ", ";
-                }
-            }
-            itemp << " ]";
+    //         itemp << "[ ";
+    //         for (unsigned int i = 0; i < idata.size(); ++i) {
+    //             if (i == idata.size() - 1) {
+    //                 itemp << idata[i];
+    //             } else {
+    //                 itemp << idata[i] << ", ";
+    //             }
+    //         }
+    //         itemp << " ]";
 
-            return stream << itemp.str();
-        } else if (is_list && !is_integer) {
-            const std::vector<double> &fdata = boost::get<std::vector<double> >(value);
-            std::ostringstream dtemp;
+    //         return stream << itemp.str();
+    //     } else if (is_list && !is_integer) {
+    //         const std::vector<double> &fdata = boost::get<std::vector<double> >(value);
+    //         std::ostringstream dtemp;
 
-            dtemp << "[ ";
-            for (unsigned int j = 0; j < fdata.size(); ++j) {
-                if (j == fdata.size() - 1) {
-                    dtemp << fdata[j];
-                } else {
-                    dtemp << fdata[j] << ", ";
-                }
-            }
-            dtemp << " ]";
+    //         dtemp << "[ ";
+    //         for (unsigned int j = 0; j < fdata.size(); ++j) {
+    //             if (j == fdata.size() - 1) {
+    //                 dtemp << fdata[j];
+    //             } else {
+    //                 dtemp << fdata[j] << ", ";
+    //             }
+    //         }
+    //         dtemp << " ]";
 
-            return stream << dtemp.str();
-        } else if (!is_list && is_integer) {
-            return stream << boost::get<std::int64_t>(value);
-        } else { // !is_list && !is_integer
-            return stream << boost::get<double>(value);
-        }
-    }
+    //         return stream << dtemp.str();
+    //     } else if (!is_list && is_integer) {
+    //         return stream << boost::get<std::int64_t>(value);
+    //     } else { // !is_list && !is_integer
+    //         return stream << boost::get<double>(value);
+    //     }
+    // }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Implementation of internal helper functions for PlyFile.
+    // Implementation of class PropertyValue
     ////////////////////////////////////////////////////////////////////////////////
 
-    std::ostream& operator<<(std::ostream &stream, Format value) {
-        switch (value) {
-        case ASCII:
-            return stream << "ASCII";
-        case BINARY_BIG_ENDIAN:
-            return stream << "binary (big-endian)";
-        case BINARY_LITTLE_ENDIAN:
-            return stream << "binary (little-endian)";
-        default:
-            return stream;
-        }
+    PropertyValue::PropertyValue(std::int64_t int_val)
+        : m_value{new PropertyValue::_Value(int_val)}
+    {}
+
+    PropertyValue::PropertyValue(double double_val)
+        : m_value{new PropertyValue::_Value(double_val)}
+    {}
+
+    PropertyValue::PropertyValue(std::vector<std::int64_t> &&int_list_val)
+        : m_value{new PropertyValue::_Value(std::move(int_list_val))}
+    {}
+
+    PropertyValue::PropertyValue(std::vector<double> &&double_list_val)
+        : m_value{new PropertyValue::_Value(std::move(double_list_val))}
+    {}
+
+    PropertyValue::PropertyValue(const PropertyValue &other)
+        : m_value{new PropertyValue::_Value(*other.m_value)}
+    {}
+
+    PropertyValue::PropertyValue(PropertyValue &&other)
+        : m_value{std::move(other.m_value)}
+    {}
+
+    PropertyValue::~PropertyValue() {}
+
+    PropertyValue& PropertyValue::operator=(PropertyValue other) {
+        std::swap(m_value, other.m_value);
+        return *this;
     }
 
-    PropertyValue create_list(ListType type) {
-        PropertyValue rv;
-
-        switch (type.value_type) {
-        case UINT_8:
-        case UINT_16:
-        case UINT_32:
-        case INT_8:
-        case INT_16:
-        case INT_32:
-            rv = std::vector<std::int64_t>();
-            break;
-        case FLOAT_32:
-        case FLOAT_64:
-            rv = std::vector<double>();
-        }
-
-        return rv;
+    bool PropertyValue::isList() const {
+        return boost::apply_visitor(is_list_visitor(), m_value->inner);
     }
+
+    bool PropertyValue::isIntegral() const {
+        return boost::apply_visitor(is_integral_visitor(), m_value->inner);
+    }
+
+    std::int64_t PropertyValue::intValue() const {
+        return boost::get<std::int64_t>(m_value->inner);
+    }
+
+    double PropertyValue::doubleValue() const {
+        return boost::get<double>(m_value->inner);
+    }
+
+    const std::vector<std::int64_t>& PropertyValue::intListValue() {
+        return boost::get<std::vector<std::int64_t> >(m_value->inner);
+    }
+
+    const std::vector<double>& PropertyValue::doubleListValue() {
+        return boost::get<std::vector<double> >(m_value->inner);
+    }
+
+    // ////////////////////////////////////////////////////////////////////////////////
+    // // Implementation of internal helper functions for PlyFile.
+    // ////////////////////////////////////////////////////////////////////////////////
+
+    // std::ostream& operator<<(std::ostream &stream, Format value) {
+    //     switch (value) {
+    //     case ASCII:
+    //         return stream << "ASCII";
+    //     case BINARY_BIG_ENDIAN:
+    //         return stream << "binary (big-endian)";
+    //     case BINARY_LITTLE_ENDIAN:
+    //         return stream << "binary (little-endian)";
+    //     default:
+    //         return stream;
+    //     }
+    // }
+
+    // PropertyValue create_list(ListType type) {
+    //     PropertyValue rv;
+
+    //     switch (type.value_type) {
+    //     case UINT_8:
+    //     case UINT_16:
+    //     case UINT_32:
+    //     case INT_8:
+    //     case INT_16:
+    //     case INT_32:
+    //         rv = std::vector<std::int64_t>();
+    //         break;
+    //     case FLOAT_32:
+    //     case FLOAT_64:
+    //         rv = std::vector<double>();
+    //     }
+
+    //     return rv;
+    // }
 
     Format read_format(const StringVec &toks) {
         Format rv = ASCII;
@@ -420,111 +628,104 @@ namespace graphplay {
         }
 
         if (list && toks.size() >= 5) {
-            return Property(toks[4].c_str(), 0, ListType{ read_value_type(toks[2]), read_value_type(toks[3]) });
+            return Property(toks[4].c_str(), ListType{ read_value_type(toks[2]), read_value_type(toks[3]) });
         } else if (!list && toks.size() >= 3) {
-            return Property(toks[2].c_str(), 0, read_value_type(toks[1]));
+            return Property(toks[2].c_str(), read_value_type(toks[1]));
         } else {
-            return Property("", 0, UINT_8);
+            return Property("", UINT_8);
         }
     }
 
     PropertyValue read_ascii_value(const std::string& token, ScalarType type) {
-        PropertyValue value;
-
         switch (type) {
         case UINT_8:
         case UINT_16:
         case UINT_32:
-            value = (std::int64_t)std::stoul(token);
-            break;
+            return PropertyValue((std::int64_t)std::stoul(token));
         case INT_8:
         case INT_16:
         case INT_32:
-            value = (std::int64_t)std::stol(token);
+            return PropertyValue((std::int64_t)std::stol(token));
             break;
         case FLOAT_32:
         case FLOAT_64:
-            value = std::stod(token);
-            break;
+            return PropertyValue(std::stod(token));
         default:
-            std::cerr << "Cannot handle PLY value type (?) with value " << token << std::endl;
-            break;
-        }
-
-        return value;
-    }
-
-    template<typename T>
-    PropertyValue read_int_binary_value(std::istream &stream, Format format) {
-        T temp;
-        PropertyValue rv;
-
-        stream.read(reinterpret_cast<char*>(&temp), sizeof(temp));
-
-        if (format == BINARY_BIG_ENDIAN) {
-            boost::endian::big_to_native_inplace(temp);
-        } else if (format == BINARY_LITTLE_ENDIAN) {
-            boost::endian::little_to_native_inplace(temp);
-        }
-
-        rv = static_cast<std::int64_t>(temp);
-        return rv;
-    }
-
-    PropertyValue read_float_binary_value(std::istream &stream, Format format) {
-        std::uint32_t itemp;
-        PropertyValue rv;
-
-        stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
-
-        if (format == BINARY_BIG_ENDIAN) {
-            boost::endian::big_to_native_inplace(itemp);
-        } else if (format == BINARY_LITTLE_ENDIAN) {
-            boost::endian::little_to_native_inplace(itemp);
-        }
-
-        rv = static_cast<double>(*reinterpret_cast<float*>(&itemp));
-        return rv;
-    }
-
-    PropertyValue read_double_binary_value(std::istream &stream, Format format) {
-        std::uint64_t itemp;
-        PropertyValue rv;
-
-        stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
-
-        if (format == BINARY_BIG_ENDIAN) {
-            boost::endian::big_to_native_inplace(itemp);
-        } else if (format == BINARY_LITTLE_ENDIAN) {
-            boost::endian::little_to_native_inplace(itemp);
-        }
-
-        rv = *reinterpret_cast<double*>(&itemp);
-        return rv;
-    }
-
-    PropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format) {
-        switch (type) {
-        case UINT_8:
-            return read_int_binary_value<std::uint8_t>(stream, format);
-        case INT_8:
-            return read_int_binary_value<std::int8_t>(stream, format);
-        case UINT_16:
-            return read_int_binary_value<std::uint16_t>(stream, format);
-        case INT_16:
-            return read_int_binary_value<std::int16_t>(stream, format);
-        case UINT_32:
-            return read_int_binary_value<std::uint32_t>(stream, format);
-        case INT_32:
-            return read_int_binary_value<std::int32_t>(stream, format);
-        case FLOAT_32:
-            return read_float_binary_value(stream, format);
-        case FLOAT_64:
-            return read_double_binary_value(stream, format);
-        default:
-            return PropertyValue();
+            throw std::string("Cannot handle PLY value type");
         }
     }
+
+    // template<typename T>
+    // PropertyValue read_int_binary_value(std::istream &stream, Format format) {
+    //     T temp;
+    //     PropertyValue rv;
+
+    //     stream.read(reinterpret_cast<char*>(&temp), sizeof(temp));
+
+    //     if (format == BINARY_BIG_ENDIAN) {
+    //         boost::endian::big_to_native_inplace(temp);
+    //     } else if (format == BINARY_LITTLE_ENDIAN) {
+    //         boost::endian::little_to_native_inplace(temp);
+    //     }
+
+    //     rv = static_cast<std::int64_t>(temp);
+    //     return rv;
+    // }
+
+    // PropertyValue read_float_binary_value(std::istream &stream, Format format) {
+    //     std::uint32_t itemp;
+    //     PropertyValue rv;
+
+    //     stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
+
+    //     if (format == BINARY_BIG_ENDIAN) {
+    //         boost::endian::big_to_native_inplace(itemp);
+    //     } else if (format == BINARY_LITTLE_ENDIAN) {
+    //         boost::endian::little_to_native_inplace(itemp);
+    //     }
+
+    //     rv = static_cast<double>(*reinterpret_cast<float*>(&itemp));
+    //     return rv;
+    // }
+
+    // PropertyValue read_double_binary_value(std::istream &stream, Format format) {
+    //     std::uint64_t itemp;
+    //     PropertyValue rv;
+
+    //     stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
+
+    //     if (format == BINARY_BIG_ENDIAN) {
+    //         boost::endian::big_to_native_inplace(itemp);
+    //     } else if (format == BINARY_LITTLE_ENDIAN) {
+    //         boost::endian::little_to_native_inplace(itemp);
+    //     }
+
+    //     rv = *reinterpret_cast<double*>(&itemp);
+    //     return rv;
+    // }
+
+    // PropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format) {
+    //     switch (type) {
+    //     case UINT_8:
+    //         return read_int_binary_value<std::uint8_t>(stream, format);
+    //     case INT_8:
+    //         return read_int_binary_value<std::int8_t>(stream, format);
+    //     case UINT_16:
+    //         return read_int_binary_value<std::uint16_t>(stream, format);
+    //     case INT_16:
+    //         return read_int_binary_value<std::int16_t>(stream, format);
+    //     case UINT_32:
+    //         return read_int_binary_value<std::uint32_t>(stream, format);
+    //     case INT_32:
+    //         return read_int_binary_value<std::int32_t>(stream, format);
+    //     case FLOAT_32:
+    //         return read_float_binary_value(stream, format);
+    //     case FLOAT_64:
+    //         return read_double_binary_value(stream, format);
+    //     default:
+    //         return PropertyValue();
+    //     }
+    // }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Implementation of utilities.

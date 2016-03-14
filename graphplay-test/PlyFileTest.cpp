@@ -95,5 +95,9 @@ end_header
 
         const std::vector<ElementValue> &data = elem.data();
         ASSERT_EQ(2, data.size());
+
+        for (auto &&row : data) {
+            const PropertyValue uc_pv = row.getProperty("uc");
+        }
     }
 }
