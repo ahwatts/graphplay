@@ -60,10 +60,9 @@ namespace graphplay {
 
     class PropertyValue {
     public:
-        PropertyValue(std::int64_t int_val);
-        PropertyValue(double double_val);
-        PropertyValue(std::vector<std::int64_t> &&int_list_val);
-        PropertyValue(std::vector<double> &&double_list_val);
+        class _Value;
+
+        PropertyValue(_Value &&v);
         PropertyValue(const PropertyValue &other);
         PropertyValue(PropertyValue &&other);
         ~PropertyValue();
@@ -79,7 +78,6 @@ namespace graphplay {
         const std::vector<double>& doubleListValue();
 
     private:
-        class _Value;
         std::unique_ptr<_Value> m_value;
     };
 

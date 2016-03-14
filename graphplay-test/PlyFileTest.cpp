@@ -96,8 +96,22 @@ end_header
         const std::vector<ElementValue> &data = elem.data();
         ASSERT_EQ(2, data.size());
 
-        for (auto &&row : data) {
-            const PropertyValue uc_pv = row.getProperty("uc");
-        }
+        ASSERT_EQ(1, data[0].getProperty("uc").intValue());
+        ASSERT_EQ(2, data[0].getProperty("us").intValue());
+        ASSERT_EQ(3, data[0].getProperty("ul").intValue());
+        ASSERT_EQ(-1, data[0].getProperty("c").intValue());
+        ASSERT_EQ(-2, data[0].getProperty("s").intValue());
+        ASSERT_EQ(-3, data[0].getProperty("l").intValue());
+        ASSERT_EQ(1.0, data[0].getProperty("f").doubleValue());
+        ASSERT_EQ(2.3, data[0].getProperty("d").doubleValue());
+
+        ASSERT_EQ(2, data[1].getProperty("uc").intValue());
+        ASSERT_EQ(4, data[1].getProperty("us").intValue());
+        ASSERT_EQ(6, data[1].getProperty("ul").intValue());
+        ASSERT_EQ(-2, data[1].getProperty("c").intValue());
+        ASSERT_EQ(-4, data[1].getProperty("s").intValue());
+        ASSERT_EQ(-6, data[1].getProperty("l").intValue());
+        ASSERT_EQ(2.1, data[1].getProperty("f").doubleValue());
+        ASSERT_EQ(4.0, data[1].getProperty("d").doubleValue());
     }
 }

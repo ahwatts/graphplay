@@ -2,6 +2,7 @@
 
 #include "PlyFile.h"
 
+#include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
@@ -28,9 +29,6 @@ namespace graphplay {
         _Value(_Value &&other) : inner() { std::swap(inner, other.inner); }
         InnerPropertyValue inner;
     };
-
-    // std::ostream& operator<<(std::ostream& stream, Format value);
-    // std::ostream& operator<<(std::ostream& stream, const PropertyValue &value);
 
     class is_list_visitor : public boost::static_visitor<bool> {
     public:
@@ -77,59 +75,60 @@ namespace graphplay {
         bool operator()(const std::vector<double> &v) const { return false; }
     };
 
-    // template<typename T>
-    // class casting_visitor : public boost::static_visitor<T> {
-    // public:
-    //     T operator()(const std::int64_t &v) const {
-    //         if (std::is_arithmetic<T>::value) {
-    //             return static_cast<T>(v);
-    //         } else {
-    //             throw std::string("Canot cast a scalar value to a non-arithmetic type.");
-    //         }
-    //     }
+    template<typename T>
+    class casting_visitor : public boost::static_visitor<T> {
+    public:
+        T operator()(const std::int64_t &v) const {
+            if (std::is_arithmetic<T>::value) {
+                return static_cast<T>(v);
+            } else {
+                throw std::string("Canot cast a scalar value to a non-arithmetic type.");
+            }
+        }
 
-    //     T operator()(const double &v) const {
-    //         if (!std::is_arithmetic<T>::value) {
-    //             throw std::string("Canot cast a scalar value to a non-arithmetic type.");
-    //         } else if (std::is_integral<T>::value) {
-    //             return static_cast<T>(std::round(v));
-    //         } else {
-    //             return static_cast<T>(v);
-    //         }
-    //     }
+        T operator()(const double &v) const {
+            if (!std::is_arithmetic<T>::value) {
+                throw std::string("Canot cast a scalar value to a non-arithmetic type.");
+            } else if (std::is_integral<T>::value) {
+                return static_cast<T>(std::round(v));
+            } else {
+                return static_cast<T>(v);
+            }
+        }
 
-    //     template<typename U>
-    //     T operator()(const U &v) const {
-    //         throw std::string("Cannot cast list variant value.");
-    //     }
-    // };
+        template<typename U>
+        T operator()(const U &v) const {
+            throw std::string("Cannot cast list variant value.");
+        }
+    };
 
-    // class append_visitor : public boost::static_visitor<> {
-    // public:
-    //     template<typename T>
-    //     void operator()(std::vector<T> &vec, const T &val) const {
-    //         vec.emplace_back(val);
-    //     }
+    class append_visitor : public boost::static_visitor<> {
+    public:
+        template<typename T>
+        void operator()(std::vector<T> &vec, const T &val) const {
+            vec.emplace_back(val);
+        }
 
-    //     template<typename T>
-    //     void operator()(std::vector<T> &vec, const std::vector<T> &val) const {
-    //         vec.insert(vec.end(), val.begin(), val.end());
-    //     }
+        template<typename T>
+        void operator()(std::vector<T> &vec, const std::vector<T> &val) const {
+            vec.insert(vec.end(), val.begin(), val.end());
+        }
 
-    //     template<typename T1, typename T2>
-    //     void operator()(T1 &vec, const T2 &val) const {
-    //         throw std::string("Cannot append mixed types.");
-    //     }
-    // };
+        template<typename T1, typename T2>
+        void operator()(T1 &vec, const T2 &val) const {
+            throw std::string("Cannot append mixed types.");
+        }
+    };
 
-    // PropertyValue create_list(ListType type);
+    InnerPropertyValue create_list(ListType type);
+    PropertyValue create_pv_from_inner(InnerPropertyValue &&inner);
 
     Format read_format(const StringVec &toks);
     std::string read_comment(const StringVec &toks);
     ScalarType read_value_type(const std::string &type_str);
     Element read_element(const StringVec &toks);
     Property read_property(const StringVec &toks);
-    PropertyValue read_ascii_value(const std::string& token, ScalarType type);
+    InnerPropertyValue read_ascii_value(const std::string& token, ScalarType type);
     // PropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format);
 
     // PropertyValue read_float_binary_value(std::istream &stream, Format format);
@@ -291,19 +290,21 @@ namespace graphplay {
             while (token != tokens.end() && prop != m_props.end()) {
                 if (prop->isList()) {
                     ListType type = boost::get<ListType>(prop->m_type->inner);
-                    PropertyValue count_val = read_ascii_value(*token, type.count_type);
-                    int count = (int)count_val.intValue();
-                    PropertyValue list_val = create_list(type);
+                    InnerPropertyValue count_val = read_ascii_value(*token, type.count_type);
+                    int count = boost::apply_visitor(casting_visitor<int>(), count_val);
+                    InnerPropertyValue list_val = create_list(type);
 
                     for (int i = 0; i < count && token != tokens.end(); ++i) {
                         ++token;
-                        PropertyValue val = read_ascii_value(*token, type.value_type);
+                        InnerPropertyValue val = read_ascii_value(*token, type.value_type);
                         boost::apply_visitor(append_visitor(), list_val, val);
                     }
 
-                    elem.emplace(prop->name(), list_val);
+                    elem.m_propvals.emplace(prop->name(), create_pv_from_inner(std::move(list_val)));
                 } else {
-                    elem.m_propvals.emplace(prop->name(), read_ascii_value(*token, boost::get<ScalarType>(prop->m_type->inner)));
+                    ScalarType type = boost::get<ScalarType>(prop->m_type->inner);
+                    InnerPropertyValue val = read_ascii_value(*token, type);
+                    elem.m_propvals.emplace(prop->name(), create_pv_from_inner(std::move(val)));
                 }
                 ++token;
                 ++prop;
@@ -423,65 +424,12 @@ namespace graphplay {
         return boost::apply_visitor(is_integral_visitor(), m_type->inner);
     }
 
-    // std::ostream& operator<<(std::ostream& stream, const PropertyValue &value) {
-    //     bool is_list = boost::apply_visitor(is_list_visitor(), value);
-    //     bool is_integer = boost::apply_visitor(is_integral_visitor(), value);
-
-    //     if (is_list && is_integer) {
-    //         const std::vector<std::int64_t> &idata = boost::get<std::vector<std::int64_t> >(value);
-    //         std::ostringstream itemp;
-
-    //         itemp << "[ ";
-    //         for (unsigned int i = 0; i < idata.size(); ++i) {
-    //             if (i == idata.size() - 1) {
-    //                 itemp << idata[i];
-    //             } else {
-    //                 itemp << idata[i] << ", ";
-    //             }
-    //         }
-    //         itemp << " ]";
-
-    //         return stream << itemp.str();
-    //     } else if (is_list && !is_integer) {
-    //         const std::vector<double> &fdata = boost::get<std::vector<double> >(value);
-    //         std::ostringstream dtemp;
-
-    //         dtemp << "[ ";
-    //         for (unsigned int j = 0; j < fdata.size(); ++j) {
-    //             if (j == fdata.size() - 1) {
-    //                 dtemp << fdata[j];
-    //             } else {
-    //                 dtemp << fdata[j] << ", ";
-    //             }
-    //         }
-    //         dtemp << " ]";
-
-    //         return stream << dtemp.str();
-    //     } else if (!is_list && is_integer) {
-    //         return stream << boost::get<std::int64_t>(value);
-    //     } else { // !is_list && !is_integer
-    //         return stream << boost::get<double>(value);
-    //     }
-    // }
-
     ////////////////////////////////////////////////////////////////////////////////
     // Implementation of class PropertyValue
     ////////////////////////////////////////////////////////////////////////////////
 
-    PropertyValue::PropertyValue(std::int64_t int_val)
-        : m_value{new PropertyValue::_Value(int_val)}
-    {}
-
-    PropertyValue::PropertyValue(double double_val)
-        : m_value{new PropertyValue::_Value(double_val)}
-    {}
-
-    PropertyValue::PropertyValue(std::vector<std::int64_t> &&int_list_val)
-        : m_value{new PropertyValue::_Value(std::move(int_list_val))}
-    {}
-
-    PropertyValue::PropertyValue(std::vector<double> &&double_list_val)
-        : m_value{new PropertyValue::_Value(std::move(double_list_val))}
+    PropertyValue::PropertyValue(_Value &&v)
+        : m_value{new PropertyValue::_Value(std::move(v))}
     {}
 
     PropertyValue::PropertyValue(const PropertyValue &other)
@@ -527,38 +475,30 @@ namespace graphplay {
     // // Implementation of internal helper functions for PlyFile.
     // ////////////////////////////////////////////////////////////////////////////////
 
-    // std::ostream& operator<<(std::ostream &stream, Format value) {
-    //     switch (value) {
-    //     case ASCII:
-    //         return stream << "ASCII";
-    //     case BINARY_BIG_ENDIAN:
-    //         return stream << "binary (big-endian)";
-    //     case BINARY_LITTLE_ENDIAN:
-    //         return stream << "binary (little-endian)";
-    //     default:
-    //         return stream;
-    //     }
-    // }
+    InnerPropertyValue create_list(ListType type) {
+        InnerPropertyValue rv;
 
-    // PropertyValue create_list(ListType type) {
-    //     PropertyValue rv;
+        switch (type.value_type) {
+        case UINT_8:
+        case UINT_16:
+        case UINT_32:
+        case INT_8:
+        case INT_16:
+        case INT_32:
+            rv = std::vector<std::int64_t>();
+            break;
+        case FLOAT_32:
+        case FLOAT_64:
+            rv = std::vector<double>();
+        }
 
-    //     switch (type.value_type) {
-    //     case UINT_8:
-    //     case UINT_16:
-    //     case UINT_32:
-    //     case INT_8:
-    //     case INT_16:
-    //     case INT_32:
-    //         rv = std::vector<std::int64_t>();
-    //         break;
-    //     case FLOAT_32:
-    //     case FLOAT_64:
-    //         rv = std::vector<double>();
-    //     }
+        return rv;
+    }
 
-    //     return rv;
-    // }
+    PropertyValue create_pv_from_inner(InnerPropertyValue &&inner) {
+        PropertyValue::_Value v(std::move(inner));
+        return PropertyValue(std::move(v));
+    }
 
     Format read_format(const StringVec &toks) {
         Format rv = ASCII;
@@ -636,23 +576,29 @@ namespace graphplay {
         }
     }
 
-    PropertyValue read_ascii_value(const std::string& token, ScalarType type) {
+    InnerPropertyValue read_ascii_value(const std::string& token, ScalarType type) {
+        InnerPropertyValue value;
+
         switch (type) {
         case UINT_8:
         case UINT_16:
         case UINT_32:
-            return PropertyValue((std::int64_t)std::stoul(token));
+            value = (std::int64_t)std::stoul(token);
+            break;
         case INT_8:
         case INT_16:
         case INT_32:
-            return PropertyValue((std::int64_t)std::stol(token));
+            value = (std::int64_t)std::stol(token);
             break;
         case FLOAT_32:
         case FLOAT_64:
-            return PropertyValue(std::stod(token));
+            value = std::stod(token);
+            break;
         default:
             throw std::string("Cannot handle PLY value type");
         }
+
+        return value;
     }
 
     // template<typename T>
