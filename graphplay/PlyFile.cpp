@@ -129,12 +129,12 @@ namespace graphplay {
     Element read_element(const StringVec &toks);
     Property read_property(const StringVec &toks);
     InnerPropertyValue read_ascii_value(const std::string& token, ScalarType type);
-    // PropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format);
+    InnerPropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format);
 
-    // PropertyValue read_float_binary_value(std::istream &stream, Format format);
-    // PropertyValue read_double_binary_value(std::istream &stream, Format format);
-    // template<typename T>
-    // PropertyValue read_int_binary_value(std::istream &stream, Format format);
+    template<typename T>
+    InnerPropertyValue read_int_binary_value(std::istream &stream, Format format);
+    InnerPropertyValue read_float_binary_value(std::istream &stream, Format format);
+    InnerPropertyValue read_double_binary_value(std::istream &stream, Format format);
 
     ////////////////////////////////////////////////////////////////////////////////
     // Generic utilities.
@@ -314,31 +314,33 @@ namespace graphplay {
         }
     }
 
-    // void Element::loadBinaryData(std::istream &stream, Format format) {
-    //     for (int row = 0; row < m_count && !stream.eof(); ++row) {
-    //         ElementValue elem;
+    void Element::loadBinaryData(std::istream &stream, Format format) {
+        for (int row = 0; row < m_count && !stream.eof(); ++row) {
+            ElementValue elem;
 
-    //         for (auto &&prop : m_props) {
-    //             if (prop.isList()) {
-    //                 ListType type = boost::get<ListType>(prop.type());
-    //                 PropertyValue count_val = read_binary_value(stream, type.count_type, format);
-    //                 int count = boost::apply_visitor(casting_visitor<int>(), count_val);
-    //                 PropertyValue list_val = create_list(type);
+            for (auto &&prop : m_props) {
+                if (prop.isList()) {
+                    ListType type = boost::get<ListType>(prop.m_type->inner);
+                    InnerPropertyValue count_val = read_binary_value(stream, type.count_type, format);
+                    int count = boost::apply_visitor(casting_visitor<int>(), count_val);
+                    InnerPropertyValue list_val = create_list(type);
 
-    //                 for (int i = 0; i < count; ++i) {
-    //                     PropertyValue val = read_binary_value(stream, type.value_type, format);
-    //                     boost::apply_visitor(append_visitor(), list_val, val);
-    //                 }
+                    for (int i = 0; i < count; ++i) {
+                        InnerPropertyValue val = read_binary_value(stream, type.value_type, format);
+                        boost::apply_visitor(append_visitor(), list_val, val);
+                    }
 
-    //                 elem.emplace(prop.name(), list_val);
-    //             } else {
-    //                 elem.emplace(prop.name(), read_binary_value(stream, boost::get<ScalarType>(prop.type()), format));
-    //             }
-    //         }
+                    elem.m_propvals.emplace(prop.name(), create_pv_from_inner(std::move(list_val)));
+                } else {
+                    ScalarType type = boost::get<ScalarType>(prop.m_type->inner);
+                    InnerPropertyValue val = read_binary_value(stream, type, format);
+                    elem.m_propvals.emplace(prop.name(), create_pv_from_inner(std::move(val)));
+                }
+            }
 
-    //         m_data.emplace_back(std::move(elem));
-    //     }
-    // }
+            m_data.emplace_back(std::move(elem));
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Implementation of class ElementValue
@@ -463,11 +465,11 @@ namespace graphplay {
         return boost::get<double>(m_value->inner);
     }
 
-    const std::vector<std::int64_t>& PropertyValue::intListValue() {
+    const std::vector<std::int64_t>& PropertyValue::intListValue() const {
         return boost::get<std::vector<std::int64_t> >(m_value->inner);
     }
 
-    const std::vector<double>& PropertyValue::doubleListValue() {
+    const std::vector<double>& PropertyValue::doubleListValue() const {
         return boost::get<std::vector<double> >(m_value->inner);
     }
 
@@ -601,77 +603,77 @@ namespace graphplay {
         return value;
     }
 
-    // template<typename T>
-    // PropertyValue read_int_binary_value(std::istream &stream, Format format) {
-    //     T temp;
-    //     PropertyValue rv;
+    template<typename T>
+    InnerPropertyValue read_int_binary_value(std::istream &stream, Format format) {
+        T temp;
+        InnerPropertyValue rv;
 
-    //     stream.read(reinterpret_cast<char*>(&temp), sizeof(temp));
+        stream.read(reinterpret_cast<char*>(&temp), sizeof(temp));
 
-    //     if (format == BINARY_BIG_ENDIAN) {
-    //         boost::endian::big_to_native_inplace(temp);
-    //     } else if (format == BINARY_LITTLE_ENDIAN) {
-    //         boost::endian::little_to_native_inplace(temp);
-    //     }
+        if (format == BINARY_BIG_ENDIAN) {
+            boost::endian::big_to_native_inplace(temp);
+        } else if (format == BINARY_LITTLE_ENDIAN) {
+            boost::endian::little_to_native_inplace(temp);
+        }
 
-    //     rv = static_cast<std::int64_t>(temp);
-    //     return rv;
-    // }
+        rv = static_cast<std::int64_t>(temp);
+        return rv;
+    }
 
-    // PropertyValue read_float_binary_value(std::istream &stream, Format format) {
-    //     std::uint32_t itemp;
-    //     PropertyValue rv;
+    InnerPropertyValue read_float_binary_value(std::istream &stream, Format format) {
+        std::uint32_t itemp;
+        InnerPropertyValue rv;
 
-    //     stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
+        stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
 
-    //     if (format == BINARY_BIG_ENDIAN) {
-    //         boost::endian::big_to_native_inplace(itemp);
-    //     } else if (format == BINARY_LITTLE_ENDIAN) {
-    //         boost::endian::little_to_native_inplace(itemp);
-    //     }
+        if (format == BINARY_BIG_ENDIAN) {
+            boost::endian::big_to_native_inplace(itemp);
+        } else if (format == BINARY_LITTLE_ENDIAN) {
+            boost::endian::little_to_native_inplace(itemp);
+        }
 
-    //     rv = static_cast<double>(*reinterpret_cast<float*>(&itemp));
-    //     return rv;
-    // }
+        rv = static_cast<double>(*reinterpret_cast<float*>(&itemp));
+        return rv;
+    }
 
-    // PropertyValue read_double_binary_value(std::istream &stream, Format format) {
-    //     std::uint64_t itemp;
-    //     PropertyValue rv;
+    InnerPropertyValue read_double_binary_value(std::istream &stream, Format format) {
+        std::uint64_t itemp;
+        InnerPropertyValue rv;
 
-    //     stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
+        stream.read(reinterpret_cast<char*>(&itemp), sizeof(itemp));
 
-    //     if (format == BINARY_BIG_ENDIAN) {
-    //         boost::endian::big_to_native_inplace(itemp);
-    //     } else if (format == BINARY_LITTLE_ENDIAN) {
-    //         boost::endian::little_to_native_inplace(itemp);
-    //     }
+        if (format == BINARY_BIG_ENDIAN) {
+            boost::endian::big_to_native_inplace(itemp);
+        } else if (format == BINARY_LITTLE_ENDIAN) {
+            boost::endian::little_to_native_inplace(itemp);
+        }
 
-    //     rv = *reinterpret_cast<double*>(&itemp);
-    //     return rv;
-    // }
+        rv = *reinterpret_cast<double*>(&itemp);
+        return rv;
+    }
 
-    // PropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format) {
-    //     switch (type) {
-    //     case UINT_8:
-    //         return read_int_binary_value<std::uint8_t>(stream, format);
-    //     case INT_8:
-    //         return read_int_binary_value<std::int8_t>(stream, format);
-    //     case UINT_16:
-    //         return read_int_binary_value<std::uint16_t>(stream, format);
-    //     case INT_16:
-    //         return read_int_binary_value<std::int16_t>(stream, format);
-    //     case UINT_32:
-    //         return read_int_binary_value<std::uint32_t>(stream, format);
-    //     case INT_32:
-    //         return read_int_binary_value<std::int32_t>(stream, format);
-    //     case FLOAT_32:
-    //         return read_float_binary_value(stream, format);
-    //     case FLOAT_64:
-    //         return read_double_binary_value(stream, format);
-    //     default:
-    //         return PropertyValue();
-    //     }
-    // }
+    InnerPropertyValue read_binary_value(std::istream &stream, ScalarType type, Format format) {
+        switch (type) {
+        case UINT_8:
+            return read_int_binary_value<std::uint8_t>(stream, format);
+        case INT_8:
+            return read_int_binary_value<std::int8_t>(stream, format);
+        case UINT_16:
+            return read_int_binary_value<std::uint16_t>(stream, format);
+        case INT_16:
+            return read_int_binary_value<std::int16_t>(stream, format);
+        case UINT_32:
+            return read_int_binary_value<std::uint32_t>(stream, format);
+        case INT_32:
+            return read_int_binary_value<std::int32_t>(stream, format);
+        case FLOAT_32:
+            return read_float_binary_value(stream, format);
+        case FLOAT_64:
+            return read_double_binary_value(stream, format);
+        default:
+            return InnerPropertyValue();
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Implementation of utilities.

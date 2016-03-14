@@ -74,8 +74,8 @@ namespace graphplay {
 
         std::int64_t intValue() const;
         double doubleValue() const;
-        const std::vector<std::int64_t>& intListValue();
-        const std::vector<double>& doubleListValue();
+        const std::vector<std::int64_t>& intListValue() const;
+        const std::vector<double>& doubleListValue() const;
 
     private:
         std::unique_ptr<_Value> m_value;

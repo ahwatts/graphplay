@@ -114,4 +114,47 @@ end_header
         ASSERT_EQ(2.1, data[1].getProperty("f").doubleValue());
         ASSERT_EQ(4.0, data[1].getProperty("d").doubleValue());
     }
+
+    TEST(PlyFileTest, ReadListAsciiData) {
+        std::string ply_string(R"ply(ply
+format ascii 1.0
+element vertex 2
+property list uint8 uint8 ucl
+property list uint16 int32 ll
+property list uint16 float32 fl
+end_header
+3 1 2 3 3 -2 -4 -6 4 1.0 2.1 3.2 4.3
+)ply");
+
+        std::istringstream ply_stream(ply_string);
+        PlyFile f(ply_stream);
+
+        const std::vector<Element> &elements = f.elements();
+        ASSERT_EQ(1, elements.size());
+
+        const Element &elem = elements[0];
+        ASSERT_EQ(3, elem.properties().size());
+
+        const std::vector<ElementValue> &data = elem.data();
+        ASSERT_EQ(1, data.size());
+
+        const std::vector<std::int64_t> &ucl_val = data[0].getProperty("ucl").intListValue();
+        ASSERT_EQ(3, ucl_val.size());
+        ASSERT_EQ(1, ucl_val[0]);
+        ASSERT_EQ(2, ucl_val[1]);
+        ASSERT_EQ(3, ucl_val[2]);
+
+        const std::vector<std::int64_t> &ll_val = data[0].getProperty("ll").intListValue();
+        ASSERT_EQ(3, ll_val.size());
+        ASSERT_EQ(-2, ll_val[0]);
+        ASSERT_EQ(-4, ll_val[1]);
+        ASSERT_EQ(-6, ll_val[2]);
+
+        const std::vector<double> &fl_val = data[0].getProperty("fl").doubleListValue();
+        ASSERT_EQ(4, fl_val.size());
+        ASSERT_EQ(1.0, fl_val[0]);
+        ASSERT_EQ(2.1, fl_val[1]);
+        ASSERT_EQ(3.2, fl_val[2]);
+        ASSERT_EQ(4.3, fl_val[3]);
+    }
 }
