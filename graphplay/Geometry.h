@@ -109,6 +109,7 @@ namespace graphplay {
     Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();
     Geometry<PCNVertex>::sptr_type makeSphereGeometry();
     Geometry<PCNVertex>::sptr_type loadPCNFile(const char *filename);
+    Geometry<PCNVertex>::sptr_type loadPlyFile(const char *filename);
 };
 
 #include "Geometry.tmpl.cpp"

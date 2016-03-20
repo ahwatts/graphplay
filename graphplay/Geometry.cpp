@@ -14,6 +14,7 @@
 
 #include "OpenGLUtils.h"
 #include "Geometry.h"
+#include "PlyFile.h"
 
 namespace graphplay {
     // Class AbstractGeometry.
@@ -286,6 +287,14 @@ namespace graphplay {
             std::cerr << "File " << filename << " does not appear to be a PCN file." << std::endl;
         }
         
+        file.close();
+        return rv;
+    }
+
+    Geometry<PCNVertex>::sptr_type loadPlyFile(const char *filename) {
+        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
+        std::fstream file(filename, std::ios::in | std::ios::binary);
+        PlyFile f(file);
         file.close();
         return rv;
     }

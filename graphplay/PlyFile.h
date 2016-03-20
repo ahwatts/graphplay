@@ -3,11 +3,13 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_PLY_FILE_H_
 #define _GRAPHPLAY_GRAPHPLAY_PLY_FILE_H_
 
+#include <cstddef>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace graphplay {
     enum Format {
@@ -58,28 +60,91 @@ namespace graphplay {
         std::unique_ptr<_Type> m_type;
     };
 
+    template<typename T>
+    class PropertyValueIterator : public std::iterator<std::forward_iterator_tag, T> {
+        static_assert(std::is_arithmetic<T>::value, "Can only cast PropertyValues to arithmetic types.");
+
+    public:
+        typedef typename PropertyValueIterator<T>::difference_type difference_type;
+        typedef typename PropertyValueIterator<T>::value_type      value_type;
+        typedef typename PropertyValueIterator<T>::pointer         pointer;
+        typedef typename PropertyValueIterator<T>::reference       reference;
+
+        PropertyValueIterator(PropertyValue &iteratee, std::size_t index);
+        PropertyValueIterator(const PropertyValueIterator<T> &other);
+        ~PropertyValueIterator();
+
+        value_type operator*() const;
+
+        bool operator!=(const PropertyValueIterator<T> &other) const;
+
+        PropertyValueIterator<T>& operator++();
+        PropertyValueIterator<T> operator++(int);
+
+    private:
+        PropertyValue &m_propval;
+        std::size_t m_index;
+    };
+
     class PropertyValue {
     public:
-        class _Value;
+        ////////////////////////////////////////////////////////////
 
-        PropertyValue(_Value &&v);
+        PropertyValue();
         PropertyValue(const PropertyValue &other);
         PropertyValue(PropertyValue &&other);
         ~PropertyValue();
 
-        PropertyValue& operator=(PropertyValue other);
+        PropertyValue& operator=(const PropertyValue &other);
+        PropertyValue& operator=(PropertyValue &&other);
+
+        ////////////////////////////////////////////////////////////
+
+        template<typename T>
+        PropertyValue(T s_val);
+
+        template<typename T>
+        PropertyValue(const std::vector<T> &v_val);
+
+        ////////////////////////////////////////////////////////////
+
+        template<typename T>
+        PropertyValue& operator=(T s_val);
+
+        template<typename T>
+        PropertyValue& operator=(const std::vector<T> &v_val);
+
+        ////////////////////////////////////////////////////////////
 
         bool isList() const;
         bool isIntegral() const;
+        std::size_t size() const;
 
-        std::int64_t intValue() const;
-        double doubleValue() const;
-        const std::vector<std::int64_t>& intListValue() const;
-        const std::vector<double>& doubleListValue() const;
+        ////////////////////////////////////////////////////////////
+
+        template<typename T>
+        T first() const;
+
+        template<typename T>
+        PropertyValueIterator<T> begin() const;
+
+        template<typename T>
+        PropertyValueIterator<T> end() const;
+
+        ////////////////////////////////////////////////////////////
+
+        template<typename T>
+        friend class PropertyValueIterator;
+        friend class Element;
+
+        friend std::ostream& operator<<(std::ostream&, const PropertyValue&);
 
     private:
-        std::unique_ptr<_Value> m_value;
+        class Impl;
+        std::unique_ptr<Impl> m_value;
     };
+
+    std::ostream& operator<<(std::ostream& stream, const PropertyValue &pv);
 
     class Element {
     public:
