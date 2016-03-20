@@ -154,7 +154,7 @@ namespace graphplay {
     };
 
     Geometry<PCNVertex>::sptr_type makeOctohedronGeometry() {
-        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex>>();
+        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
         rv->setVertexData(
             OCTOHEDRON_VERTEX_ELEMS, 24,
             OCTOHEDRON_VERTEX_ARRAY, 24);
@@ -225,7 +225,7 @@ namespace graphplay {
     }
 
     Geometry<PCNVertex>::sptr_type makeSphereGeometry() {
-        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex>>();
+        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
         Geometry<PCNVertex>::vertex_array_type verts;
         PositionsAndElements pne, prev_pne;
 
@@ -262,7 +262,7 @@ namespace graphplay {
     }
 
     Geometry<PCNVertex>::sptr_type loadPCNFile(const char *filename) {
-        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex>>();
+        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
         std::fstream file(filename, std::ios::in | std::ios::binary);
         unsigned int num_things = 0;
         char magic_arr[4];

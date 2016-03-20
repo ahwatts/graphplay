@@ -62,9 +62,9 @@ namespace graphplay {
         const static GLenum elem_gl_type = GL_UNSIGNED_INT;
         typedef std::vector<vertex_type> vertex_array_type;
         typedef std::vector<elem_type> elem_array_type;
-        typedef std::unique_ptr<Geometry<V>> uptr_type;
-        typedef std::shared_ptr<Geometry<V>> sptr_type;
-        typedef std::weak_ptr<Geometry<V>> wptr_type;
+        typedef std::unique_ptr<Geometry<V> > uptr_type;
+        typedef std::shared_ptr<Geometry<V> > sptr_type;
+        typedef std::weak_ptr<Geometry<V> > wptr_type;
 
         Geometry();
         Geometry(const Geometry<V> &other);
