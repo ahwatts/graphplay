@@ -70,19 +70,20 @@ namespace graphplay {
         typedef typename PropertyValueIterator<T>::pointer         pointer;
         typedef typename PropertyValueIterator<T>::reference       reference;
 
-        PropertyValueIterator(PropertyValue &iteratee, std::size_t index);
+        PropertyValueIterator(const PropertyValue &iteratee, std::size_t index);
         PropertyValueIterator(const PropertyValueIterator<T> &other);
         ~PropertyValueIterator();
 
         value_type operator*() const;
 
         bool operator!=(const PropertyValueIterator<T> &other) const;
+        bool operator==(const PropertyValueIterator<T> &other) const;
 
         PropertyValueIterator<T>& operator++();
         PropertyValueIterator<T> operator++(int);
 
     private:
-        PropertyValue &m_propval;
+        const PropertyValue &m_propval;
         std::size_t m_index;
     };
 
@@ -213,5 +214,7 @@ namespace graphplay {
         std::vector<Element> m_elements;
     };
 }
+
+#include "PlyFile.tmpl.cpp"
 
 #endif

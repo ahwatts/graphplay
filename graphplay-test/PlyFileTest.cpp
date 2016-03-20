@@ -102,8 +102,8 @@ end_header
         ASSERT_EQ(-1, data[0].getProperty("c").first<int>());
         ASSERT_EQ(-2, data[0].getProperty("s").first<int>());
         ASSERT_EQ(-3, data[0].getProperty("l").first<int>());
-        ASSERT_EQ(1.0, data[0].getProperty("f").first<float>());
-        ASSERT_EQ(2.3, data[0].getProperty("d").first<float>());
+        ASSERT_FLOAT_EQ(1.0, data[0].getProperty("f").first<float>());
+        ASSERT_FLOAT_EQ(2.3, data[0].getProperty("d").first<float>());
 
         ASSERT_EQ(2, data[1].getProperty("uc").first<int>());
         ASSERT_EQ(4, data[1].getProperty("us").first<int>());
@@ -111,8 +111,8 @@ end_header
         ASSERT_EQ(-2, data[1].getProperty("c").first<int>());
         ASSERT_EQ(-4, data[1].getProperty("s").first<int>());
         ASSERT_EQ(-6, data[1].getProperty("l").first<int>());
-        ASSERT_EQ(2.1, data[1].getProperty("f").first<float>());
-        ASSERT_EQ(4.0, data[1].getProperty("d").first<float>());
+        ASSERT_FLOAT_EQ(2.1, data[1].getProperty("f").first<float>());
+        ASSERT_FLOAT_EQ(4.0, data[1].getProperty("d").first<float>());
     }
 
     TEST(PlyFileTest, ReadListAsciiData) {
@@ -140,23 +140,36 @@ end_header
 
         const PropertyValue &ucl_val = data[0].getProperty("ucl");
         ASSERT_EQ(3, ucl_val.size());
+        ASSERT_TRUE(ucl_val.isList());
+        ASSERT_TRUE(ucl_val.isIntegral());
 
-        PropertyValueIterator<int> i = ucl_val.begin<int>();
+        PropertyValueIterator<unsigned char> i = ucl_val.begin<unsigned char>();
         ASSERT_EQ(1, *i++);
         ASSERT_EQ(2, *i++);
         ASSERT_EQ(3, *i++);
+        ASSERT_EQ(ucl_val.end<unsigned char>(), i);
 
-        // const std::vector<std::int64_t> &ll_val = data[0].getProperty("ll").intListValue();
-        // ASSERT_EQ(3, ll_val.size());
-        // ASSERT_EQ(-2, ll_val[0]);
-        // ASSERT_EQ(-4, ll_val[1]);
-        // ASSERT_EQ(-6, ll_val[2]);
+        const PropertyValue &ll_val = data[0].getProperty("ll");
+        ASSERT_EQ(3, ll_val.size());
+        ASSERT_TRUE(ll_val.isList());
+        ASSERT_TRUE(ll_val.isIntegral());
 
-        // const std::vector<double> &fl_val = data[0].getProperty("fl").doubleListValue();
-        // ASSERT_EQ(4, fl_val.size());
-        // ASSERT_EQ(1.0, fl_val[0]);
-        // ASSERT_EQ(2.1, fl_val[1]);
-        // ASSERT_EQ(3.2, fl_val[2]);
-        // ASSERT_EQ(4.3, fl_val[3]);
+        PropertyValueIterator<long> j = ll_val.begin<long>();
+        ASSERT_EQ(-2, *j++);
+        ASSERT_EQ(-4, *j++);
+        ASSERT_EQ(-6, *j++);
+        ASSERT_EQ(ll_val.end<long>(), j);
+
+        const PropertyValue &fl_val = data[0].getProperty("fl");
+        ASSERT_EQ(4, fl_val.size());
+        ASSERT_TRUE(fl_val.isList());
+        ASSERT_FALSE(fl_val.isIntegral());
+
+        PropertyValueIterator<float> k = fl_val.begin<float>();
+        ASSERT_FLOAT_EQ(1.0, *k++);
+        ASSERT_FLOAT_EQ(2.1, *k++);
+        ASSERT_FLOAT_EQ(3.2, *k++);
+        ASSERT_FLOAT_EQ(4.3, *k++);
+        ASSERT_EQ(fl_val.end<float>(), k);
     }
 }
