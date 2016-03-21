@@ -102,8 +102,8 @@ end_header
         ASSERT_EQ(-1, data[0].getProperty("c").first<int>());
         ASSERT_EQ(-2, data[0].getProperty("s").first<int>());
         ASSERT_EQ(-3, data[0].getProperty("l").first<int>());
-        ASSERT_FLOAT_EQ(1.0, data[0].getProperty("f").first<float>());
-        ASSERT_FLOAT_EQ(2.3, data[0].getProperty("d").first<float>());
+        ASSERT_FLOAT_EQ(1.0f, data[0].getProperty("f").first<float>());
+        ASSERT_FLOAT_EQ(2.3f, data[0].getProperty("d").first<float>());
 
         ASSERT_EQ(2, data[1].getProperty("uc").first<int>());
         ASSERT_EQ(4, data[1].getProperty("us").first<int>());
@@ -111,8 +111,8 @@ end_header
         ASSERT_EQ(-2, data[1].getProperty("c").first<int>());
         ASSERT_EQ(-4, data[1].getProperty("s").first<int>());
         ASSERT_EQ(-6, data[1].getProperty("l").first<int>());
-        ASSERT_FLOAT_EQ(2.1, data[1].getProperty("f").first<float>());
-        ASSERT_FLOAT_EQ(4.0, data[1].getProperty("d").first<float>());
+        ASSERT_FLOAT_EQ(2.1f, data[1].getProperty("f").first<float>());
+        ASSERT_FLOAT_EQ(4.0f, data[1].getProperty("d").first<float>());
     }
 
     TEST(PlyFileTest, ReadListAsciiData) {
@@ -166,10 +166,10 @@ end_header
         ASSERT_FALSE(fl_val.isIntegral());
 
         PropertyValueIterator<float> k = fl_val.begin<float>();
-        ASSERT_FLOAT_EQ(1.0, *k++);
-        ASSERT_FLOAT_EQ(2.1, *k++);
-        ASSERT_FLOAT_EQ(3.2, *k++);
-        ASSERT_FLOAT_EQ(4.3, *k++);
+        ASSERT_FLOAT_EQ(1.0f, *k++);
+        ASSERT_FLOAT_EQ(2.1f, *k++);
+        ASSERT_FLOAT_EQ(3.2f, *k++);
+        ASSERT_FLOAT_EQ(4.3f, *k++);
         ASSERT_EQ(fl_val.end<float>(), k);
     }
 }

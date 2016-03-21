@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -13,6 +13,7 @@
     <ClCompile Include="..\graphplay\Mesh.cpp" />
     <ClCompile Include="..\graphplay\OpenGLUtils.cpp" />
     <ClCompile Include="..\graphplay\PlyFile.cpp" />
+    <ClInclude Include="..\graphplay\PlyFile.tmpl.cpp" />
     <ClCompile Include="..\graphplay\Scene.cpp" />
     <ClCompile Include="..\graphplay\Shader.cpp" />
     <ClCompile Include="CameraTest.cpp" />

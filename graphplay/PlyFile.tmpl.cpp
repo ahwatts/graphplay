@@ -154,11 +154,15 @@ namespace graphplay {
 
         if (std::is_integral<T>::value) {
             std::vector<std::int64_t> icasted;
-            icasted.insert(icasted.end(), val.begin(), val.end());
+            for (auto &&v : val) {
+                icasted.emplace_back(static_cast<std::int64_t>(v));
+            }
             m_value->inner = std::move(icasted);
         } else {
             std::vector<double> dcasted;
-            dcasted.insert(dcasted.end(), val.begin(), val.end());
+            for (auto &&w : val) {
+                dcasted.emplace_back(static_cast<double>(w));
+            }
             m_value->inner = std::move(dcasted);
         }
 

@@ -3,9 +3,6 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 
-// #include <iostream>
-
-#include "Geometry.h"
 #include "OpenGLUtils.h"
 #include "Shader.h"
 

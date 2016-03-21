@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -21,6 +21,9 @@
     <ClCompile Include="..\graphplay\Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClInclude Include="..\graphplay\Geometry.tmpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClCompile Include="TestOpenGLContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,6 +60,9 @@
     <ClCompile Include="..\graphplay\PlyFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClInclude Include="..\graphplay\PlyFile.tmpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\graphplay\Geometry.h">
@@ -84,9 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\graphplay\OpenGLUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\graphplay\Geometry.tmpl.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\graphplay\PlyFile.h">
