@@ -38,13 +38,15 @@ namespace graphplay {
 
     class Property {
     public:
+        Property();
         Property(const char *name, ScalarType type);
         Property(const char *name, ListType type);
         Property(const Property &other);
         Property(Property &&other);
         ~Property();
 
-        Property& operator=(Property other);
+        Property& operator=(const Property &other);
+        Property& operator=(Property &&other);
 
         const std::string& name() const;
         const char* name_c() const;
@@ -54,10 +56,10 @@ namespace graphplay {
         friend class Element;
 
     private:
-        class _Type;
+        class Type;
 
         std::string m_name;
-        std::unique_ptr<_Type> m_type;
+        std::unique_ptr<Type> m_type;
     };
 
     template<typename T>
@@ -154,7 +156,8 @@ namespace graphplay {
         Element(Element &&other);
         ~Element();
 
-        Element& operator=(Element other);
+        Element& operator=(const Element &other);
+        Element& operator=(Element &&other);
 
         const std::string& name() const;
         const char* name_c() const;
@@ -182,7 +185,8 @@ namespace graphplay {
         ElementValue(ElementValue &&other);
         ~ElementValue();
 
-        ElementValue& operator=(ElementValue other);
+        ElementValue& operator=(const ElementValue &other);
+        ElementValue& operator=(ElementValue &&other);
 
         const PropertyValue& getProperty(const std::string &pname) const;
         const PropertyValue& getProperty(const char *pname) const;
@@ -195,6 +199,14 @@ namespace graphplay {
 
     class PlyFile {
     public:
+        typedef std::vector<std::string>::size_type comment_size_type;
+        typedef std::vector<std::string>::iterator comment_iterator;
+        typedef std::vector<std::string>::const_iterator const_comment_iterator;
+
+        typedef std::vector<Element>::size_type element_size_type;
+        typedef std::vector<Element>::iterator element_iterator;
+        typedef std::vector<Element>::const_iterator const_element_iterator;
+
         PlyFile(const char *filename);
         PlyFile(std::istream &stream);
         PlyFile(const PlyFile &other) = delete;
@@ -204,8 +216,17 @@ namespace graphplay {
         PlyFile& operator=(const PlyFile &other) = delete;
         PlyFile& operator=(PlyFile &&other) = delete;
 
-        const std::vector<std::string>& comments() const;
-        const std::vector<Element>& elements() const;
+        comment_size_type comments_size() const;
+        comment_iterator begin_comments();
+        comment_iterator end_comments();
+        const_comment_iterator cbegin_comments() const;
+        const_comment_iterator cend_comments() const;
+
+        element_size_type elements_size() const;
+        element_iterator begin_elements();
+        element_iterator end_elements();
+        const_element_iterator cbegin_elements() const;
+        const_element_iterator cend_elements() const;
 
     private:
         void load(std::istream &stream);

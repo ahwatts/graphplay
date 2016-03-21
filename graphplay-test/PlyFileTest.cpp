@@ -19,10 +19,12 @@ comment Second test comment
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<std::string> &comments = f.comments();
-        ASSERT_EQ(2, comments.size());
-        ASSERT_EQ("Test comment", comments[0]);
-        ASSERT_EQ("Second test comment", comments[1]);
+        ASSERT_EQ(2, f.comments_size());
+
+        PlyFile::const_comment_iterator c = f.cbegin_comments();
+        ASSERT_EQ("Test comment", *c++);
+        ASSERT_EQ("Second test comment", *c++);
+        ASSERT_EQ(f.cend_comments(), c);
     }
 
     TEST(PlyFileTest, ReadElement) {
@@ -34,12 +36,20 @@ element face 8
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<Element> &elements = f.elements();
-        ASSERT_EQ(2, elements.size());
-        ASSERT_EQ("vertex", elements[0].name());
-        ASSERT_EQ(6, elements[0].count());
-        ASSERT_EQ("face", elements[1].name());
-        ASSERT_EQ(8, elements[1].count());
+        ASSERT_EQ(2, f.elements_size());
+
+        PlyFile::const_element_iterator e = f.cbegin_elements();
+        ASSERT_EQ("vertex", e->name());
+        ASSERT_EQ(6, e->count());
+
+        ++e;
+
+        ASSERT_EQ("face", e->name());
+        ASSERT_EQ(8, e->count());
+
+        ++e;
+
+        ASSERT_EQ(f.cend_elements(), e);
     }
 
     TEST(PlyFileTest, ReadProperties) {
@@ -53,18 +63,24 @@ property list uint8 uint32 vertex_indices
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<Element> &elements = f.elements();
+        ASSERT_EQ(2, f.elements_size());
 
-        ASSERT_EQ(2, elements.size());
-        ASSERT_EQ(1, elements[0].properties().size());
-        ASSERT_EQ("x", elements[0].properties()[0].name());
-        ASSERT_EQ(false, elements[0].properties()[0].isList());
-        ASSERT_EQ(false, elements[0].properties()[0].isIntegral());
+        PlyFile::const_element_iterator e = f.cbegin_elements();
+        ASSERT_EQ(1, e->properties().size());
+        ASSERT_EQ("x", e->properties()[0].name());
+        ASSERT_EQ(false, e->properties()[0].isList());
+        ASSERT_EQ(false, e->properties()[0].isIntegral());
 
-        ASSERT_EQ(1, elements[1].properties().size());
-        ASSERT_EQ("vertex_indices", elements[1].properties()[0].name());
-        ASSERT_EQ(true, elements[1].properties()[0].isList());
-        ASSERT_EQ(true, elements[1].properties()[0].isIntegral());
+        ++e;
+
+        ASSERT_EQ(1, e->properties().size());
+        ASSERT_EQ("vertex_indices", e->properties()[0].name());
+        ASSERT_EQ(true, e->properties()[0].isList());
+        ASSERT_EQ(true, e->properties()[0].isIntegral());
+
+        ++e;
+
+        ASSERT_EQ(f.cend_elements(), e);
     }
 
     TEST(PlyFileTest, ReadScalarAsciiData) {
@@ -87,10 +103,10 @@ end_header
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<Element> &elements = f.elements();
-        ASSERT_EQ(1, elements.size());
+        ASSERT_EQ(1, f.elements_size());
 
-        const Element &elem = elements[0];
+        PlyFile::const_element_iterator elem_iter = f.cbegin_elements();
+        const Element &elem = *elem_iter;
         ASSERT_EQ(8, elem.properties().size());
 
         const std::vector<ElementValue> &data = elem.data();
@@ -113,6 +129,9 @@ end_header
         ASSERT_EQ(-6, data[1].getProperty("l").first<int>());
         ASSERT_FLOAT_EQ(2.1f, data[1].getProperty("f").first<float>());
         ASSERT_FLOAT_EQ(4.0f, data[1].getProperty("d").first<float>());
+
+        ++elem_iter;
+        ASSERT_EQ(f.cend_elements(), elem_iter);
     }
 
     TEST(PlyFileTest, ReadListAsciiData) {
@@ -129,10 +148,10 @@ end_header
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        const std::vector<Element> &elements = f.elements();
-        ASSERT_EQ(1, elements.size());
+        ASSERT_EQ(1, f.elements_size());
 
-        const Element &elem = elements[0];
+        PlyFile::const_element_iterator elem_iter = f.cbegin_elements();
+        const Element &elem = *elem_iter;
         ASSERT_EQ(3, elem.properties().size());
 
         const std::vector<ElementValue> &data = elem.data();
@@ -171,5 +190,8 @@ end_header
         ASSERT_FLOAT_EQ(3.2f, *k++);
         ASSERT_FLOAT_EQ(4.3f, *k++);
         ASSERT_EQ(fl_val.end<float>(), k);
+
+        ++elem_iter;
+        ASSERT_EQ(f.cend_elements(), elem_iter);
     }
 }

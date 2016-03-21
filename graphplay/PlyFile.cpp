@@ -11,15 +11,17 @@
 
 namespace graphplay {
     typedef std::vector<std::string> StringVec;
-    typedef boost::variant<ScalarType, ListType> InnerPropertyType;
+    typedef boost::variant<ScalarType, ListType> PropertyTypeVariant;
 
     typedef boost::variant<std::ostream&> StreamVariant;
 
-    class Property::_Type {
+    class Property::Type {
     public:
-        _Type(ScalarType type) : inner(type) {}
-        _Type(ListType type) : inner(type) {}
-        InnerPropertyType inner;
+        Type(ScalarType type) : inner(type) {}
+        Type(ListType type) : inner(type) {}
+        Type(const PropertyTypeVariant &type) : inner(type) {}
+        Type(PropertyTypeVariant &&type) : inner(std::move(type)) {}
+        PropertyTypeVariant inner;
     };
 
     class is_integral_visitor : public boost::static_visitor<bool> {
@@ -166,12 +168,44 @@ namespace graphplay {
 
     PlyFile::~PlyFile() {}
 
-    const std::vector<std::string>& PlyFile::comments() const {
-        return m_comments;
+    PlyFile::comment_size_type PlyFile::comments_size() const {
+        return m_comments.size();
     }
 
-    const std::vector<Element>& PlyFile::elements() const {
-        return m_elements;
+    PlyFile::comment_iterator PlyFile::begin_comments() {
+        return m_comments.begin();
+    }
+
+    PlyFile::comment_iterator PlyFile::end_comments() {
+        return m_comments.end();
+    }
+
+    PlyFile::const_comment_iterator PlyFile::cbegin_comments() const {
+        return m_comments.cbegin();
+    }
+
+    PlyFile::const_comment_iterator PlyFile::cend_comments() const {
+        return m_comments.cend();
+    }
+
+    PlyFile::element_size_type PlyFile::elements_size() const {
+        return m_elements.size();
+    }
+
+    PlyFile::element_iterator PlyFile::begin_elements() {
+        return m_elements.begin();
+    }
+
+    PlyFile::element_iterator PlyFile::end_elements() {
+        return m_elements.end();
+    }
+
+    PlyFile::const_element_iterator PlyFile::cbegin_elements() const {
+        return m_elements.cbegin();
+    }
+
+    PlyFile::const_element_iterator PlyFile::cend_elements() const {
+        return m_elements.cend();
     }
 
     void PlyFile::load(std::istream &stream) {
@@ -227,25 +261,31 @@ namespace graphplay {
           m_data{}
     {}
 
-    Element::Element(const Element &other)
-        : m_name{other.m_name},
-          m_count{other.m_count},
-          m_props{other.m_props},
-          m_data{other.m_data}
-    {}
+    Element::Element(const Element &other) {
+        *this = other;
+    }
 
-    Element::Element(Element &&other)
-        : m_name{},
-          m_count{other.m_count},
-          m_props{},
-          m_data{}
-    {
-        std::swap(m_name, other.m_name);
-        std::swap(m_props, other.m_props);
-        std::swap(m_data, other.m_data);
+    Element::Element(Element &&other) {
+        *this = std::move(other);
     }
 
     Element::~Element() {}
+
+    Element& Element::operator=(const Element &other) {
+        m_name = other.m_name;
+        m_count = other.m_count;
+        m_props = other.m_props;
+        m_data = other.m_data;
+        return *this;
+    }
+
+    Element& Element::operator=(Element &&other) {
+        std::swap(m_name, other.m_name);
+        m_count = other.m_count;
+        std::swap(m_props, other.m_props);
+        std::swap(m_data, other.m_data);
+        return *this;
+    }
 
     const std::string& Element::name() const {
         return m_name;
@@ -346,17 +386,25 @@ namespace graphplay {
         : m_propvals{}
     {}
 
-    ElementValue::ElementValue(const ElementValue &other)
-        : m_propvals{other.m_propvals}
-    {}
+    ElementValue::ElementValue(const ElementValue &other) {
+        *this = other;
+    }
 
-    ElementValue::ElementValue(ElementValue &&other)
-        : m_propvals{}
-    {
-        std::swap(m_propvals, other.m_propvals);
+    ElementValue::ElementValue(ElementValue &&other) {
+        *this = std::move(other);
     }
 
     ElementValue::~ElementValue() {}
+
+    ElementValue& ElementValue::operator=(const ElementValue &other) {
+        m_propvals = other.m_propvals;
+        return *this;
+    }
+
+    ElementValue& ElementValue::operator=(ElementValue &&other) {
+        std::swap(m_propvals, other.m_propvals);
+        return *this;
+    }
 
     const PropertyValue& ElementValue::getProperty(const std::string &pname) const {
         auto found = m_propvals.find(pname);
@@ -382,29 +430,42 @@ namespace graphplay {
     // Implementation of class Property
     ////////////////////////////////////////////////////////////////////////////////
 
+    Property::Property()
+        : m_name{},
+          m_type{new Property::Type(INT_32)}
+    {}
+
     Property::Property(const char *name, ScalarType type)
         : m_name{name},
-          m_type{new Property::_Type(type)}
+          m_type{new Property::Type(type)}
     {}
 
     Property::Property(const char *name, ListType type)
         : m_name{name},
-          m_type{new Property::_Type(type)}
+          m_type{new Property::Type(type)}
     {}
 
-    Property::Property(const Property &other)
-        : m_name{other.m_name},
-          m_type{new Property::_Type(*other.m_type)}
-    {}
+    Property::Property(const Property &other) {
+        *this = other;
+    }
 
-    Property::Property(Property &&other)
-        : m_name{},
-          m_type{std::move(other.m_type)}
-    {
-        std::swap(m_name, other.m_name);
+    Property::Property(Property &&other) {
+        *this = std::move(other);
     }
 
     Property::~Property() {}
+
+    Property& Property::operator=(const Property &other) {
+        m_name = other.m_name;
+        m_type.reset(new Property::Type(other.m_type->inner));
+        return *this;
+    }
+
+    Property& Property::operator=(Property &&other) {
+        std::swap(m_name, other.m_name);
+        std::swap(m_type, other.m_type);
+        return *this;
+    }
 
     const std::string& Property::name() const {
         return m_name;
