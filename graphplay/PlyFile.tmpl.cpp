@@ -3,6 +3,7 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_PLY_FILE_CPP_
 #define _GRAPHPLAY_GRAPHPLAY_PLY_FILE_CPP_
 
+#include <cmath>
 #include <sstream>
 
 #include <boost/variant.hpp>
