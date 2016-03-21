@@ -181,7 +181,7 @@ namespace graphplay {
     unsigned int add_position_to_vec(std::vector<glm::vec3> &vec, glm::vec3 pos) {
         int index = index_of(vec, pos);
         if (index < 0) {
-            index = vec.size();
+            index = (int)vec.size();
             vec.emplace_back(pos);
         }
         return static_cast<unsigned int>(index);

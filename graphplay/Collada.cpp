@@ -255,7 +255,7 @@ namespace collada {
     MeshGeometry::value_type VertexIterator::operator*() {
         MeshGeometry::value_type rv;
 
-        unsigned int nattrs = geo.polys.indices.size() / geo.polys.vertexCount();
+        unsigned int nattrs = (unsigned int)geo.polys.indices.size() / geo.polys.vertexCount();
         unsigned int primitive_offset = location * nattrs;
 
         Polylist::inputs_t::const_iterator i;

@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E1A79AD1CA03F240082C1AC /* PlyFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E1A79AA1CA03F240082C1AC /* PlyFile.cpp */; };
+		5E1A79B01CA03F400082C1AC /* PlyFileTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E1A79AF1CA03F400082C1AC /* PlyFileTest.cpp */; };
+		5E1A79B11CA043180082C1AC /* PlyFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E1A79AA1CA03F240082C1AC /* PlyFile.cpp */; };
 		5E36B0281A9A9088004C7999 /* Body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0101A9A9088004C7999 /* Body.cpp */; };
 		5E36B0291A9A9088004C7999 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0121A9A9088004C7999 /* Camera.cpp */; };
 		5E36B02A1A9A9088004C7999 /* Collada.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0141A9A9088004C7999 /* Collada.cpp */; };
 		5E36B02B1A9A9088004C7999 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0161A9A9088004C7999 /* Geometry.cpp */; };
 		5E36B02D1A9A9088004C7999 /* graphplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0191A9A9088004C7999 /* graphplay.cpp */; };
-		5E36B02E1A9A9088004C7999 /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B01B1A9A9088004C7999 /* Material.cpp */; };
 		5E36B02F1A9A9088004C7999 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B01D1A9A9088004C7999 /* Mesh.cpp */; };
 		5E36B0301A9A9088004C7999 /* OpenGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0201A9A9088004C7999 /* OpenGLUtils.cpp */; };
 		5E36B0311A9A9088004C7999 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0221A9A9088004C7999 /* Scene.cpp */; };
@@ -20,7 +22,6 @@
 		5E36B0331A9A9088004C7999 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0261A9A9088004C7999 /* tinyxml2.cpp */; };
 		5E36B08A1A9A9201004C7999 /* CameraTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0351A9A90E2004C7999 /* CameraTest.cpp */; };
 		5E36B08B1A9A9205004C7999 /* GeometryTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0371A9A90E2004C7999 /* GeometryTest.cpp */; };
-		5E36B08C1A9A920A004C7999 /* MaterialTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B03A1A9A90E2004C7999 /* MaterialTest.cpp */; };
 		5E36B08D1A9A920A004C7999 /* MeshTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B03B1A9A90E2004C7999 /* MeshTest.cpp */; };
 		5E36B08E1A9A920A004C7999 /* SceneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B03C1A9A90E2004C7999 /* SceneTest.cpp */; };
 		5E36B08F1A9A920A004C7999 /* ShaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B03D1A9A90E2004C7999 /* ShaderTest.cpp */; };
@@ -29,7 +30,6 @@
 		5E36B0921A9A922A004C7999 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0121A9A9088004C7999 /* Camera.cpp */; };
 		5E36B0931A9A922A004C7999 /* Collada.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0141A9A9088004C7999 /* Collada.cpp */; };
 		5E36B0941A9A922A004C7999 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0161A9A9088004C7999 /* Geometry.cpp */; };
-		5E36B0961A9A922A004C7999 /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B01B1A9A9088004C7999 /* Material.cpp */; };
 		5E36B0971A9A922A004C7999 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B01D1A9A9088004C7999 /* Mesh.cpp */; };
 		5E36B0981A9A922A004C7999 /* OpenGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0201A9A9088004C7999 /* OpenGLUtils.cpp */; };
 		5E36B0991A9A922A004C7999 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0221A9A9088004C7999 /* Scene.cpp */; };
@@ -76,6 +76,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5E1A79AA1CA03F240082C1AC /* PlyFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlyFile.cpp; sourceTree = "<group>"; };
+		5E1A79AB1CA03F240082C1AC /* PlyFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlyFile.h; sourceTree = "<group>"; };
+		5E1A79AC1CA03F240082C1AC /* PlyFile.tmpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlyFile.tmpl.cpp; sourceTree = "<group>"; };
+		5E1A79AF1CA03F400082C1AC /* PlyFileTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlyFileTest.cpp; sourceTree = "<group>"; };
 		5E36B0061A9A8F58004C7999 /* graphplay */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = graphplay; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E36B0101A9A9088004C7999 /* Body.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Body.cpp; sourceTree = "<group>"; };
 		5E36B0111A9A9088004C7999 /* Body.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Body.h; sourceTree = "<group>"; };
@@ -88,8 +92,6 @@
 		5E36B0181A9A9088004C7999 /* Geometry.tmpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Geometry.tmpl.cpp; sourceTree = "<group>"; };
 		5E36B0191A9A9088004C7999 /* graphplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graphplay.cpp; sourceTree = "<group>"; };
 		5E36B01A1A9A9088004C7999 /* graphplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graphplay.h; sourceTree = "<group>"; };
-		5E36B01B1A9A9088004C7999 /* Material.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Material.cpp; sourceTree = "<group>"; };
-		5E36B01C1A9A9088004C7999 /* Material.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
 		5E36B01D1A9A9088004C7999 /* Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
 		5E36B01E1A9A9088004C7999 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		5E36B01F1A9A9088004C7999 /* opengl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opengl.h; sourceTree = "<group>"; };
@@ -103,7 +105,6 @@
 		5E36B0271A9A9088004C7999 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
 		5E36B0351A9A90E2004C7999 /* CameraTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraTest.cpp; sourceTree = "<group>"; };
 		5E36B0371A9A90E2004C7999 /* GeometryTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeometryTest.cpp; sourceTree = "<group>"; };
-		5E36B03A1A9A90E2004C7999 /* MaterialTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTest.cpp; sourceTree = "<group>"; };
 		5E36B03B1A9A90E2004C7999 /* MeshTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshTest.cpp; sourceTree = "<group>"; };
 		5E36B03C1A9A90E2004C7999 /* SceneTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneTest.cpp; sourceTree = "<group>"; };
 		5E36B03D1A9A90E2004C7999 /* ShaderTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderTest.cpp; sourceTree = "<group>"; };
@@ -206,28 +207,29 @@
 			isa = PBXGroup;
 			children = (
 				5E36B0101A9A9088004C7999 /* Body.cpp */,
+				5E36B0111A9A9088004C7999 /* Body.h */,
 				5E36B0121A9A9088004C7999 /* Camera.cpp */,
+				5E36B0131A9A9088004C7999 /* Camera.h */,
 				5E36B0141A9A9088004C7999 /* Collada.cpp */,
+				5E36B0151A9A9088004C7999 /* Collada.h */,
 				5E36B0161A9A9088004C7999 /* Geometry.cpp */,
+				5E36B0171A9A9088004C7999 /* Geometry.h */,
 				5E36B0181A9A9088004C7999 /* Geometry.tmpl.cpp */,
 				5E36B0191A9A9088004C7999 /* graphplay.cpp */,
-				5E36B01B1A9A9088004C7999 /* Material.cpp */,
-				5E36B01D1A9A9088004C7999 /* Mesh.cpp */,
-				5E36B0201A9A9088004C7999 /* OpenGLUtils.cpp */,
-				5E36B0221A9A9088004C7999 /* Scene.cpp */,
-				5E36B0241A9A9088004C7999 /* Shader.cpp */,
-				5E36B0261A9A9088004C7999 /* tinyxml2.cpp */,
-				5E36B0111A9A9088004C7999 /* Body.h */,
-				5E36B0131A9A9088004C7999 /* Camera.h */,
-				5E36B0151A9A9088004C7999 /* Collada.h */,
-				5E36B0171A9A9088004C7999 /* Geometry.h */,
 				5E36B01A1A9A9088004C7999 /* graphplay.h */,
-				5E36B01C1A9A9088004C7999 /* Material.h */,
+				5E36B01D1A9A9088004C7999 /* Mesh.cpp */,
 				5E36B01E1A9A9088004C7999 /* Mesh.h */,
 				5E36B01F1A9A9088004C7999 /* opengl.h */,
+				5E36B0201A9A9088004C7999 /* OpenGLUtils.cpp */,
 				5E36B0211A9A9088004C7999 /* OpenGLUtils.h */,
+				5E1A79AA1CA03F240082C1AC /* PlyFile.cpp */,
+				5E1A79AB1CA03F240082C1AC /* PlyFile.h */,
+				5E1A79AC1CA03F240082C1AC /* PlyFile.tmpl.cpp */,
+				5E36B0221A9A9088004C7999 /* Scene.cpp */,
 				5E36B0231A9A9088004C7999 /* Scene.h */,
+				5E36B0241A9A9088004C7999 /* Shader.cpp */,
 				5E36B0251A9A9088004C7999 /* Shader.h */,
+				5E36B0261A9A9088004C7999 /* tinyxml2.cpp */,
 				5E36B0271A9A9088004C7999 /* tinyxml2.h */,
 			);
 			path = graphplay;
@@ -236,9 +238,9 @@
 		5E36B04C1A9A917A004C7999 /* graphplay-test */ = {
 			isa = PBXGroup;
 			children = (
+				5E1A79AF1CA03F400082C1AC /* PlyFileTest.cpp */,
 				5E36B0351A9A90E2004C7999 /* CameraTest.cpp */,
 				5E36B0371A9A90E2004C7999 /* GeometryTest.cpp */,
-				5E36B03A1A9A90E2004C7999 /* MaterialTest.cpp */,
 				5E36B03B1A9A90E2004C7999 /* MeshTest.cpp */,
 				5E36B03C1A9A90E2004C7999 /* SceneTest.cpp */,
 				5E36B03D1A9A90E2004C7999 /* ShaderTest.cpp */,
@@ -372,7 +374,7 @@
 		5E36AFFE1A9A8F58004C7999 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Andrew Watts";
 				TargetAttributes = {
 					5E36B0051A9A8F58004C7999 = {
@@ -408,7 +410,7 @@
 			files = (
 				5E36B0331A9A9088004C7999 /* tinyxml2.cpp in Sources */,
 				5E36B02A1A9A9088004C7999 /* Collada.cpp in Sources */,
-				5E36B02E1A9A9088004C7999 /* Material.cpp in Sources */,
+				5E1A79AD1CA03F240082C1AC /* PlyFile.cpp in Sources */,
 				5E36B02B1A9A9088004C7999 /* Geometry.cpp in Sources */,
 				5E36B0291A9A9088004C7999 /* Camera.cpp in Sources */,
 				5E36B0301A9A9088004C7999 /* OpenGLUtils.cpp in Sources */,
@@ -425,12 +427,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E36B09B1A9A922A004C7999 /* tinyxml2.cpp in Sources */,
-				5E36B08C1A9A920A004C7999 /* MaterialTest.cpp in Sources */,
-				5E36B0961A9A922A004C7999 /* Material.cpp in Sources */,
 				5E36B08A1A9A9201004C7999 /* CameraTest.cpp in Sources */,
 				5E36B08E1A9A920A004C7999 /* SceneTest.cpp in Sources */,
 				5E36B08D1A9A920A004C7999 /* MeshTest.cpp in Sources */,
 				5E36B0931A9A922A004C7999 /* Collada.cpp in Sources */,
+				5E1A79B01CA03F400082C1AC /* PlyFileTest.cpp in Sources */,
 				5E36B0A01A9A928A004C7999 /* gtest-printers.cc in Sources */,
 				5E36B0941A9A922A004C7999 /* Geometry.cpp in Sources */,
 				5E36B0921A9A922A004C7999 /* Camera.cpp in Sources */,
@@ -448,6 +449,7 @@
 				5E36B0A31A9A928A004C7999 /* gtest.cc in Sources */,
 				5E36B0901A9A920A004C7999 /* TestOpenGLContext.cpp in Sources */,
 				5E36B0A11A9A928A004C7999 /* gtest-test-part.cc in Sources */,
+				5E1A79B11CA043180082C1AC /* PlyFile.cpp in Sources */,
 				5E36B0911A9A922A004C7999 /* Body.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -474,6 +476,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -606,6 +609,7 @@
 				5E36B00F1A9A8F58004C7999 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5E36B04F1A9A917A004C7999 /* Build configuration list for PBXNativeTarget "graphplay-test" */ = {
 			isa = XCConfigurationList;
@@ -614,6 +618,7 @@
 				5E36B0511A9A917A004C7999 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

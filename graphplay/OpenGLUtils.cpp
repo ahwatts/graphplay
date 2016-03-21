@@ -138,7 +138,7 @@ namespace graphplay {
 
     GLuint createAndCompileShader(GLenum shader_type, const char* shader_src) {
         GLuint shader = glCreateShader(shader_type);
-        GLint errlen, status, src_length = std::strlen(shader_src);
+        GLint errlen, status, src_length = (GLint)std::strlen(shader_src);
 
         glShaderSource(shader, 1, &shader_src, &src_length);
         glCompileShader(shader);
