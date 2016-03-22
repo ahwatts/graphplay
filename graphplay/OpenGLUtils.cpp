@@ -804,11 +804,16 @@ namespace graphplay {
             case GL_OUT_OF_MEMORY:
                 std::cerr << " Out of memory";
                 break;
+#ifdef GL_STACK_UNDERFLOW
             case GL_STACK_UNDERFLOW:
                 std::cerr << " Stack underflow";
                 break;
+#endif
+#ifdef GL_STACK_OVERFLOW
             case GL_STACK_OVERFLOW:
                 std::cerr << " Stack overflow";
+                break;
+#endif
             }
             std::cerr << std::endl;
             err = glGetError();
