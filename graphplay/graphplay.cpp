@@ -47,16 +47,16 @@ int main(int argc, char **argv) {
     initGLFW(pixel_width, pixel_height, "Graphplay", &window);
     initGLEW();
 
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
+
     glfwGetFramebufferSize(window, &pixel_width, &pixel_height);
     SCENE.setViewport(pixel_width, pixel_height);
     SCENE.createBuffers();
 
     glfwGetCursorPos(window, &MOUSE_X, &MOUSE_Y);
-
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-    std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
-    std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
     // Geometry<PCNVertex>::sptr_type object_geo = makeOctohedronGeometry();
     // Geometry<PCNVertex>::sptr_type object_geo = makeSphereGeometry();
