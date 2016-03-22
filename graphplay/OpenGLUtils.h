@@ -23,6 +23,8 @@ namespace graphplay {
     int sizeOfGLType(GLenum type);
     std::string translateGLType(GLenum type);
     void dumpOpenGLState();
+
+    void printOpenGLError();
 }
 
 #endif

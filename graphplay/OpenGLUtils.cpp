@@ -783,4 +783,35 @@ namespace graphplay {
 
         // std::cout << std::endl;
     }
+
+    void printOpenGLError() {
+        GLenum err = glGetError();
+        while (err != GL_NO_ERROR) {
+            std::cerr << "GL error: " << err;
+            switch (err) {
+            case GL_INVALID_ENUM:
+                std::cerr << " Invalid enum";
+                break;
+            case GL_INVALID_VALUE:
+                std::cerr << " Invalid value";
+                break;
+            case GL_INVALID_OPERATION:
+                std::cerr << " Invalid operation";
+                break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION:
+                std::cerr << " Invalid framebuffer operation";
+                break;
+            case GL_OUT_OF_MEMORY:
+                std::cerr << " Out of memory";
+                break;
+            case GL_STACK_UNDERFLOW:
+                std::cerr << " Stack underflow";
+                break;
+            case GL_STACK_OVERFLOW:
+                std::cerr << " Stack overflow";
+            }
+            std::cerr << std::endl;
+            err = glGetError();
+        }
+    }
 }
