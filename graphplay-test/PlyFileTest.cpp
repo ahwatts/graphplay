@@ -19,12 +19,12 @@ comment Second test comment
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        ASSERT_EQ(2, f.comments_size());
+        ASSERT_EQ(2, f.numComments());
 
-        PlyFile::const_comment_iterator c = f.cbegin_comments();
+        PlyFile::const_comment_iterator c = f.cbeginComments();
         ASSERT_EQ("Test comment", *c++);
         ASSERT_EQ("Second test comment", *c++);
-        ASSERT_EQ(f.cend_comments(), c);
+        ASSERT_EQ(f.cendComments(), c);
     }
 
     TEST(PlyFileTest, ReadElement) {
@@ -36,20 +36,20 @@ element face 8
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        ASSERT_EQ(2, f.elements_size());
+        ASSERT_EQ(2, f.numElements());
 
-        PlyFile::const_element_iterator e = f.cbegin_elements();
+        const Element *e = f.getElement("vertex");
+        ASSERT_NE(nullptr, e);
         ASSERT_EQ("vertex", e->name());
         ASSERT_EQ(6, e->count());
 
-        ++e;
-
+        e = f.getElement("face");
+        ASSERT_NE(nullptr, e);
         ASSERT_EQ("face", e->name());
         ASSERT_EQ(8, e->count());
 
-        ++e;
-
-        ASSERT_EQ(f.cend_elements(), e);
+        e = f.getElement("bogus");
+        ASSERT_EQ(nullptr, e);
     }
 
     TEST(PlyFileTest, ReadProperties) {
@@ -63,24 +63,21 @@ property list uint8 uint32 vertex_indices
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        ASSERT_EQ(2, f.elements_size());
+        ASSERT_EQ(2, f.numElements());
 
-        PlyFile::const_element_iterator e = f.cbegin_elements();
+        const Element *e = f.getElement("vertex");
+        ASSERT_NE(nullptr, e);
         ASSERT_EQ(1, e->properties().size());
         ASSERT_EQ("x", e->properties()[0].name());
         ASSERT_EQ(false, e->properties()[0].isList());
         ASSERT_EQ(false, e->properties()[0].isIntegral());
 
-        ++e;
-
+        e = f.getElement("face");
+        ASSERT_NE(nullptr, e);
         ASSERT_EQ(1, e->properties().size());
         ASSERT_EQ("vertex_indices", e->properties()[0].name());
         ASSERT_EQ(true, e->properties()[0].isList());
         ASSERT_EQ(true, e->properties()[0].isIntegral());
-
-        ++e;
-
-        ASSERT_EQ(f.cend_elements(), e);
     }
 
     TEST(PlyFileTest, ReadScalarAsciiData) {
@@ -103,13 +100,13 @@ end_header
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        ASSERT_EQ(1, f.elements_size());
+        ASSERT_EQ(1, f.numElements());
 
-        PlyFile::const_element_iterator elem_iter = f.cbegin_elements();
-        const Element &elem = *elem_iter;
-        ASSERT_EQ(8, elem.properties().size());
+        const Element *elem = f.getElement("vertex");
+        ASSERT_NE(nullptr, elem);
+        ASSERT_EQ(8, elem->properties().size());
 
-        const std::vector<ElementValue> &data = elem.data();
+        const std::vector<ElementValue> &data = elem->data();
         ASSERT_EQ(2, data.size());
 
         ASSERT_EQ(1, data[0].getProperty("uc").first<int>());
@@ -129,9 +126,6 @@ end_header
         ASSERT_EQ(-6, data[1].getProperty("l").first<int>());
         ASSERT_FLOAT_EQ(2.1f, data[1].getProperty("f").first<float>());
         ASSERT_FLOAT_EQ(4.0f, data[1].getProperty("d").first<float>());
-
-        ++elem_iter;
-        ASSERT_EQ(f.cend_elements(), elem_iter);
     }
 
     TEST(PlyFileTest, ReadListAsciiData) {
@@ -148,13 +142,13 @@ end_header
         std::istringstream ply_stream(ply_string);
         PlyFile f(ply_stream);
 
-        ASSERT_EQ(1, f.elements_size());
+        ASSERT_EQ(1, f.numElements());
 
-        PlyFile::const_element_iterator elem_iter = f.cbegin_elements();
-        const Element &elem = *elem_iter;
-        ASSERT_EQ(3, elem.properties().size());
+        const Element *elem = f.getElement("vertex");
+        ASSERT_NE(nullptr, elem);
+        ASSERT_EQ(3, elem->properties().size());
 
-        const std::vector<ElementValue> &data = elem.data();
+        const std::vector<ElementValue> &data = elem->data();
         ASSERT_EQ(1, data.size());
 
         const PropertyValue &ucl_val = data[0].getProperty("ucl");
@@ -190,8 +184,5 @@ end_header
         ASSERT_FLOAT_EQ(3.2f, *k++);
         ASSERT_FLOAT_EQ(4.3f, *k++);
         ASSERT_EQ(fl_val.end<float>(), k);
-
-        ++elem_iter;
-        ASSERT_EQ(f.cend_elements(), elem_iter);
     }
 }

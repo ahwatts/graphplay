@@ -203,9 +203,9 @@ namespace graphplay {
         typedef std::vector<std::string>::iterator comment_iterator;
         typedef std::vector<std::string>::const_iterator const_comment_iterator;
 
-        typedef std::vector<Element>::size_type element_size_type;
-        typedef std::vector<Element>::iterator element_iterator;
-        typedef std::vector<Element>::const_iterator const_element_iterator;
+        typedef std::map<std::string, Element>::size_type element_size_type;
+        typedef std::map<std::string, Element>::iterator element_iterator;
+        typedef std::map<std::string, Element>::const_iterator const_element_iterator;
 
         PlyFile(const char *filename);
         PlyFile(std::istream &stream);
@@ -216,23 +216,26 @@ namespace graphplay {
         PlyFile& operator=(const PlyFile &other) = delete;
         PlyFile& operator=(PlyFile &&other) = delete;
 
-        comment_size_type comments_size() const;
-        comment_iterator begin_comments();
-        comment_iterator end_comments();
-        const_comment_iterator cbegin_comments() const;
-        const_comment_iterator cend_comments() const;
+        comment_size_type numComments() const { return m_comments.size(); }
+        comment_iterator beginComments() { return m_comments.begin(); }
+        comment_iterator endComments() { return m_comments.end(); }
+        const_comment_iterator cbeginComments() const { return m_comments.cbegin(); }
+        const_comment_iterator cendComments() const { return m_comments.cend(); }
 
-        element_size_type elements_size() const;
-        element_iterator begin_elements();
-        element_iterator end_elements();
-        const_element_iterator cbegin_elements() const;
-        const_element_iterator cend_elements() const;
+        element_size_type numElements() const { return m_elements.size(); }
+        const Element* getElement(const std::string &pname) const;
+        const Element* getElement(const char *pname) const;
+        element_iterator beginElements() { return m_elements.begin(); }
+        element_iterator endElements() { return m_elements.end(); }
+        const_element_iterator cbeginElements() const { return m_elements.cbegin(); }
+        const_element_iterator cendElements() const { return m_elements.cend(); }
 
     private:
         void load(std::istream &stream);
+        void addElement(Element &&elem);
 
         std::vector<std::string> m_comments;
-        std::vector<Element> m_elements;
+        std::map<std::string, Element> m_elements;
     };
 }
 

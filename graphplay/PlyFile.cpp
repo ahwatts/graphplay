@@ -168,49 +168,10 @@ namespace graphplay {
 
     PlyFile::~PlyFile() {}
 
-    PlyFile::comment_size_type PlyFile::comments_size() const {
-        return m_comments.size();
-    }
-
-    PlyFile::comment_iterator PlyFile::begin_comments() {
-        return m_comments.begin();
-    }
-
-    PlyFile::comment_iterator PlyFile::end_comments() {
-        return m_comments.end();
-    }
-
-    PlyFile::const_comment_iterator PlyFile::cbegin_comments() const {
-        return m_comments.cbegin();
-    }
-
-    PlyFile::const_comment_iterator PlyFile::cend_comments() const {
-        return m_comments.cend();
-    }
-
-    PlyFile::element_size_type PlyFile::elements_size() const {
-        return m_elements.size();
-    }
-
-    PlyFile::element_iterator PlyFile::begin_elements() {
-        return m_elements.begin();
-    }
-
-    PlyFile::element_iterator PlyFile::end_elements() {
-        return m_elements.end();
-    }
-
-    PlyFile::const_element_iterator PlyFile::cbegin_elements() const {
-        return m_elements.cbegin();
-    }
-
-    PlyFile::const_element_iterator PlyFile::cend_elements() const {
-        return m_elements.cend();
-    }
-
     void PlyFile::load(std::istream &stream) {
         Format format = ASCII;
         std::string magic, line;
+        Element *last_elem = nullptr;
 
         std::getline(stream, magic);
         chomp(magic);
@@ -229,11 +190,13 @@ namespace graphplay {
                 } else if (tokens[0] == "comment") {
                     m_comments.emplace_back(read_comment(tokens));
                 } else if (tokens[0] == "element") {
-                    m_elements.emplace_back(read_element(tokens));
+                    Element elem = read_element(tokens);
+                    std::string elem_name(elem.name());
+                    addElement(std::move(elem));
+                    last_elem = &m_elements.at(elem_name);
                 } else if (tokens[0] == "property") {
-                    if (!m_elements.empty()) {
-                        Element &elem = m_elements.back();
-                        elem.addProperty(read_property(tokens));
+                    if (last_elem != nullptr) {
+                        last_elem->addProperty(read_property(tokens));
                     }
                 } else if (tokens[0] == "end_header") {
                     break;
@@ -243,10 +206,27 @@ namespace graphplay {
 
         for (auto&& e : m_elements) {
             if (format == ASCII) {
-                e.loadAsciiData(stream);
-            // } else {
-            //     e.loadBinaryData(stream, format);
+                e.second.loadAsciiData(stream);
+            } else {
+                e.second.loadBinaryData(stream, format);
             }
+        }
+    }
+
+    void PlyFile::addElement(Element &&elem) {
+        m_elements.emplace(std::make_pair(elem.name(), std::move(elem)));
+    }
+
+    const Element* PlyFile::getElement(const std::string &pname) const {
+        return getElement(pname.data());
+    }
+
+    const Element* PlyFile::getElement(const char *pname) const {
+        auto elem_iter = m_elements.find(pname);
+        if (elem_iter == m_elements.cend()) {
+            return nullptr;
+        } else {
+            return &elem_iter->second;
         }
     }
 
