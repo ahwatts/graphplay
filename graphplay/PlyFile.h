@@ -236,6 +236,7 @@ namespace graphplay {
 
         std::vector<std::string> m_comments;
         std::map<std::string, Element> m_elements;
+        std::vector<Element*> m_element_seq;
     };
 }
 

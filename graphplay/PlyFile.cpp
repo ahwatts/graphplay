@@ -204,17 +204,18 @@ namespace graphplay {
             }
         }
 
-        for (auto&& e : m_elements) {
+        for (auto&& e : m_element_seq) {
             if (format == ASCII) {
-                e.second.loadAsciiData(stream);
+                e->loadAsciiData(stream);
             } else {
-                e.second.loadBinaryData(stream, format);
+                e->loadBinaryData(stream, format);
             }
         }
     }
 
     void PlyFile::addElement(Element &&elem) {
-        m_elements.emplace(std::make_pair(elem.name(), std::move(elem)));
+        auto iter = m_elements.emplace(std::make_pair(elem.name(), std::move(elem)));
+        m_element_seq.emplace_back(&iter.first->second);
     }
 
     const Element* PlyFile::getElement(const std::string &pname) const {

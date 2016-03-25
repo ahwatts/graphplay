@@ -3,6 +3,7 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
 
+#include <iostream>
 #include <map>
 #include <memory>
 #include <vector>
@@ -104,6 +105,9 @@ namespace graphplay {
         float normal[3];
         static const AttrMap description;
     };
+
+    // Output functions.
+    std::ostream& operator<<(std::ostream& stream, const PCNVertex &vertex);
 
     // Geometry factory functions.
     Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();

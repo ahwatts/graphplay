@@ -3,14 +3,20 @@
 #include "graphplay.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <random>
+#include <sstream>
 #include <vector>
 
 #include <glm/vec3.hpp>
 #include <glm/gtc/epsilon.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/range.hpp>
+#include <glm/gtx/io.hpp>
 
 #include "OpenGLUtils.h"
 #include "Geometry.h"
@@ -93,6 +99,25 @@ namespace graphplay {
         { "color",    VertexDesc { BUFFER_OFFSET_BYTES(3*sizeof(float)), GL_FLOAT, 4 } },
         { "normal",   VertexDesc { BUFFER_OFFSET_BYTES(7*sizeof(float)), GL_FLOAT, 3 } },
     };
+
+    std::ostream& operator<<(std::ostream& stream, const PCNVertex &vertex) {
+        std::stringstream buf;
+        buf << "{ position = ["
+            << vertex.position[0] << ", "
+            << vertex.position[1] << ", "
+            << vertex.position[2]
+            << "], color = ["
+            << vertex.color[0] << ", "
+            << vertex.color[1] << ", "
+            << vertex.color[2] << ", "
+            << vertex.color[3]
+            << "], normal = ["
+            << vertex.normal[0] << ", "
+            << vertex.normal[1] << ", "
+            << vertex.normal[2]
+            << "] }";
+        return stream << buf.str();
+    }
 
     // Octohedron geometry builder.
 #ifdef MSVC
@@ -293,9 +318,116 @@ namespace graphplay {
 
     Geometry<PCNVertex>::sptr_type loadPlyFile(const char *filename) {
         Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
+        Geometry<PCNVertex>::vertex_array_type verts;
+        Geometry<PCNVertex>::elem_array_type elems;
         std::fstream file(filename, std::ios::in | std::ios::binary);
         PlyFile f(file);
         file.close();
+
+        // Read the vertex array data.
+        const Element *vertex_elem = f.getElement("vertex");
+        if (vertex_elem != nullptr) {
+            const std::vector<Property> vertex_props = vertex_elem->properties();
+            const std::vector<ElementValue> &ply_vertex_data = vertex_elem->data();
+            verts.resize(vertex_elem->count());
+
+            for (auto &&prop : vertex_props) {
+                const std::string &pname = prop.name();
+                unsigned int i = 0;
+                unsigned int offset = 0;
+
+                if (pname == "x") {
+                    offset = offsetof(PCNVertex, position[0]);
+                } else if (pname == "y") {
+                    offset = offsetof(PCNVertex, position[1]);
+                } else if (pname == "z") {
+                    offset = offsetof(PCNVertex, position[2]);
+                } else if (pname == "red") {
+                    offset = offsetof(PCNVertex, color[0]);
+                } else if (pname == "green") {
+                    offset = offsetof(PCNVertex, color[1]);
+                } else if (pname == "blue") {
+                    offset = offsetof(PCNVertex, color[2]);
+                } else if (pname == "alpha") {
+                    offset = offsetof(PCNVertex, color[3]);
+                } else if (pname == "nx") {
+                    offset = offsetof(PCNVertex, normal[0]);
+                } else if (pname == "ny") {
+                    offset = offsetof(PCNVertex, normal[1]);
+                } else if (pname == "nz") {
+                    offset = offsetof(PCNVertex, normal[2]);
+                } else {
+                    continue;
+                }
+
+                for (auto &&elem_val : ply_vertex_data) {
+                    const PropertyValue &prop_val = elem_val.getProperty(prop.name());
+                    float *dst = reinterpret_cast<float*>(reinterpret_cast<char*>(&verts[i]) + offset);
+                    *dst = prop_val.first<float>();
+                    ++i;
+                }
+            }
+        } else {
+            std::cerr << "File " << filename << " did not have a \"vertex\" element." << std::endl;
+        }
+
+        // Read the element array data.
+        const Element *faces_elem = f.getElement("face");
+        if (faces_elem != nullptr) {
+            const std::vector<Property> face_props = faces_elem->properties();
+            const std::vector<ElementValue> &ply_elem_data = faces_elem->data();
+
+            for (auto&& prop : face_props) {
+                if (prop.name() == "vertex_indices") {
+                    for (auto &&elem_val : ply_elem_data) {
+                        const PropertyValue &prop_val = elem_val.getProperty(prop.name());
+                        for (PropertyValueIterator<Geometry<PCNVertex>::elem_type> index = prop_val.begin<Geometry<PCNVertex>::elem_type>();
+                             index != prop_val.end<Geometry<PCNVertex>::elem_type>();
+                             ++index) {
+                            elems.emplace_back(*index);
+                        }
+                    }
+                }
+            }
+        } else {
+            std::cerr << "File " << filename << " did not have a \"face\" element." << std::endl;
+        }
+
+        // Determine the bounding box of the mesh.
+        glm::vec3 bb_min, bb_max;
+        for (Geometry<PCNVertex>::vertex_array_type::iterator v = verts.begin(); v != verts.end(); ++v) {
+            glm::vec3 pos = glm::make_vec3(v->position);
+
+            if (v == verts.begin()) {
+                bb_min = bb_max = pos;
+            }
+
+            bb_min = glm::min(bb_min, pos);
+            bb_max = glm::max(bb_max, pos);
+        }
+
+        // Convert all the positions to be between -1 and 1 with the
+        // barycenter at the origin.
+        glm::vec3 bcenter = (bb_min + bb_max) / 2.0f;
+        glm::vec3 new_bb_max = bb_max - bcenter;
+        float max_dim = *std::max_element(glm::begin(new_bb_max), glm::end(new_bb_max));
+        for (Geometry<PCNVertex>::vertex_array_type::iterator v = verts.begin(); v != verts.end(); ++v) {
+            glm::vec3 pos = glm::make_vec3(v->position);
+            pos = (pos - bcenter) / max_dim;
+            v->position[0] = pos.x;
+            v->position[1] = pos.y;
+            v->position[2] = pos.z;
+        }
+
+        // Compute the colors assuming each vertex is opaque.
+        for (Geometry<PCNVertex>::vertex_array_type::iterator v = verts.begin(); v != verts.end(); ++v) {
+            v->color[0] = (v->color[0] / v->color[3]) * std::abs(v->position[0]);
+            v->color[1] = (v->color[1] / v->color[3]) * std::abs(v->position[1]);
+            v->color[2] = (v->color[2] / v->color[3]) * std::abs(v->position[2]);
+            v->color[3] = 1.0;
+        }
+
+        rv->setVertexData(std::move(elems), std::move(verts));
         return rv;
     }
 }

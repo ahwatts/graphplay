@@ -10,6 +10,7 @@
 
 #include <string>
 #include <iostream>
+#include <random>
 #include <sstream>
 
 #ifndef MSVC
@@ -63,10 +64,14 @@ int main(int argc, char **argv) {
 
 #ifdef _WIN32
     // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets\\stanford_armadillo.pcn");
-    Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets\\stanford_bunny.pcn");
+    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets\\stanford_bunny.pcn");
+    // Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets\\stanford_armadillo.ply");
+    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets\\stanford_bunny.ply");
 #else
     // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets/stanford_armadillo.pcn");
-    Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets/stanford_bunny.pcn");
+    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets/stanford_bunny.pcn");
+    // Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets/stanford_armadillo.ply");
+    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets/stanford_bunny.ply");
 #endif
 
     Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
@@ -77,7 +82,6 @@ int main(int argc, char **argv) {
     Program::sptr_type lit_program = std::make_shared<Program>(lit_vertex_shader, lit_fragment_shader);
 
     Mesh::sptr_type object = std::make_shared<Mesh>(object_geo, lit_program);
-    object->setTransform(glm::scale(glm::mat4x4(), glm::vec3(10, 10, 10)));
     SCENE.addMesh(object);
 
     Camera &camera = SCENE.getCamera();
