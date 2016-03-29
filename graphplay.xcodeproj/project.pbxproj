@@ -52,6 +52,8 @@
 		5E36B0AF1A9A9520004C7999 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E36B0A71A9A9364004C7999 /* CoreVideo.framework */; };
 		5E36B0B11A9A9525004C7999 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E36B0B01A9A9525004C7999 /* Cocoa.framework */; };
 		5E36B0B21A9A952B004C7999 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E36B0A51A9A9359004C7999 /* Carbon.framework */; };
+		5E823AEB1CAABF7A002B4A8B /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 5E823AEA1CAABF7A002B4A8B /* glad.c */; };
+		5E823AEC1CAABF7A002B4A8B /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 5E823AEA1CAABF7A002B4A8B /* glad.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -150,6 +152,9 @@
 		5E36B0A91A9A9375004C7999 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		5E36B0AB1A9A9382004C7999 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		5E36B0B01A9A9525004C7999 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		5E823AE61CAABF7A002B4A8B /* glad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glad.h; sourceTree = "<group>"; };
+		5E823AE81CAABF7A002B4A8B /* khrplatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = khrplatform.h; sourceTree = "<group>"; };
+		5E823AEA1CAABF7A002B4A8B /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,6 +258,7 @@
 		5E36B0521A9A91D3004C7999 /* vendor */ = {
 			isa = PBXGroup;
 			children = (
+				5E823AE01CAABF7A002B4A8B /* glad */,
 				5E36B0531A9A91D3004C7999 /* gtest */,
 			);
 			path = vendor;
@@ -327,6 +333,48 @@
 				5E36B07E1A9A91D3004C7999 /* gtest-typed-test.cc */,
 				5E36B07F1A9A91D3004C7999 /* gtest.cc */,
 				5E36B0801A9A91D3004C7999 /* gtest_main.cc */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		5E823AE01CAABF7A002B4A8B /* glad */ = {
+			isa = PBXGroup;
+			children = (
+				5E823AE41CAABF7A002B4A8B /* include */,
+				5E823AE91CAABF7A002B4A8B /* src */,
+			);
+			path = glad;
+			sourceTree = "<group>";
+		};
+		5E823AE41CAABF7A002B4A8B /* include */ = {
+			isa = PBXGroup;
+			children = (
+				5E823AE51CAABF7A002B4A8B /* glad */,
+				5E823AE71CAABF7A002B4A8B /* KHR */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		5E823AE51CAABF7A002B4A8B /* glad */ = {
+			isa = PBXGroup;
+			children = (
+				5E823AE61CAABF7A002B4A8B /* glad.h */,
+			);
+			path = glad;
+			sourceTree = "<group>";
+		};
+		5E823AE71CAABF7A002B4A8B /* KHR */ = {
+			isa = PBXGroup;
+			children = (
+				5E823AE81CAABF7A002B4A8B /* khrplatform.h */,
+			);
+			path = KHR;
+			sourceTree = "<group>";
+		};
+		5E823AE91CAABF7A002B4A8B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				5E823AEA1CAABF7A002B4A8B /* glad.c */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -419,6 +467,7 @@
 				5E36B02F1A9A9088004C7999 /* Mesh.cpp in Sources */,
 				5E36B0311A9A9088004C7999 /* Scene.cpp in Sources */,
 				5E36B0281A9A9088004C7999 /* Body.cpp in Sources */,
+				5E823AEB1CAABF7A002B4A8B /* glad.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,6 +488,7 @@
 				5E36B09A1A9A922A004C7999 /* Shader.cpp in Sources */,
 				5E36B0A21A9A928A004C7999 /* gtest-typed-test.cc in Sources */,
 				5E36B0981A9A922A004C7999 /* OpenGLUtils.cpp in Sources */,
+				5E823AEC1CAABF7A002B4A8B /* glad.c in Sources */,
 				5E36B0A41A9A928A004C7999 /* gtest_main.cc in Sources */,
 				5E36B08F1A9A920A004C7999 /* ShaderTest.cpp in Sources */,
 				5E36B09D1A9A9283004C7999 /* gtest-death-test.cc in Sources */,
@@ -495,6 +545,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/include,
+					vendor/glad/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
@@ -537,6 +588,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/include,
+					vendor/glad/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
