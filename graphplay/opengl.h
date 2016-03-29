@@ -4,11 +4,6 @@
 #include "config.h"
 
 #include <glad/glad.h>
-
-#ifdef __APPLE_CC__
-#define GLFW_INCLUDE_GLCOREARB
-#endif
-
 #include GLFW_HEADER
 
 #endif
