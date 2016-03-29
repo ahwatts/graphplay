@@ -49,6 +49,7 @@ namespace graphplay {
         virtual void render() const;
 
     protected:
+        GLenum m_draw_type;
         GLuint m_vertex_buffer;
         GLuint m_elem_buffer;
         GLuint m_array_object;
@@ -93,6 +94,8 @@ namespace graphplay {
 
         void render() const;
 
+        friend Geometry<V>::sptr_type makeWireframeCubeGeometry();
+
     protected:
         vertex_array_type m_vertices;
         elem_array_type m_elems;
@@ -112,6 +115,7 @@ namespace graphplay {
     // Geometry factory functions.
     Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();
     Geometry<PCNVertex>::sptr_type makeSphereGeometry();
+    Geometry<PCNVertex>::sptr_type makeWireframeCubeGeometry();
     Geometry<PCNVertex>::sptr_type loadPCNFile(const char *filename);
     Geometry<PCNVertex>::sptr_type loadPlyFile(const char *filename);
 };

@@ -33,12 +33,14 @@
 namespace graphplay {
     // Class AbstractGeometry.
     AbstractGeometry::AbstractGeometry()
-        : m_vertex_buffer{0},
+        : m_draw_type{GL_TRIANGLES},
+          m_vertex_buffer{0},
           m_elem_buffer{0},
           m_array_object{0}
     {}
 
     AbstractGeometry::AbstractGeometry(const AbstractGeometry &other) : AbstractGeometry() {
+        m_draw_type = other.m_draw_type;
         m_elem_buffer = duplicateBuffer(GL_ELEMENT_ARRAY_BUFFER, other.m_elem_buffer);
         m_vertex_buffer = duplicateBuffer(GL_ARRAY_BUFFER, other.m_vertex_buffer);
         m_array_object = duplicateVertexArrayObject(other.m_array_object);
@@ -46,6 +48,7 @@ namespace graphplay {
 
     AbstractGeometry::AbstractGeometry(AbstractGeometry &&other) : AbstractGeometry() {
         // Move other's GL objects over here.
+        m_draw_type = other.m_draw_type;
         m_array_object = other.m_array_object;
         m_elem_buffer = other.m_elem_buffer;
         m_vertex_buffer = other.m_vertex_buffer;
@@ -68,6 +71,7 @@ namespace graphplay {
     }
 
     AbstractGeometry& AbstractGeometry::operator=(AbstractGeometry &&other) {
+        m_draw_type = other.m_draw_type;
         std::swap(m_array_object, other.m_array_object);
         std::swap(m_elem_buffer, other.m_elem_buffer);
         std::swap(m_vertex_buffer, other.m_vertex_buffer);
@@ -290,6 +294,42 @@ namespace graphplay {
         }
 
         rv->setVertexData(std::move(pne.elems), std::move(verts));
+        rv->createBuffers();
+        return rv;
+    }
+
+#ifdef MSVC
+    const
+#else
+    constexpr
+#endif 
+    PCNVertex WIREFRAME_CUBE_VERTEX_ARRAY[8] = {
+        // position             color                   normal
+        { {  1.0,  1.0,  1.0 }, { 1.0, 1.0, 1.0, 1.0 }, {  0.577350269f,  0.577350269f,  0.577350269f } }, // 0
+        { {  1.0,  1.0, -1.0 }, { 1.0, 1.0, 1.0, 1.0 }, {  0.577350269f,  0.577350269f, -0.577350269f } }, // 1
+        { {  1.0, -1.0,  1.0 }, { 1.0, 1.0, 1.0, 1.0 }, {  0.577350269f, -0.577350269f,  0.577350269f } }, // 2
+        { {  1.0, -1.0, -1.0 }, { 1.0, 1.0, 1.0, 1.0 }, {  0.577350269f, -0.577350269f, -0.577350269f } }, // 3
+        { { -1.0,  1.0,  1.0 }, { 1.0, 1.0, 1.0, 1.0 }, { -0.577350269f,  0.577350269f,  0.577350269f } }, // 4
+        { { -1.0,  1.0, -1.0 }, { 1.0, 1.0, 1.0, 1.0 }, { -0.577350269f,  0.577350269f, -0.577350269f } }, // 5
+        { { -1.0, -1.0,  1.0 }, { 1.0, 1.0, 1.0, 1.0 }, { -0.577350269f, -0.577350269f,  0.577350269f } }, // 6
+        { { -1.0, -1.0, -1.0 }, { 1.0, 1.0, 1.0, 1.0 }, { -0.577350269f, -0.577350269f, -0.577350269f } }, // 7
+    };
+
+#ifdef MSVC
+    const
+#else
+    constexpr
+#endif 
+    unsigned int WIREFRAME_CUBE_VERTEX_ELEMS[24] = {
+        0, 2, 2, 6, 6, 4, 4, 0,
+        0, 1, 2, 3, 4, 5, 6, 7,
+        1, 3, 3, 7, 7, 5, 5, 1,
+    };
+
+    Geometry<PCNVertex>::sptr_type makeWireframeCubeGeometry() {
+        Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
+        rv->m_draw_type = GL_LINES;
+        rv->setVertexData(WIREFRAME_CUBE_VERTEX_ELEMS, 24, WIREFRAME_CUBE_VERTEX_ARRAY, 8);
         rv->createBuffers();
         return rv;
     }
