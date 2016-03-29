@@ -22,7 +22,6 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 if(WIN32 AND MINGW)
-  add_definitions(-DGLEW_STATIC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 endif(WIN32 AND MINGW)
 
@@ -38,13 +37,6 @@ find_package(OpenGL REQUIRED)
 message(STATUS "Found OpenGL include: " ${OPENGL_INCLUDE_DIRS})
 message(STATUS "Found OpenGL header: " ${OPENGL_HEADER_PATH})
 message(STATUS "Found OpenGL libs: " ${OPENGL_LIBRARIES})
-
-if(NOT ("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin"))
-  find_package(GLEW REQUIRED)
-  message(STATUS "Found GLEW include: " ${GLEW_INCLUDE_DIRS})
-  message(STATUS "Found GLEW header: " ${GLEW_HEADER_PATH})
-  message(STATUS "Found GLEW libs: " ${GLEW_LIBRARIES})
-endif(NOT ("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin"))
 
 find_path(GLFW_INCLUDE_DIRS NAMES GL/glfw3.h GLFW/glfw3.h)
 find_file(GLFW_FULL_HEADER_PATH NAMES GL/glfw3.h GLFW/glfw3.h)
@@ -66,11 +58,17 @@ message(STATUS "Found glm include: " ${GLM_INCLUDE_DIRS})
 
 configure_file(config.h.in config.h)
 
-include_directories(AFTER SYSTEM ${Boost_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${graphplay_BINARY_DIR})
+include_directories(AFTER SYSTEM
+  ${Boost_INCLUDE_DIRS}
+  ${GLFW_INCLUDE_DIRS}
+  ${GLM_INCLUDE_DIRS}
+  vendor/glad/include
+  ${graphplay_BINARY_DIR})
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)
 add_subdirectory(vendor/gtest)
+add_subdirectory(vendor/glad)
 
 enable_testing()
 add_test(NAME graphplay-test

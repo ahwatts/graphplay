@@ -26,7 +26,7 @@
 #include "opengl.h"
 
 void initGLFW(int width, int height, const char *title, GLFWwindow **window);
-void initGLEW();
+void initglad();
 void handle_glfw_error(int code, const char *desc);
 void bailout(const std::string &msg);
 
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     GLFWwindow *window = nullptr;
 
     initGLFW(pixel_width, pixel_height, "Graphplay", &window);
-    initGLEW();
+    initglad();
 
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
@@ -156,15 +156,12 @@ void initGLFW(int width, int height, const char *title, GLFWwindow **window) {
     glfwMakeContextCurrent(*window);
 }
 
-void initGLEW() {
-#ifndef __APPLE_CC__
-    GLenum glew_err = glewInit();
-    if (glew_err != GLEW_OK) {
+void initglad() {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::ostringstream msg;
-        msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
+        msg << "Could not initialize OpenGL context." << std::endl;
         bailout(msg.str());
     }
-#endif
 }
 
 void handle_glfw_error(int code, const char *desc) {

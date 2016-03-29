@@ -13,8 +13,9 @@ add_executable(graphplay WIN32
 
 target_link_libraries(graphplay
   ${GLFW_LIBRARIES}
-  ${GLEW_LIBRARIES}
-  ${OPENGL_LIBRARIES})
+  glad
+  ${OPENGL_LIBRARIES}
+  ${CMAKE_DL_LIBS})
 
 if (WIN32)
   add_executable(graphplay-console

@@ -35,15 +35,11 @@ namespace graphplay {
 
         glfwMakeContextCurrent(window);
 
-#ifndef __APPLE_CC__
-        GLenum glew_err = glewInit();
-        if (glew_err != GLEW_OK) {
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
             std::ostringstream msg;
-            msg << "Could not initialize GLEW: " << glewGetErrorString(glew_err);
+            msg << "Could not initialize OpenGL context." << std::endl;
             bailout(msg.str());
         }
-#endif
-
     }
 
     void TestOpenGLContext::TearDown() {

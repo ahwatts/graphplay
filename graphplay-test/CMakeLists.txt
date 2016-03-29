@@ -18,8 +18,9 @@ include_directories(AFTER SYSTEM ../vendor/gtest/include)
 
 target_link_libraries(graphplay-test
   ${GLFW_LIBRARIES}
-  ${GLEW_LIBRARIES}
+  glad
   ${OPENGL_LIBRARIES}
+  ${CMAKE_DL_LIBS}
   gtest gtest_main)
 
 if(MSVC AND CMAKE_CXX_COMPILER_VERSION STRLESS "18.0")
