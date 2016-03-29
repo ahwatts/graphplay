@@ -22,6 +22,14 @@
 #include "Geometry.h"
 #include "PlyFile.h"
 
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
 namespace graphplay {
     // Class AbstractGeometry.
     AbstractGeometry::AbstractGeometry()

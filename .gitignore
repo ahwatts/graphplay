@@ -8,6 +8,9 @@
 
 /graphplay-test/Debug
 
+/vendor/glad/Debug
+/vendor/glad/Release
+
 /vendor/gtest/gtest/Debug
 /vendor/gtest/gtest_main/Debug
 

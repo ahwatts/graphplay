@@ -33,7 +33,7 @@ if (WIN32)
 
   target_link_libraries(graphplay-console
     ${GLFW_LIBRARIES}
-    ${GLEW_LIBRARIES}
+    glad
     ${OPENGL_LIBRARIES})
 
   if(MINGW)

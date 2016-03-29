@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -37,6 +37,9 @@
     <ClInclude Include="TestOpenGLContext.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\vendor\glad\glad.vcxproj">
+      <Project>{e4873a24-4bfd-4a7b-87a6-9083e696de2e}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\vendor\gtest\gtest\gtest.vcxproj">
       <Project>{ac00d515-ffce-44e5-adb7-99626a62562d}</Project>
     </ProjectReference>
@@ -72,14 +75,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_VARIADIC_MAX=10;_GRAPHPLAY_TEST_;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\andrew\Projects\graphplay-deps\include;$(SolutionDir)vendor\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\andrew\Projects\graphplay-deps\include;$(SolutionDir)vendor\glad\include;$(SolutionDir)vendor\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\andrew\Projects\graphplay-deps\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3dll.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3dll.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
