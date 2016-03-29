@@ -3,13 +3,12 @@
 
 #include "config.h"
 
+#include <glad/glad.h>
+
 #ifdef __APPLE_CC__
-#include <glad/glad.h>
 #define GLFW_INCLUDE_GLCOREARB
-#include GLFW_HEADER
-#else
-#include <glad/glad.h>
-#include GLFW_HEADER
 #endif
+
+#include GLFW_HEADER
 
 #endif
