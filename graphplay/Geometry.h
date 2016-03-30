@@ -94,7 +94,7 @@ namespace graphplay {
 
         void render() const;
 
-        friend Geometry<V>::sptr_type makeWireframeCubeGeometry();
+        friend typename Geometry<V>::sptr_type makeWireframeCubeGeometry();
 
     protected:
         vertex_array_type m_vertices;

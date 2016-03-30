@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets/stanford_bunny.ply");
 #endif
 
-    Geometry<PCNVertex>::sptr_type bb_geo = makeWireframeCubeGeometry();
+    Geometry<PCNVertex>::sptr_type bbox_geo = makeWireframeCubeGeometry();
 
     Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
     Shader::sptr_type unlit_fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::unlit_fragment_shader_source);
@@ -84,13 +84,15 @@ int main(int argc, char **argv) {
     Program::sptr_type lit_program = std::make_shared<Program>(lit_vertex_shader, lit_fragment_shader);
 
     Mesh::sptr_type object = std::make_shared<Mesh>(object_geo, lit_program);
-    Mesh::sptr_type bb = std::make_shared<Mesh>(bb_geo, unlit_program);
     SCENE.addMesh(object);
-    SCENE.addMesh(bb);
+
+    Mesh::sptr_type bbox = std::make_shared<Mesh>(bbox_geo, unlit_program);
+    bbox->setTransform(glm::scale(bbox->getTransform(), glm::vec3(10.0f, 10.0f, 10.0f)));
+    SCENE.addMesh(bbox);
 
     Camera &camera = SCENE.getCamera();
     camera.setFocusPoint(glm::vec3(0.0, 0.0, 0.0));
-    camera.setPosition(glm::vec3(0.0, 0.0, 5.0));
+    camera.setPosition(glm::vec3(0.0, 0.0, 30.0));
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, pixel_width, pixel_height);
