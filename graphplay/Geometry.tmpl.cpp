@@ -180,7 +180,7 @@ namespace graphplay {
         // }
         // ++i;
 
-        glDrawElements(m_draw_type, (GLsizei)m_elems.size(), elem_gl_type, BUFFER_OFFSET_BYTES(0));
+        glDrawElements(draw_type, (GLsizei)m_elems.size(), elem_gl_type, BUFFER_OFFSET_BYTES(0));
         glBindVertexArray(0);
     }
 };

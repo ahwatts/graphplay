@@ -48,8 +48,9 @@ namespace graphplay {
 
         virtual void render() const;
 
+        GLenum draw_type;
+
     protected:
-        GLenum m_draw_type;
         GLuint m_vertex_buffer;
         GLuint m_elem_buffer;
         GLuint m_array_object;
@@ -93,8 +94,6 @@ namespace graphplay {
         inline const AttrMap& getAttrInfo() { return m_attr_infos; }
 
         void render() const;
-
-        friend typename Geometry<V>::sptr_type makeWireframeCubeGeometry();
 
     protected:
         vertex_array_type m_vertices;
