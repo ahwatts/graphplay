@@ -17,6 +17,8 @@
 #include <sys/time.h>
 #endif
 
+#include <boost/filesystem.hpp>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Geometry.h"
@@ -36,8 +38,9 @@ void mouse_scroll(GLFWwindow *wnd, double xoffset, double yoffset);
 void mouse_move(GLFWwindow *wnd, double xpos, double ypos);
 
 using namespace graphplay;
+using namespace boost::filesystem;
 
-Scene SCENE(800, 600);
+Scene SCENE(1024, 768);
 double MOUSE_X = 0.0, MOUSE_Y = 0.0;
 bool ROTATING = false;
 
@@ -62,17 +65,13 @@ int main(int argc, char **argv) {
     // Geometry<PCNVertex>::sptr_type object_geo = makeOctohedronGeometry();
     // Geometry<PCNVertex>::sptr_type object_geo = makeSphereGeometry();
 
-#ifdef _WIN32
-    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets\\stanford_armadillo.pcn");
-    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets\\stanford_bunny.pcn");
-    // Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets\\stanford_armadillo.ply");
-    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets\\stanford_bunny.ply");
-#else
-    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets/stanford_armadillo.pcn");
-    // Geometry<PCNVertex>::sptr_type object_geo = loadPCNFile("assets/stanford_bunny.pcn");
-    // Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets/stanford_armadillo.ply");
-    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile("assets/stanford_bunny.ply");
-#endif
+    path assets_path("assets");
+    path object_path(assets_path);
+    object_path /= "stanford_bunny.ply";
+    // object_path /= "stanford_bunny.pcn";
+    // object_path /= "stanford_armadillo.ply";
+    // object_path /= "stanford_armadillo.pcn";
+    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile(object_path.c_str());
 
     Geometry<PCNVertex>::sptr_type bbox_geo = makeWireframeCubeGeometry();
 
@@ -102,30 +101,7 @@ int main(int argc, char **argv) {
     glfwSetMouseButtonCallback(window, mouse_click);
     glfwSetScrollCallback(window, mouse_scroll);
 
-#ifdef MSVC
-    // LARGE_INTEGER time, ptime, frequency, tick_delta;
-    // QueryPerformanceFrequency(&frequency);
-    // QueryPerformanceCounter(&ptime);
-#else
-    // struct timeval tod, ptod;
-    // gettimeofday(&ptod, NULL);
-#endif
-
     while (!glfwWindowShouldClose(window)) {
-        // Calculate the time delta.
-#ifdef MSVC
-        // QueryPerformanceCounter(&time);
-        // tick_delta.QuadPart = time.QuadPart - ptime.QuadPart;
-        // auto delta = tick_delta.QuadPart * 1000000 / frequency.QuadPart; // delta is now in usec.
-        // ptime = time;
-#else
-        // gettimeofday(&tod, NULL);
-        // auto delta = (tod.tv_sec * 1000000 + tod.tv_usec - ptod.tv_sec * 1000000 - ptod.tv_usec); // delta in usec.
-        // ptod = tod;
-#endif
-
-        // double dtime = delta / 1e6;
-
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         SCENE.render();

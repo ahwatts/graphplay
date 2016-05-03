@@ -25,9 +25,10 @@ if(WIN32 AND MINGW)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 endif(WIN32 AND MINGW)
 
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 message(STATUS "Found Boost version: " ${Boost_VERSION})
 message(STATUS "Found Boost headers: " ${Boost_INCLUDE_DIRS})
+message(STATUS "Found Boost.Filesystem libs: " ${Boost_FILESYSTEM_LIBRARY})
 
 find_package(Threads REQUIRED)
 message(STATUS "Found thread libs: " ${CMAKE_THREAD_LIBS_INIT})

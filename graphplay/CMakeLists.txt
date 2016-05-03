@@ -15,6 +15,7 @@ target_link_libraries(graphplay
   ${GLFW_LIBRARIES}
   glad
   ${OPENGL_LIBRARIES}
+  Boost::filesystem
   ${CMAKE_DL_LIBS})
 
 if (WIN32)
@@ -34,7 +35,8 @@ if (WIN32)
   target_link_libraries(graphplay-console
     ${GLFW_LIBRARIES}
     glad
-    ${OPENGL_LIBRARIES})
+    ${OPENGL_LIBRARIES}
+    Boost::filesystem)
 
   if(MINGW)
     set_target_properties(graphplay PROPERTIES
