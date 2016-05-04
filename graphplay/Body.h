@@ -26,10 +26,7 @@ namespace graphplay {
         float m_ang_pos, m_ang_vel;
         glm::vec3 mw_ang_vel_dir;
 
-        virtual void render(const glm::mat4 &projection, const glm::mat4 &model_view, int flags);
         void update(float dt);
-
-    protected:
         glm::mat4 baseModelView(const glm::mat4 &wld_model_view);
     };
 };

@@ -26,11 +26,6 @@ namespace graphplay {
         }
     }
 
-    void Body::render(const glm::mat4 &projection, const glm::mat4 &model_view, int flags)
-    {
-        // Nothing to see here...
-    }
-
     glm::mat4 Body::baseModelView(const glm::mat4 &wld_model_view)
     {
         return glm::rotate(

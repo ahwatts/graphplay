@@ -3,24 +3,16 @@
 #include "graphplay.h"
 #include "config.h"
 
-#ifdef MSVC
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#endif
-
-#include <string>
+#include <chrono>
 #include <iostream>
 #include <random>
 #include <sstream>
-
-#ifndef MSVC
-#include <sys/time.h>
-#endif
+#include <string>
 
 #include <boost/filesystem.hpp>
-
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Body.h"
 #include "Geometry.h"
 #include "Mesh.h"
 #include "Scene.h"
@@ -85,6 +77,9 @@ int main(int argc, char **argv) {
     Mesh::sptr_type object = std::make_shared<Mesh>(object_geo, lit_program);
     SCENE.addMesh(object);
 
+    Body object_body;
+    object_body.m_vel_mag = 0.5;
+
     Mesh::sptr_type bbox = std::make_shared<Mesh>(bbox_geo, unlit_program);
     bbox->setTransform(glm::scale(bbox->getTransform(), glm::vec3(10.0f, 10.0f, 10.0f)));
     SCENE.addMesh(bbox);
@@ -101,7 +96,16 @@ int main(int argc, char **argv) {
     glfwSetMouseButtonCallback(window, mouse_click);
     glfwSetScrollCallback(window, mouse_scroll);
 
+    auto ptime = std::chrono::steady_clock::now();
+
     while (!glfwWindowShouldClose(window)) {
+        auto time = std::chrono::steady_clock::now();
+        std::chrono::duration<double> ticks = time - ptime;
+        ptime = time;
+
+        object_body.update(ticks.count());
+        object->setTransform(object_body.baseModelView(glm::mat4x4(1)));
+
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         SCENE.render();
