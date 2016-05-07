@@ -31,6 +31,7 @@ void mouse_move(GLFWwindow *wnd, double xpos, double ypos);
 
 using namespace graphplay;
 using namespace boost::filesystem;
+using namespace std::chrono;
 
 Scene SCENE(1024, 768);
 double MOUSE_X = 0.0, MOUSE_Y = 0.0;
@@ -96,11 +97,11 @@ int main(int argc, char **argv) {
     glfwSetMouseButtonCallback(window, mouse_click);
     glfwSetScrollCallback(window, mouse_scroll);
 
-    auto ptime = std::chrono::steady_clock::now();
+    auto ptime = steady_clock::now();
 
     while (!glfwWindowShouldClose(window)) {
-        auto time = std::chrono::steady_clock::now();
-        std::chrono::duration<double> ticks = time - ptime;
+        auto time = steady_clock::now();
+        duration<double> ticks = time - ptime;
         ptime = time;
 
         object_body.update(ticks.count());
