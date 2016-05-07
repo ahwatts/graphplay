@@ -6,13 +6,16 @@ add_executable(graphplay-test
   SceneTest.cpp
   ShaderTest.cpp
   TestOpenGLContext.cpp
+  ../graphplay/Body.cpp
   ../graphplay/Camera.cpp
+  ../graphplay/Collada.cpp
   ../graphplay/Geometry.cpp
   ../graphplay/Mesh.cpp
   ../graphplay/OpenGLUtils.cpp
   ../graphplay/PlyFile.cpp
   ../graphplay/Scene.cpp
-  ../graphplay/Shader.cpp)
+  ../graphplay/Shader.cpp
+  ../graphplay/tinyxml2.cpp)
 
 include_directories(AFTER SYSTEM ../vendor/gtest/include)
 
