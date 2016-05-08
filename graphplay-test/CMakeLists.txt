@@ -13,6 +13,7 @@ add_executable(graphplay-test
   ../graphplay/Mesh.cpp
   ../graphplay/OpenGLUtils.cpp
   ../graphplay/PlyFile.cpp
+  ../graphplay/PhysicsSystem.cpp
   ../graphplay/Scene.cpp
   ../graphplay/Shader.cpp
   ../graphplay/tinyxml2.cpp)
