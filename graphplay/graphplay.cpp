@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
 
     while (!glfwWindowShouldClose(window)) {
         auto time = steady_clock::now();
-        duration<double> ticks = time - ptime;
+        duration<float> ticks = time - ptime;
         ptime = time;
 
         object_body.update(ticks.count());
