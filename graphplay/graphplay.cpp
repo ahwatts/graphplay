@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     // object_path /= "stanford_bunny.pcn";
     // object_path /= "stanford_armadillo.ply";
     // object_path /= "stanford_armadillo.pcn";
-    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile(object_path.c_str());
+    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile(object_path.string().c_str());
 
     Geometry<PCNVertex>::sptr_type bbox_geo = makeWireframeCubeGeometry();
 
