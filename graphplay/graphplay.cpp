@@ -15,6 +15,7 @@
 #include "Body.h"
 #include "Geometry.h"
 #include "Mesh.h"
+#include "PhysicsSystem.h"
 #include "Scene.h"
 #include "Shader.h"
 #include "opengl.h"
@@ -78,12 +79,15 @@ int main(int argc, char **argv) {
     Mesh::sptr_type object = std::make_shared<Mesh>(object_geo, lit_program);
     SCENE.addMesh(object);
 
-    Body object_body;
-    object_body.m_vel_mag = 0.5;
-
     Mesh::sptr_type bbox = std::make_shared<Mesh>(bbox_geo, unlit_program);
     bbox->setTransform(glm::scale(bbox->getTransform(), glm::vec3(10.0f, 10.0f, 10.0f)));
     SCENE.addMesh(bbox);
+
+    Body::sptr_type object_body = std::make_shared<Body>();
+    object_body->m_vel_mag = 0.5;
+
+    PhysicsSystem physics;
+    physics.addBody(object_body);
 
     Camera &camera = SCENE.getCamera();
     camera.setFocusPoint(glm::vec3(0.0, 0.0, 0.0));
@@ -104,8 +108,8 @@ int main(int argc, char **argv) {
         duration<float> ticks = time - ptime;
         ptime = time;
 
-        object_body.update(ticks.count());
-        object->setTransform(object_body.baseModelView(glm::mat4x4(1)));
+        physics.update(ticks.count());
+        object->setTransform(object_body->baseModelView(glm::mat4x4(1)));
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -106,7 +106,9 @@
     <ClCompile Include="graphplay.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OpenGLUtils.cpp" />
+    <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PlyFile.cpp" />
+    <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PlyFile.tmpl.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="tinyxml2.cpp" />

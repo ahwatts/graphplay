@@ -3,6 +3,8 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_BODY_H_
 #define _GRAPHPLAY_GRAPHPLAY_BODY_H_
 
+#include <memory>
+
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -10,6 +12,10 @@ namespace graphplay {
     class Body
     {
     public:
+        typedef std::unique_ptr<Body> uptr_type;
+        typedef std::shared_ptr<Body> sptr_type;
+        typedef std::weak_ptr<Body> wptr_type;
+
         Body();
         virtual ~Body();
 
