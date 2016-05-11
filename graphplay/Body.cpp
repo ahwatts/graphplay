@@ -2,34 +2,56 @@
 
 #include "graphplay.h"
 #include "Body.h"
+
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/io.hpp>
 
 namespace graphplay {
     Body::Body()
-        : mw_pos(),
-          mw_vel_dir(1, 0, 0),
-          m_vel_mag(0),
-          m_ang_pos(0),
-          m_ang_vel(0),
-          mw_ang_vel_dir(0, 1, 0)
-    { }
+        : m_position(),
+          m_velocity_dir(1.0, 0.0, 0.0),
+          m_velocity_mag(0)
+    {}
 
-    Body::~Body(void)
-    { }
+    Body::Body(const glm::vec3 &pos, const glm::vec3 &vel) : Body() {
+        setPosition(pos);
+        setVelocity(vel);
+    }
 
-    void Body::update(float dt)
-    {
-        mw_pos = mw_pos + (m_vel_mag*mw_vel_dir*dt);
-        m_ang_pos = m_ang_pos + m_ang_vel*dt;
-        if (m_ang_pos > 360.0f) {
-            m_ang_pos = m_ang_pos - 360.0f;
+    glm::vec3 Body::position() {
+        return m_position;
+    }
+
+    void Body::setPosition(const glm::vec3& new_pos) {
+        m_position = new_pos;
+    }
+
+    glm::vec3 Body::velocity() {
+        return m_velocity_dir * m_velocity_mag;
+    }
+
+    void Body::setVelocity(const glm::vec3& new_vel) {
+        m_velocity_mag = glm::length(new_vel);
+        if (m_velocity_mag != 0.0) {
+            m_velocity_dir = new_vel / m_velocity_mag;
+        } else {
+            m_velocity_dir = { 1.0, 0.0, 0.0 };
         }
     }
 
-    glm::mat4 Body::baseModelView(const glm::mat4 &wld_model_view)
-    {
-        return glm::rotate(
-            glm::translate(wld_model_view, mw_pos),
-            m_ang_pos, mw_ang_vel_dir);
+    void Body::update(float dt) {
+        float ds_mag = dt * m_velocity_mag;
+        m_position += m_velocity_dir * ds_mag;
+    }
+
+    glm::mat4 Body::modelview(const glm::mat4 &base_modelview) {
+        return glm::translate(base_modelview, m_position);
+    }
+
+    std::ostream& operator<<(std::ostream &stream, const Body &body) {
+        return stream << "Body { "
+                      << "m_position = " << body.m_position << ", "
+                      << "m_velocity_dir = " << body.m_velocity_dir << ", "
+                      << "m_velocity_mag = " << body.m_velocity_mag << " }";
     }
 };

@@ -3,6 +3,7 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_BODY_H_
 #define _GRAPHPLAY_GRAPHPLAY_BODY_H_
 
+#include <iostream>
 #include <memory>
 
 #include <glm/vec3.hpp>
@@ -17,24 +18,25 @@ namespace graphplay {
         typedef std::weak_ptr<Body> wptr_type;
 
         Body();
-        virtual ~Body();
+        Body(const glm::vec3 &pos, const glm::vec3 &vel);
 
-        // The position of the object in "world" coordinates.
-        glm::vec3 mw_pos;
+        glm::vec3 position();
+        void setPosition(const glm::vec3& new_pos);
 
-        // The velocity of the object in "world" coordinates, as a unit vector, 
-        // and a float for its magnitude.
-        glm::vec3 mw_vel_dir;
-        float m_vel_mag;
-
-        // Angular quantities: The angular position, angular velocity, and the
-        // axis around which it's rotating.
-        float m_ang_pos, m_ang_vel;
-        glm::vec3 mw_ang_vel_dir;
+        glm::vec3 velocity();
+        void setVelocity(const glm::vec3& new_vel);
 
         void update(float dt);
-        glm::mat4 baseModelView(const glm::mat4 &wld_model_view);
+        glm::mat4x4 modelview(const glm::mat4x4 &base_modelview);
+
+        friend std::ostream& operator<<(std::ostream &stream, const Body &body);
+
+    protected:
+        glm::vec3 m_position, m_velocity_dir;
+        float m_velocity_mag;
     };
+
+    std::ostream& operator<<(std::ostream &stream, const Body &body);
 };
 
 #endif

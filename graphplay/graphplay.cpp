@@ -84,7 +84,8 @@ int main(int argc, char **argv) {
     SCENE.addMesh(bbox);
 
     Body::sptr_type object_body = std::make_shared<Body>();
-    object_body->m_vel_mag = 0.5;
+    object_body->setVelocity({ 1.5, 0.3, 0.0 });
+    std::cout << "object = " << *object_body << std::endl;
 
     PhysicsSystem physics;
     physics.addBody(object_body);
@@ -105,11 +106,11 @@ int main(int argc, char **argv) {
 
     while (!glfwWindowShouldClose(window)) {
         auto time = steady_clock::now();
-        duration<float> ticks = time - ptime;
+        duration<float> seconds = time - ptime;
         ptime = time;
 
-        physics.update(ticks.count());
-        object->setTransform(object_body->baseModelView(glm::mat4x4(1)));
+        physics.update(seconds.count());
+        object->setTransform(object_body->modelview(glm::mat4x4(1)));
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
