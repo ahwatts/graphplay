@@ -62,14 +62,13 @@ namespace graphplay {
         m_position += m_velocity_dir * ds_mag;
 
         glm::quat w(0.0, m_angular_velocity);
-        glm::quat dq = w * 0.5f * m_orientation;
+        glm::quat dq = w * m_orientation * 0.5f * dt;
         m_orientation = glm::normalize(m_orientation + dq);
     }
 
     glm::mat4x4 Body::modelview(const glm::mat4x4 &base_modelview) {
-        glm::mat4x4 transform = base_modelview;
-        // transform = glm::translate(transform, m_position);
-        transform = glm::mat4_cast(m_orientation) * transform;
+        glm::mat4x4 transform = glm::translate(base_modelview, m_position);
+        transform = transform * glm::mat4_cast(m_orientation);
         return transform;
     }
 
@@ -78,6 +77,7 @@ namespace graphplay {
                       << "m_position = "     << body.m_position     << ", "
                       << "m_velocity_dir = " << body.m_velocity_dir << ", "
                       << "m_velocity_mag = " << body.m_velocity_mag << ", "
-                      << "m_orientation = "  << body.m_orientation  << " }";
+                      << "m_orientation = "  << body.m_orientation  << ", "
+                      << "m_angular_velocity = " << body.m_angular_velocity << " }";
     }
 };
