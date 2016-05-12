@@ -6,8 +6,9 @@
 #include <iostream>
 #include <memory>
 
-#include <glm/vec3.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 namespace graphplay {
     class Body
@@ -23,8 +24,14 @@ namespace graphplay {
         glm::vec3 position();
         void setPosition(const glm::vec3& new_pos);
 
+        glm::quat orientation();
+        void setOrientation(const glm::quat &new_orientation);
+
         glm::vec3 velocity();
-        void setVelocity(const glm::vec3& new_vel);
+        void setVelocity(const glm::vec3 &new_vel);
+
+        glm::vec3 angularVelocity();
+        void setAngularVelocity(const glm::vec3 &new_ang_vel);
 
         void update(float dt);
         glm::mat4x4 modelview(const glm::mat4x4 &base_modelview);
@@ -34,6 +41,9 @@ namespace graphplay {
     protected:
         glm::vec3 m_position, m_velocity_dir;
         float m_velocity_mag;
+
+        glm::quat m_orientation;
+        glm::vec3 m_angular_velocity;
     };
 
     std::ostream& operator<<(std::ostream &stream, const Body &body);

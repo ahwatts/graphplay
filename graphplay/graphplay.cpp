@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
 
     Body::sptr_type object_body = std::make_shared<Body>();
     object_body->setVelocity({ 1.5, 0.3, 0.0 });
+    object_body->setAngularVelocity({ 0.01, 0.005, 0.0 });
     std::cout << "object = " << *object_body << std::endl;
 
     PhysicsSystem physics;
