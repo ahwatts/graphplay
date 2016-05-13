@@ -18,21 +18,16 @@ namespace graphplay {
         typedef std::weak_ptr<Mesh> wptr_type;
 
         Mesh();
-        Mesh(const Mesh &other);
         Mesh(AbstractGeometry::sptr_type geo, Program::sptr_type program);
-        ~Mesh();
 
-        Mesh& operator=(const Mesh &other);
-        Mesh& operator=(Mesh &&other);
+        void geometry(AbstractGeometry::sptr_type geo);
+        inline const AbstractGeometry::wptr_type geometry() const { return AbstractGeometry::wptr_type(m_geometry); }
 
-        void setGeometry(AbstractGeometry::sptr_type geo);
-        inline const AbstractGeometry::wptr_type getGeometry() const { return AbstractGeometry::wptr_type(m_geometry); }
+        void program(Program::sptr_type program);
+        inline const Program::wptr_type program() const { return Program::wptr_type(m_program); }
 
-        void setProgram(Program::sptr_type program);
-        inline const Program::wptr_type getProgram() const { return Program::wptr_type(m_program); }
-
-        void setTransform(const glm::mat4x4 &new_transform);
-        inline const glm::mat4x4& getTransform() const { return m_model_transform; }
+        void modelTransformation(const glm::mat4x4 &new_transform);
+        inline const glm::mat4x4& modelTransformation() const { return m_model_transform; }
 
         void render() const;
 

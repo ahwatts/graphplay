@@ -37,9 +37,9 @@ namespace graphplay {
         virtual AbstractGeometry& operator=(const AbstractGeometry &other);
         virtual AbstractGeometry& operator=(AbstractGeometry &&other);
 
-        inline const GLuint getVertexBufferId() const { return m_vertex_buffer; }
-        inline const GLuint getElemBufferId() const { return m_elem_buffer; }
-        inline const GLuint getVertexArrayObjectId() const { return m_array_object; }
+        inline const GLuint vertexBufferId() const { return m_vertex_buffer; }
+        inline const GLuint elemBufferId() const { return m_elem_buffer; }
+        inline const GLuint vertexArrayObjectId() const { return m_array_object; }
 
         virtual void createBuffers();
         virtual void deleteBuffers();
@@ -89,9 +89,9 @@ namespace graphplay {
         virtual void createBuffers();
         virtual void createVertexArray(const Program &program);
 
-        inline vertex_array_type& getVertices() { return m_vertices; }
-        inline elem_array_type& getElems() { return m_elems; }
-        inline const AttrMap& getAttrInfo() { return m_attr_infos; }
+        inline vertex_array_type& vertices() { return m_vertices; }
+        inline elem_array_type& elements() { return m_elems; }
+        inline const AttrMap& attrInfos() { return m_attr_infos; }
 
         void render() const;
 

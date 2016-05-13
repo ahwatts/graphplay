@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     SCENE.addMesh(object);
 
     Mesh::sptr_type bbox = std::make_shared<Mesh>(bbox_geo, unlit_program);
-    bbox->setTransform(glm::scale(bbox->getTransform(), glm::vec3(10.0f, 10.0f, 10.0f)));
+    bbox->modelTransformation(glm::scale(bbox->modelTransformation(), glm::vec3(10.0f, 10.0f, 10.0f)));
     SCENE.addMesh(bbox);
 
     Body::sptr_type object_body = std::make_shared<Body>();
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
         ptime = time;
 
         physics.update(seconds.count());
-        object->setTransform(object_body->modelTransformation(glm::mat4x4(1)));
+        object->modelTransformation(object_body->modelTransformation(glm::mat4x4(1)));
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

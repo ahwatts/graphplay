@@ -20,9 +20,7 @@ namespace graphplay {
         m_geometry->createVertexArray(*m_program);
     }
 
-    Mesh::~Mesh() {}
-
-    void Mesh::setGeometry(AbstractGeometry::sptr_type geo) {
+    void Mesh::geometry(AbstractGeometry::sptr_type geo) {
         m_geometry = geo;
 
         if (m_program) {
@@ -30,7 +28,7 @@ namespace graphplay {
         }
     }
 
-    void Mesh::setProgram(Program::sptr_type program) {
+    void Mesh::program(Program::sptr_type program) {
         m_program = program;
 
         if (m_geometry) {
@@ -38,7 +36,7 @@ namespace graphplay {
         }
     }
 
-    void Mesh::setTransform(const glm::mat4x4 &new_transform) {
+    void Mesh::modelTransformation(const glm::mat4x4 &new_transform) {
         m_model_transform = new_transform;
     }
 

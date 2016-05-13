@@ -59,7 +59,7 @@ namespace graphplay {
         Mesh::sptr_type smesh = mesh.lock();
 
         if (smesh) {
-            Program::sptr_type sprogram = smesh->getProgram().lock();
+            Program::sptr_type sprogram = smesh->program().lock();
             if (sprogram) {
                 GLuint progid = sprogram->getProgramId();
                 const IndexMap &program_blocks = sprogram->getUniformBlocks();

@@ -11,24 +11,24 @@ namespace graphplay {
     class GeometryTest : public TestOpenGLContext {};
 
     void assertNoBuffersCreated(const AbstractGeometry &g) {
-        ASSERT_EQ(0, g.getElemBufferId());
-        ASSERT_EQ(GL_FALSE, glIsBuffer(g.getElemBufferId()));
+        ASSERT_EQ(0, g.elemBufferId());
+        ASSERT_EQ(GL_FALSE, glIsBuffer(g.elemBufferId()));
         ASSERT_EQ(GL_NO_ERROR, glGetError());
 
-        ASSERT_EQ(0, g.getVertexBufferId());
-        ASSERT_EQ(GL_FALSE, glIsBuffer(g.getVertexBufferId()));
+        ASSERT_EQ(0, g.vertexBufferId());
+        ASSERT_EQ(GL_FALSE, glIsBuffer(g.vertexBufferId()));
         ASSERT_EQ(GL_NO_ERROR, glGetError());
 
-        ASSERT_EQ(0, g.getVertexArrayObjectId());
-        ASSERT_EQ(GL_FALSE, glIsVertexArray(g.getVertexArrayObjectId()));
+        ASSERT_EQ(0, g.vertexArrayObjectId());
+        ASSERT_EQ(GL_FALSE, glIsVertexArray(g.vertexArrayObjectId()));
         ASSERT_EQ(GL_NO_ERROR, glGetError());
     }
 
     void assertBuffersCreated(const AbstractGeometry &g) {
-        ASSERT_EQ(GL_TRUE, glIsBuffer(g.getElemBufferId()));
-        ASSERT_EQ(GL_TRUE, glIsBuffer(g.getVertexBufferId()));
-        ASSERT_EQ(0, g.getVertexArrayObjectId());
-        ASSERT_EQ(GL_FALSE, glIsVertexArray(g.getVertexArrayObjectId()));
+        ASSERT_EQ(GL_TRUE, glIsBuffer(g.elemBufferId()));
+        ASSERT_EQ(GL_TRUE, glIsBuffer(g.vertexBufferId()));
+        ASSERT_EQ(0, g.vertexArrayObjectId());
+        ASSERT_EQ(GL_FALSE, glIsVertexArray(g.vertexArrayObjectId()));
     }
 
     void assertEqualBufferContent(GLuint expected, GLuint actual) {
@@ -81,9 +81,9 @@ namespace graphplay {
         Geometry<PCNVertex> g;
 
         assertNoBuffersCreated(dynamic_cast<AbstractGeometry&>(g));
-        ASSERT_TRUE(g.getVertices().empty());
-        ASSERT_TRUE(g.getElems().empty());
-        ASSERT_EQ(&PCNVertex::description, &g.getAttrInfo());
+        ASSERT_TRUE(g.vertices().empty());
+        ASSERT_TRUE(g.elements().empty());
+        ASSERT_EQ(&PCNVertex::description, &g.attrInfos());
     }
 
     const Geometry<PCNVertex>::vertex_array_type verts = {
@@ -98,10 +98,10 @@ namespace graphplay {
         Geometry<PCNVertex> g;
         g.setVertexData(elems, verts);
         assertNoBuffersCreated(dynamic_cast<AbstractGeometry&>(g));
-        ASSERT_EQ(3, g.getVertices().size());
-        ASSERT_EQ(3, g.getElems().size());
-        ASSERT_NE(&verts, &g.getVertices());
-        ASSERT_NE(&elems, &g.getElems());
+        ASSERT_EQ(3, g.vertices().size());
+        ASSERT_EQ(3, g.elements().size());
+        ASSERT_NE(&verts, &g.vertices());
+        ASSERT_NE(&elems, &g.elements());
 
         // Move from refs.
         Geometry<PCNVertex> g2;
@@ -109,10 +109,10 @@ namespace graphplay {
         Geometry<PCNVertex>::elem_array_type new_elems = elems;
         g2.setVertexData(std::move(new_elems), std::move(new_verts));
         assertNoBuffersCreated(dynamic_cast<AbstractGeometry&>(g2));
-        ASSERT_EQ(3, g2.getVertices().size());
-        ASSERT_EQ(3, g2.getElems().size());
-        ASSERT_NE(&new_verts, &g2.getVertices());
-        ASSERT_NE(&new_elems, &g2.getElems());
+        ASSERT_EQ(3, g2.vertices().size());
+        ASSERT_EQ(3, g2.elements().size());
+        ASSERT_NE(&new_verts, &g2.vertices());
+        ASSERT_NE(&new_elems, &g2.elements());
         ASSERT_TRUE(new_verts.empty());
         ASSERT_TRUE(new_elems.empty());
 
@@ -122,10 +122,10 @@ namespace graphplay {
         new_elems = elems;
         g3.setVertexData(new_elems.data(), 3, new_verts.data(), 3);
         assertNoBuffersCreated(dynamic_cast<AbstractGeometry&>(g3));
-        ASSERT_EQ(3, g3.getVertices().size());
-        ASSERT_EQ(3, g3.getElems().size());
-        ASSERT_NE(&new_verts, &g3.getVertices());
-        ASSERT_NE(&new_elems, &g3.getElems());
+        ASSERT_EQ(3, g3.vertices().size());
+        ASSERT_EQ(3, g3.elements().size());
+        ASSERT_NE(&new_verts, &g3.vertices());
+        ASSERT_NE(&new_elems, &g3.elements());
         ASSERT_EQ(3, new_verts.size());
         ASSERT_EQ(3, new_elems.size());
     }
@@ -142,9 +142,9 @@ namespace graphplay {
         g.setVertexData(elems, verts);
         g.createBuffers();
 
-        GLuint elem_buffer = g.getElemBufferId();
-        GLuint vert_buffer = g.getVertexBufferId();
-        GLuint vert_array_obj = g.getVertexArrayObjectId();
+        GLuint elem_buffer = g.elemBufferId();
+        GLuint vert_buffer = g.vertexBufferId();
+        GLuint vert_array_obj = g.vertexArrayObjectId();
 
         assertBuffersCreated(dynamic_cast<AbstractGeometry&>(g));
 
@@ -167,11 +167,11 @@ namespace graphplay {
         assertBuffersCreated(dynamic_cast<AbstractGeometry&>(g1));
         assertBuffersCreated(dynamic_cast<AbstractGeometry&>(g2));
 
-        ASSERT_NE(g1.getElemBufferId(), g2.getElemBufferId());
-        ASSERT_NE(g1.getVertexBufferId(), g2.getVertexBufferId());
+        ASSERT_NE(g1.elemBufferId(), g2.elemBufferId());
+        ASSERT_NE(g1.vertexBufferId(), g2.vertexBufferId());
 
-        assertEqualBufferContent(g1.getElemBufferId(), g2.getElemBufferId());
-        assertEqualBufferContent(g1.getVertexBufferId(), g2.getVertexBufferId());
+        assertEqualBufferContent(g1.elemBufferId(), g2.elemBufferId());
+        assertEqualBufferContent(g1.vertexBufferId(), g2.vertexBufferId());
     }
 
     TEST_F(GeometryTest, RealGeometryMoveConstructor) {
@@ -199,11 +199,11 @@ namespace graphplay {
         assertBuffersCreated(dynamic_cast<AbstractGeometry&>(g1));
         assertBuffersCreated(dynamic_cast<AbstractGeometry&>(g2));
 
-        ASSERT_NE(g1.getElemBufferId(), g2.getElemBufferId());
-        ASSERT_NE(g1.getVertexBufferId(), g2.getVertexBufferId());
+        ASSERT_NE(g1.elemBufferId(), g2.elemBufferId());
+        ASSERT_NE(g1.vertexBufferId(), g2.vertexBufferId());
 
-        assertEqualBufferContent(g1.getElemBufferId(), g2.getElemBufferId());
-        assertEqualBufferContent(g1.getVertexBufferId(), g2.getVertexBufferId());
+        assertEqualBufferContent(g1.elemBufferId(), g2.elemBufferId());
+        assertEqualBufferContent(g1.vertexBufferId(), g2.vertexBufferId());
     }
 
     TEST_F(GeometryTest, RealGeometryMoveAssignmentOperator) {
@@ -228,8 +228,8 @@ namespace graphplay {
             Geometry<PCNVertex> g;
             g.setVertexData(elems, verts);
             g.createBuffers();
-            vbuf = g.getVertexBufferId();
-            ebuf = g.getElemBufferId();
+            vbuf = g.vertexBufferId();
+            ebuf = g.elemBufferId();
             ASSERT_EQ(GL_TRUE, glIsBuffer(vbuf));
             ASSERT_EQ(GL_TRUE, glIsBuffer(ebuf));
         }
@@ -242,14 +242,14 @@ namespace graphplay {
         Geometry<PCNVertex>::sptr_type octo = makeOctohedronGeometry();
 
         assertBuffersCreated(*octo);
-        ASSERT_LT(0, static_cast<int>(octo->getElems().size()));
-        ASSERT_LT(0, static_cast<int>(octo->getVertices().size()));
+        ASSERT_LT(0, static_cast<int>(octo->elements().size()));
+        ASSERT_LT(0, static_cast<int>(octo->vertices().size()));
     }
 
     TEST_F(GeometryTest, CreateSphere) {
         Geometry<PCNVertex>::sptr_type sphere = makeSphereGeometry();
         assertBuffersCreated(*sphere);
-        ASSERT_LT(0, static_cast<int>(sphere->getElems().size()));
-        ASSERT_LT(0, static_cast<int>(sphere->getVertices().size()));
+        ASSERT_LT(0, static_cast<int>(sphere->elements().size()));
+        ASSERT_LT(0, static_cast<int>(sphere->vertices().size()));
     }
 };
