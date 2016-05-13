@@ -113,7 +113,7 @@ namespace graphplay {
 
         for (auto i = 0; i < num_uniforms; ++i) {
             glGetActiveUniformName(progid, uniform_indices[i], max_name_len, nullptr, name);
-            if (std::regex_search(name, light_field_parts, light_field_name)) { \
+            if (std::regex_search(name, light_field_parts, light_field_name)) {
                 int light_index = std::stoi(light_field_parts[1]);
                 std::string field_str(light_field_parts[2]);
 

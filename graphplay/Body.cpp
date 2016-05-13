@@ -16,31 +16,31 @@ namespace graphplay {
     {}
 
     Body::Body(const glm::vec3 &pos, const glm::vec3 &vel) : Body() {
-        setPosition(pos);
-        setVelocity(vel);
+        position(pos);
+        velocity(vel);
     }
 
-    glm::vec3 Body::position() {
+    glm::vec3 Body::position() const {
         return m_position;
     }
 
-    void Body::setPosition(const glm::vec3 &new_pos) {
+    void Body::position(const glm::vec3 &new_pos) {
         m_position = new_pos;
     }
 
-    glm::quat Body::orientation() {
+    glm::quat Body::orientation() const {
         return m_orientation;
     }
 
-    void Body::setOrientation(const glm::quat &new_orientation) {
+    void Body::orientation(const glm::quat &new_orientation) {
         m_orientation = glm::normalize(new_orientation);
     }
 
-    glm::vec3 Body::velocity() {
+    glm::vec3 Body::velocity() const {
         return m_velocity_dir * m_velocity_mag;
     }
 
-    void Body::setVelocity(const glm::vec3 &new_vel) {
+    void Body::velocity(const glm::vec3 &new_vel) {
         m_velocity_mag = glm::length(new_vel);
         if (m_velocity_mag != 0.0) {
             m_velocity_dir = new_vel / m_velocity_mag;
@@ -49,11 +49,11 @@ namespace graphplay {
         }
     }
 
-    glm::vec3 Body::angularVelocity() {
+    glm::vec3 Body::angularVelocity() const {
         return m_angular_velocity;
     }
 
-    void Body::setAngularVelocity(const glm::vec3 &new_ang_vel) {
+    void Body::angularVelocity(const glm::vec3 &new_ang_vel) {
         m_angular_velocity = new_ang_vel;
     }
 
@@ -66,7 +66,7 @@ namespace graphplay {
         m_orientation = glm::normalize(m_orientation + dq);
     }
 
-    glm::mat4x4 Body::modelview(const glm::mat4x4 &base_modelview) {
+    glm::mat4x4 Body::modelTransformation(const glm::mat4x4 &base_modelview) const {
         glm::mat4x4 transform = glm::translate(base_modelview, m_position);
         transform = transform * glm::mat4_cast(m_orientation);
         return transform;

@@ -12,23 +12,18 @@ namespace graphplay {
     public:
         Camera();
         Camera(const glm::vec3 &position, const glm::vec3 &focus);
-        Camera(const Camera &other);
-        Camera(Camera &&other);
 
-        Camera& operator=(const Camera &other);
-        Camera& operator=(Camera &&other);
+        glm::vec3 focusPoint() const;
+        void focusPoint(const glm::vec3 &new_focus);
 
-        inline const glm::vec3& getFocusPoint() const { return m_focus_point; }
-        void setFocusPoint(const glm::vec3 &new_focus);
-
-        inline const glm::vec3& getPosition() const { return m_position; }
-        void setPosition(const glm::vec3 &new_position);
+        glm::vec3 position() const;
+        void position(const glm::vec3 &new_position);
 
         void reset();
         void rotate(double dtheta, double dphi);
         void zoom(double dr);
 
-        glm::mat4x4 getViewTransform() const;
+        glm::mat4x4 viewTransformation() const;
 
         static const glm::vec3 DEFAULT_POSITION, DEFAULT_FOCUS_POINT;
 

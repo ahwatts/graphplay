@@ -12,37 +12,27 @@ namespace graphplay {
 
     Camera::Camera()
         : m_focus_point(DEFAULT_FOCUS_POINT),
-          m_position(DEFAULT_POSITION) {}
+          m_position(DEFAULT_POSITION)
+    {}
 
     Camera::Camera(const glm::vec3 &position, const glm::vec3 &focus_point)
         : m_focus_point(focus_point),
-          m_position(position) {}
+          m_position(position)
+    {}
 
-    Camera::Camera(const Camera &other)
-        : m_focus_point(other.m_focus_point),
-          m_position(other.m_position) {}
-
-    Camera::Camera(Camera &&other)
-        : m_focus_point(std::move(other.m_focus_point)),
-          m_position(std::move(other.m_position)) {}
-
-    Camera& Camera::operator=(const Camera &other) {
-        Camera tmp(other);
-        std::swap(*this, tmp);
-        return *this;
+    glm::vec3 Camera::focusPoint() const {
+        return m_focus_point;
     }
 
-    Camera& Camera::operator=(Camera &&other) {
-        std::swap(m_focus_point, other.m_focus_point);
-        std::swap(m_position, other.m_position);
-        return *this;
-    }
-
-    void Camera::setFocusPoint(const glm::vec3 &new_focus_point) {
+    void Camera::focusPoint(const glm::vec3 &new_focus_point) {
         m_focus_point = new_focus_point;
     }
 
-    void Camera::setPosition(const glm::vec3 &new_position) {
+    glm::vec3 Camera::position() const {
+        return m_position;
+    }
+
+    void Camera::position(const glm::vec3 &new_position) {
         m_position = new_position;
     }
 
@@ -85,7 +75,7 @@ namespace graphplay {
         m_position = m_focus_point + cam_dir*radius;
     }
 
-    glm::mat4x4 Camera::getViewTransform() const {
+    glm::mat4x4 Camera::viewTransformation() const {
         return glm::lookAt(m_position, m_focus_point, glm::vec3(0.0, 1.0, 0.0));
     }
 };

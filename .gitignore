@@ -14,8 +14,6 @@
 /vendor/gtest/gtest/Debug
 /vendor/gtest/gtest_main/Debug
 
-/graphplay.VC.opendb
-
 /build
 /msvc
 /mingw
@@ -26,6 +24,8 @@
 *.d
 *.o
 *.blend1
+*.VC.db
+*.VC.VC.opendb
 gmon.out
 /graphplay/graphplay
 /graphplay/graphplay.exe

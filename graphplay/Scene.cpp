@@ -112,7 +112,7 @@ namespace graphplay {
         const LightListBlock &light_block = LightListBlock::getDescriptor();
         GLubyte *buffer = nullptr;
 
-        glm::mat4x4 view = m_camera.getViewTransform();
+        glm::mat4x4 view = m_camera.viewTransformation();
         glm::mat4x4 view_inv = glm::inverse(view);
 
         glBindBuffer(GL_UNIFORM_BUFFER, m_view_projection_uniform_buffer);

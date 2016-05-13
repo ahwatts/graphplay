@@ -85,16 +85,16 @@ int main(int argc, char **argv) {
     SCENE.addMesh(bbox);
 
     Body::sptr_type object_body = std::make_shared<Body>();
-    object_body->setVelocity({ 1.5, 0.3, 0.0 });
-    object_body->setAngularVelocity({ M_PI_2, M_PI_4, 0.0 });
+    object_body->velocity({ 1.5, 0.3, 0.0 });
+    object_body->angularVelocity({ M_PI_2, M_PI_4, 0.0 });
     std::cout << "object = " << *object_body << std::endl;
 
     PhysicsSystem physics;
     physics.addBody(object_body);
 
     Camera &camera = SCENE.getCamera();
-    camera.setFocusPoint(glm::vec3(0.0, 0.0, 0.0));
-    camera.setPosition(glm::vec3(0.0, 0.0, 30.0));
+    camera.focusPoint(glm::vec3(0.0, 0.0, 0.0));
+    camera.position(glm::vec3(0.0, 0.0, 30.0));
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, pixel_width, pixel_height);
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
         ptime = time;
 
         physics.update(seconds.count());
-        object->setTransform(object_body->modelview(glm::mat4x4(1)));
+        object->setTransform(object_body->modelTransformation(glm::mat4x4(1)));
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
