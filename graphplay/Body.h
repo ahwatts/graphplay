@@ -24,14 +24,14 @@ namespace graphplay {
         glm::vec3 position() const;
         void position(const glm::vec3& new_pos);
 
-        glm::quat orientation() const;
-        void orientation(const glm::quat &new_orientation);
+        // glm::quat orientation() const;
+        // void orientation(const glm::quat &new_orientation);
 
         glm::vec3 velocity() const;
         void velocity(const glm::vec3 &new_vel);
 
-        glm::vec3 angularVelocity() const;
-        void angularVelocity(const glm::vec3 &new_ang_vel);
+        // glm::vec3 angularVelocity() const;
+        // void angularVelocity(const glm::vec3 &new_ang_vel);
 
         void update(float dt);
 
@@ -40,11 +40,10 @@ namespace graphplay {
         friend std::ostream& operator<<(std::ostream &stream, const Body &body);
 
     protected:
-        glm::vec3 m_position, m_velocity_dir;
-        float m_velocity_mag;
+        glm::vec3 m_position, m_velocity;
 
-        glm::quat m_orientation;
-        glm::vec3 m_angular_velocity;
+        // glm::quat m_orientation;
+        // glm::vec3 m_angular_velocity;
     };
 
     std::ostream& operator<<(std::ostream &stream, const Body &body);
