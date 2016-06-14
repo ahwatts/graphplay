@@ -10,6 +10,8 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+#include "Integrator.h"
+
 namespace graphplay {
     class Body
     {
@@ -41,6 +43,7 @@ namespace graphplay {
 
     protected:
         glm::vec3 m_position, m_velocity;
+        Rk4<glm::vec3, float> m_integrator;
 
         // glm::quat m_orientation;
         // glm::vec3 m_angular_velocity;

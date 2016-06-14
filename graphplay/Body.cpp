@@ -7,9 +7,27 @@
 #include <glm/gtx/io.hpp>
 
 namespace graphplay {
+    class ConstantVelocity : public FirstOrderDE<glm::vec3, float> {
+    public:
+        ConstantVelocity(const glm::vec3 &velocity)
+            : FirstOrderDE(),
+              m_velocity(velocity)
+        {}
+
+        ~ConstantVelocity() {}
+
+        virtual glm::vec3 operator()(glm::vec3 pos, float time) const {
+            return m_velocity;
+        }
+
+    protected:
+        glm::vec3 m_velocity;
+    };
+
     Body::Body()
         : m_position(),
-          m_velocity()
+          m_velocity(),
+          m_integrator(std::make_shared<ConstantVelocity>(m_velocity), 0.1)
           // m_orientation(),
           // m_angular_velocity(0)
     {}
@@ -58,8 +76,10 @@ namespace graphplay {
     // }
 
     void Body::update(float dt) {
-        glm::vec3 ds = m_velocity * dt;
-        m_position += ds;
+        // glm::vec3 ds = m_velocity * dt;
+        // m_position += ds;
+
+        m_position = m_integrator(m_position, dt);
 
         // glm::quat w(0.0, m_angular_velocity);
         // glm::quat dq = w * m_orientation * 0.5f * dt;
