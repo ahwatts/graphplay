@@ -9,10 +9,10 @@ add_executable(graphplay WIN32
   PlyFile.cpp
   Scene.cpp
   Shader.cpp
-  graphplay.cpp
-  tinyxml2.cpp)
+  graphplay.cpp)
 
 target_link_libraries(graphplay
+  tinyxml2
   ${GLFW_LIBRARIES}
   glad
   ${OPENGL_LIBRARIES}
@@ -31,10 +31,10 @@ if (WIN32)
     PhysicsSystem.cpp
     Scene.cpp
     Shader.cpp
-    graphplay.cpp
-    tinyxml2.cpp)
+    graphplay.cpp)
 
   target_link_libraries(graphplay-console
+    tinyxml2
     ${GLFW_LIBRARIES}
     glad
     ${OPENGL_LIBRARIES}

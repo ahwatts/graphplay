@@ -64,12 +64,14 @@ include_directories(AFTER SYSTEM
   ${GLFW_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
   vendor/glad/include
+  vendor/tinyxml2/include
   ${graphplay_BINARY_DIR})
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)
 add_subdirectory(vendor/gtest)
 add_subdirectory(vendor/glad)
+add_subdirectory(vendor/tinyxml2)
 
 enable_testing()
 add_test(NAME graphplay-test

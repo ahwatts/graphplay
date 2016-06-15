@@ -15,12 +15,12 @@ add_executable(graphplay-test
   ../graphplay/PlyFile.cpp
   ../graphplay/PhysicsSystem.cpp
   ../graphplay/Scene.cpp
-  ../graphplay/Shader.cpp
-  ../graphplay/tinyxml2.cpp)
+  ../graphplay/Shader.cpp)
 
 include_directories(AFTER SYSTEM ../vendor/gtest/include)
 
 target_link_libraries(graphplay-test
+  tinyxml2
   ${GLFW_LIBRARIES}
   glad
   ${OPENGL_LIBRARIES}
