@@ -19,7 +19,6 @@
 		5E36B0301A9A9088004C7999 /* OpenGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0201A9A9088004C7999 /* OpenGLUtils.cpp */; };
 		5E36B0311A9A9088004C7999 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0221A9A9088004C7999 /* Scene.cpp */; };
 		5E36B0321A9A9088004C7999 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0241A9A9088004C7999 /* Shader.cpp */; };
-		5E36B0331A9A9088004C7999 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0261A9A9088004C7999 /* tinyxml2.cpp */; };
 		5E36B08A1A9A9201004C7999 /* CameraTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0351A9A90E2004C7999 /* CameraTest.cpp */; };
 		5E36B08B1A9A9205004C7999 /* GeometryTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0371A9A90E2004C7999 /* GeometryTest.cpp */; };
 		5E36B08D1A9A920A004C7999 /* MeshTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B03B1A9A90E2004C7999 /* MeshTest.cpp */; };
@@ -34,7 +33,6 @@
 		5E36B0981A9A922A004C7999 /* OpenGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0201A9A9088004C7999 /* OpenGLUtils.cpp */; };
 		5E36B0991A9A922A004C7999 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0221A9A9088004C7999 /* Scene.cpp */; };
 		5E36B09A1A9A922A004C7999 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0241A9A9088004C7999 /* Shader.cpp */; };
-		5E36B09B1A9A922A004C7999 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0261A9A9088004C7999 /* tinyxml2.cpp */; };
 		5E36B09D1A9A9283004C7999 /* gtest-death-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0781A9A91D3004C7999 /* gtest-death-test.cc */; };
 		5E36B09E1A9A9283004C7999 /* gtest-filepath.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B0791A9A91D3004C7999 /* gtest-filepath.cc */; };
 		5E36B09F1A9A928A004C7999 /* gtest-port.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5E36B07B1A9A91D3004C7999 /* gtest-port.cc */; };
@@ -54,6 +52,10 @@
 		5E36B0B21A9A952B004C7999 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E36B0A51A9A9359004C7999 /* Carbon.framework */; };
 		5E823AEB1CAABF7A002B4A8B /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 5E823AEA1CAABF7A002B4A8B /* glad.c */; };
 		5E823AEC1CAABF7A002B4A8B /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 5E823AEA1CAABF7A002B4A8B /* glad.c */; };
+		5E8DB2A91D10E40B00FC3C35 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E8DB2A81D10E40B00FC3C35 /* tinyxml2.cpp */; };
+		5E8DB2AA1D10E49400FC3C35 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E8DB2A81D10E40B00FC3C35 /* tinyxml2.cpp */; };
+		5E8DB2AC1D10E4A300FC3C35 /* PhysicsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E8DB2AB1D10E4A300FC3C35 /* PhysicsSystem.cpp */; };
+		5E8DB2AF1D10E4B700FC3C35 /* PhysicsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E8DB2AB1D10E4A300FC3C35 /* PhysicsSystem.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -103,8 +105,6 @@
 		5E36B0231A9A9088004C7999 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
 		5E36B0241A9A9088004C7999 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		5E36B0251A9A9088004C7999 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
-		5E36B0261A9A9088004C7999 /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
-		5E36B0271A9A9088004C7999 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
 		5E36B0351A9A90E2004C7999 /* CameraTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraTest.cpp; sourceTree = "<group>"; };
 		5E36B0371A9A90E2004C7999 /* GeometryTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeometryTest.cpp; sourceTree = "<group>"; };
 		5E36B03B1A9A90E2004C7999 /* MeshTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshTest.cpp; sourceTree = "<group>"; };
@@ -155,6 +155,11 @@
 		5E823AE61CAABF7A002B4A8B /* glad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glad.h; sourceTree = "<group>"; };
 		5E823AE81CAABF7A002B4A8B /* khrplatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = khrplatform.h; sourceTree = "<group>"; };
 		5E823AEA1CAABF7A002B4A8B /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
+		5E8DB2A61D10E40B00FC3C35 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
+		5E8DB2A81D10E40B00FC3C35 /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
+		5E8DB2AB1D10E4A300FC3C35 /* PhysicsSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicsSystem.cpp; sourceTree = "<group>"; };
+		5E8DB2AD1D10E4B100FC3C35 /* Integrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Integrator.h; sourceTree = "<group>"; };
+		5E8DB2AE1D10E4B100FC3C35 /* PhysicsSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhysicsSystem.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +216,9 @@
 		5E36B0081A9A8F58004C7999 /* graphplay */ = {
 			isa = PBXGroup;
 			children = (
+				5E8DB2AD1D10E4B100FC3C35 /* Integrator.h */,
+				5E8DB2AE1D10E4B100FC3C35 /* PhysicsSystem.h */,
+				5E8DB2AB1D10E4A300FC3C35 /* PhysicsSystem.cpp */,
 				5E36B0101A9A9088004C7999 /* Body.cpp */,
 				5E36B0111A9A9088004C7999 /* Body.h */,
 				5E36B0121A9A9088004C7999 /* Camera.cpp */,
@@ -234,8 +242,6 @@
 				5E36B0231A9A9088004C7999 /* Scene.h */,
 				5E36B0241A9A9088004C7999 /* Shader.cpp */,
 				5E36B0251A9A9088004C7999 /* Shader.h */,
-				5E36B0261A9A9088004C7999 /* tinyxml2.cpp */,
-				5E36B0271A9A9088004C7999 /* tinyxml2.h */,
 			);
 			path = graphplay;
 			sourceTree = "<group>";
@@ -258,6 +264,7 @@
 		5E36B0521A9A91D3004C7999 /* vendor */ = {
 			isa = PBXGroup;
 			children = (
+				5E8DB2A31D10E40B00FC3C35 /* tinyxml2 */,
 				5E823AE01CAABF7A002B4A8B /* glad */,
 				5E36B0531A9A91D3004C7999 /* gtest */,
 			);
@@ -379,6 +386,31 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		5E8DB2A31D10E40B00FC3C35 /* tinyxml2 */ = {
+			isa = PBXGroup;
+			children = (
+				5E8DB2A51D10E40B00FC3C35 /* include */,
+				5E8DB2A71D10E40B00FC3C35 /* src */,
+			);
+			path = tinyxml2;
+			sourceTree = "<group>";
+		};
+		5E8DB2A51D10E40B00FC3C35 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				5E8DB2A61D10E40B00FC3C35 /* tinyxml2.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		5E8DB2A71D10E40B00FC3C35 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				5E8DB2A81D10E40B00FC3C35 /* tinyxml2.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -456,15 +488,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E36B0331A9A9088004C7999 /* tinyxml2.cpp in Sources */,
 				5E36B02A1A9A9088004C7999 /* Collada.cpp in Sources */,
 				5E1A79AD1CA03F240082C1AC /* PlyFile.cpp in Sources */,
 				5E36B02B1A9A9088004C7999 /* Geometry.cpp in Sources */,
 				5E36B0291A9A9088004C7999 /* Camera.cpp in Sources */,
+				5E8DB2AC1D10E4A300FC3C35 /* PhysicsSystem.cpp in Sources */,
 				5E36B0301A9A9088004C7999 /* OpenGLUtils.cpp in Sources */,
 				5E36B02D1A9A9088004C7999 /* graphplay.cpp in Sources */,
 				5E36B0321A9A9088004C7999 /* Shader.cpp in Sources */,
 				5E36B02F1A9A9088004C7999 /* Mesh.cpp in Sources */,
+				5E8DB2A91D10E40B00FC3C35 /* tinyxml2.cpp in Sources */,
 				5E36B0311A9A9088004C7999 /* Scene.cpp in Sources */,
 				5E36B0281A9A9088004C7999 /* Body.cpp in Sources */,
 				5E823AEB1CAABF7A002B4A8B /* glad.c in Sources */,
@@ -475,7 +508,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E36B09B1A9A922A004C7999 /* tinyxml2.cpp in Sources */,
 				5E36B08A1A9A9201004C7999 /* CameraTest.cpp in Sources */,
 				5E36B08E1A9A920A004C7999 /* SceneTest.cpp in Sources */,
 				5E36B08D1A9A920A004C7999 /* MeshTest.cpp in Sources */,
@@ -494,10 +526,12 @@
 				5E36B09D1A9A9283004C7999 /* gtest-death-test.cc in Sources */,
 				5E36B09E1A9A9283004C7999 /* gtest-filepath.cc in Sources */,
 				5E36B08B1A9A9205004C7999 /* GeometryTest.cpp in Sources */,
+				5E8DB2AF1D10E4B700FC3C35 /* PhysicsSystem.cpp in Sources */,
 				5E36B0971A9A922A004C7999 /* Mesh.cpp in Sources */,
 				5E36B09F1A9A928A004C7999 /* gtest-port.cc in Sources */,
 				5E36B0A31A9A928A004C7999 /* gtest.cc in Sources */,
 				5E36B0901A9A920A004C7999 /* TestOpenGLContext.cpp in Sources */,
+				5E8DB2AA1D10E49400FC3C35 /* tinyxml2.cpp in Sources */,
 				5E36B0A11A9A928A004C7999 /* gtest-test-part.cc in Sources */,
 				5E1A79B11CA043180082C1AC /* PlyFile.cpp in Sources */,
 				5E36B0911A9A922A004C7999 /* Body.cpp in Sources */,
@@ -551,7 +585,11 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lglfw3";
+				OTHER_LDFLAGS = (
+					"-lglfw3",
+					"-lboost_system",
+					"-lboost_filesystem",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -593,7 +631,11 @@
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "-lglfw3";
+				OTHER_LDFLAGS = (
+					"-lglfw3",
+					"-lboost_system",
+					"-lboost_filesystem",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
