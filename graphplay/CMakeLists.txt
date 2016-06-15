@@ -1,4 +1,4 @@
-add_executable(graphplay WIN32
+add_library(graphplay_engine
   Body.cpp
   Camera.cpp
   Collada.cpp
@@ -8,7 +8,9 @@ add_executable(graphplay WIN32
   PhysicsSystem.cpp
   PlyFile.cpp
   Scene.cpp
-  Shader.cpp
+  Shader.cpp)
+
+add_executable(graphplay WIN32
   graphplay.cpp)
 
 target_link_libraries(graphplay
@@ -17,20 +19,11 @@ target_link_libraries(graphplay
   glad
   ${OPENGL_LIBRARIES}
   ${Boost_LIBRARIES}
-  ${CMAKE_DL_LIBS})
+  ${CMAKE_DL_LIBS}
+  graphplay_engine)
 
 if (WIN32)
   add_executable(graphplay-console
-    Body.cpp
-    Camera.cpp
-    Collada.cpp
-    Geometry.cpp
-    Mesh.cpp
-    OpenGLUtils.cpp
-    PlyFile.cpp
-    PhysicsSystem.cpp
-    Scene.cpp
-    Shader.cpp
     graphplay.cpp)
 
   target_link_libraries(graphplay-console
@@ -38,7 +31,8 @@ if (WIN32)
     ${GLFW_LIBRARIES}
     glad
     ${OPENGL_LIBRARIES}
-    ${Boost_LIBRARIES})
+    ${Boost_LIBRARIES}
+    graphplay_engine)
 
   if(MINGW)
     set_target_properties(graphplay PROPERTIES
