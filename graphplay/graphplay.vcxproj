@@ -56,7 +56,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\glad\include;C:\Users\andrew\Projects\graphplay-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\tinyxml2\include;$(SolutionDir)vendor\glad\include;C:\Users\andrew\Projects\graphplay-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Users\andrew\Projects\graphplay-deps\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -70,7 +70,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\glad\include;C:\Users\andrew\Projects\graphplay-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\tinyxml2\include;$(SolutionDir)vendor\glad\include;C:\Users\andrew\Projects\graphplay-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Users\andrew\Projects\graphplay-deps\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -86,7 +86,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\glad\include;C:\Users\andrew\Projects\graphplay-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\tinyxml2\include;$(SolutionDir)vendor\glad\include;C:\Users\andrew\Projects\graphplay-deps\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -111,7 +111,6 @@
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PlyFile.tmpl.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -126,12 +125,14 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="opengl.h" />
-    <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vendor\glad\glad.vcxproj">
       <Project>{e4873a24-4bfd-4a7b-87a6-9083e696de2e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\tinyxml2\tinyxml2.vcxproj">
+      <Project>{9d1c8c5f-3ed9-44bd-b3dd-7e5856f9a631}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

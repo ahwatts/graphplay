@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphplay", "graphplay\graphplay.vcxproj", "{A4F233BE-5353-43D2-A6E8-3737A8B9E41C}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -20,6 +20,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest_main", "vendor\gtest\gtest_main\gtest_main.vcxproj", "{C5BA8E6A-6AAE-4090-8E68-0CD76C2146FF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glad", "vendor\glad\glad.vcxproj", "{E4873A24-4BFD-4A7B-87A6-9083E696DE2E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml2", "vendor\tinyxml2\tinyxml2.vcxproj", "{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,18 @@ Global
 		{E4873A24-4BFD-4A7B-87A6-9083E696DE2E}.Release|Win32.Build.0 = Release|Win32
 		{E4873A24-4BFD-4A7B-87A6-9083E696DE2E}.Release|x64.ActiveCfg = Release|x64
 		{E4873A24-4BFD-4A7B-87A6-9083E696DE2E}.Release|x64.Build.0 = Release|x64
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug - Console|Win32.ActiveCfg = Debug|Win32
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug - Console|Win32.Build.0 = Debug|Win32
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug - Console|x64.ActiveCfg = Debug|x64
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug - Console|x64.Build.0 = Debug|x64
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug|Win32.Build.0 = Debug|Win32
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug|x64.ActiveCfg = Debug|x64
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Debug|x64.Build.0 = Debug|x64
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Release|Win32.ActiveCfg = Release|Win32
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Release|Win32.Build.0 = Release|Win32
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Release|x64.ActiveCfg = Release|x64
+		{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
