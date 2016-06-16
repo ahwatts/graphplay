@@ -10,7 +10,7 @@
 namespace graphplay {
     class PhysicsSystem {
     public:
-        PhysicsSystem();
+        PhysicsSystem(float time_step);
         PhysicsSystem(const PhysicsSystem&) = delete;
         PhysicsSystem(PhysicsSystem&&) = delete;
         ~PhysicsSystem();
@@ -21,10 +21,13 @@ namespace graphplay {
         std::vector<Body::wptr_type>& bodies() { return m_bodies; }
 
         void addBody(Body::sptr_type new_body);
-        void update(float dt);
+        void update(float total_step);
 
     protected:
+        float m_time_step;
         std::vector<Body::wptr_type> m_bodies;
+
+        void stepTime(float *step_size);
     };
 }
 

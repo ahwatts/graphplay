@@ -43,7 +43,7 @@ namespace graphplay {
 
     protected:
         glm::vec3 m_position, m_velocity;
-        Rk4<glm::vec3, float> m_integrator;
+        // Rk4<glm::vec3, float> m_integrator;
 
         // glm::quat m_orientation;
         // glm::vec3 m_angular_velocity;

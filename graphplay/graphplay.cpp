@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
     // object_body->angularVelocity({ M_PI_2, M_PI_4, 0.0 });
     std::cout << "object = " << *object_body << std::endl;
 
-    PhysicsSystem physics;
+    PhysicsSystem physics(0.01);
     physics.addBody(object_body);
 
     Camera &camera = SCENE.getCamera();

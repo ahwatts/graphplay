@@ -7,27 +7,27 @@
 #include <glm/gtx/io.hpp>
 
 namespace graphplay {
-    class ConstantVelocity : public FirstOrderDE<glm::vec3, float> {
-    public:
-        ConstantVelocity(const glm::vec3 &velocity)
-            : FirstOrderDE(),
-              m_velocity(velocity)
-        {}
+    // class ConstantVelocity : public FirstOrderDE<glm::vec3, float> {
+    // public:
+    //     ConstantVelocity(const glm::vec3 &velocity)
+    //         : FirstOrderDE(),
+    //           m_velocity(velocity)
+    //     {}
 
-        ~ConstantVelocity() {}
+    //     ~ConstantVelocity() {}
 
-        virtual glm::vec3 operator()(glm::vec3 pos, float time) const {
-            return m_velocity;
-        }
+    //     virtual glm::vec3 operator()(glm::vec3 pos, float time) const {
+    //         return m_velocity;
+    //     }
 
-    protected:
-        glm::vec3 m_velocity;
-    };
+    // protected:
+    //     glm::vec3 m_velocity;
+    // };
 
     Body::Body()
         : m_position(),
-          m_velocity(),
-          m_integrator(std::make_shared<ConstantVelocity>(m_velocity), 0.1)
+          m_velocity()
+          // m_integrator(std::make_shared<ConstantVelocity>(m_velocity), 0.01)
           // m_orientation(),
           // m_angular_velocity(0)
     {}
@@ -58,6 +58,7 @@ namespace graphplay {
     }
 
     void Body::velocity(const glm::vec3 &new_vel) {
+        // m_integrator = Rk4<glm::vec3, float>(std::make_shared<ConstantVelocity>(new_vel), 0.01);
         m_velocity = new_vel;
         // m_velocity_mag = glm::length(new_vel);
         // if (m_velocity_mag != 0.0) {
@@ -75,11 +76,11 @@ namespace graphplay {
     //     m_angular_velocity = new_ang_vel;
     // }
 
-    void Body::update(float dt) {
-        // glm::vec3 ds = m_velocity * dt;
-        // m_position += ds;
+    void Body::update(float time_step) {
+        glm::vec3 ds = m_velocity * time_step;
+        m_position += ds;
 
-        m_position = m_integrator(m_position, dt);
+        // m_position += m_integrator(m_position, time_step);
 
         // glm::quat w(0.0, m_angular_velocity);
         // glm::quat dq = w * m_orientation * 0.5f * dt;

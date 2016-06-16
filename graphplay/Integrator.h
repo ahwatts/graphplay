@@ -26,15 +26,14 @@ namespace graphplay {
         typedef Y dependent_type;
         typedef T independent_type;
 
-        Rk4(typename FirstOrderDE<Y, T>::sptr_type equation, T step)
-            : m_equation(equation),
-              m_step(step)
+        Rk4(typename FirstOrderDE<Y, T>::sptr_type equation)
+            : m_equation(equation)
         {}
 
         ~Rk4() {}
 
         Y operator()(Y yn, T tn) const {
-            T h = m_step;
+            T h = tn;
             T half_h = h / 2.0;
             T sixth_h = h / 6.0;
             T two = 2.0;
@@ -49,7 +48,6 @@ namespace graphplay {
 
     protected:
         typename FirstOrderDE<Y, T>::sptr_type m_equation;
-        T m_step;
     };
 }
 
