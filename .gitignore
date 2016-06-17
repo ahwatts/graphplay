@@ -1,25 +1,11 @@
-/Debug
-/Debug - Console
-/Release
-
-/graphplay/Debug
-/graphplay/Debug - Console
-/graphplay/Release
-
-/graphplay-test/Debug
-
-/vendor/glad/Debug
-/vendor/glad/Release
-
-/vendor/gtest/gtest/Debug
-/vendor/gtest/gtest_main/Debug
-
-/vendor/tinyxml2/Debug
-/vendor/tinyxml2/Release
-
 /build
-/msvc
 /mingw
+
+msvc/Debug
+msvc/glad/Debug
+msvc/graphplay/Debug
+msvc/graphplay_engine/Debug
+msvc/tinyxml2/Debug
 
 *.sdf
 *.suo

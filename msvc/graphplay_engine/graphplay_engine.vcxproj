@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9D1C8C5F-3ED9-44BD-B3DD-7E5856F9A631}</ProjectGuid>
-    <RootNamespace>tinyxml2</RootNamespace>
+    <ProjectGuid>{B41708C9-D3DE-4E84-B7CB-2EA8F6C39C67}</ProjectGuid>
+    <RootNamespace>graphplay_engine</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -68,13 +68,23 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)..\graphplay;$(SolutionDir)..\vendor\tinyxml2\include;$(SolutionDir)..\vendor\glad\include;$(SolutionDir)..\..\graphplay-deps\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)..\graphplay;$(SolutionDir)..\vendor\tinyxml2\include;$(SolutionDir)..\vendor\glad\include;$(SolutionDir)..\..\graphplay-deps\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)..\graphplay;$(SolutionDir)..\vendor\tinyxml2\include;$(SolutionDir)..\vendor\glad\include;$(SolutionDir)..\..\graphplay-deps\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)..\graphplay;$(SolutionDir)..\vendor\tinyxml2\include;$(SolutionDir)..\vendor\glad\include;$(SolutionDir)..\..\graphplay-deps\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\tinyxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -82,7 +92,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\tinyxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,7 +101,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\tinyxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -106,7 +114,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\tinyxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -114,10 +121,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\tinyxml2.h" />
+    <ClInclude Include="..\..\graphplay\Body.h" />
+    <ClInclude Include="..\..\graphplay\Camera.h" />
+    <ClInclude Include="..\..\graphplay\Collada.h" />
+    <ClInclude Include="..\..\graphplay\Geometry.h" />
+    <ClInclude Include="..\..\graphplay\graphplay.h" />
+    <ClInclude Include="..\..\graphplay\Integrator.h" />
+    <ClInclude Include="..\..\graphplay\Mesh.h" />
+    <ClInclude Include="..\..\graphplay\opengl.h" />
+    <ClInclude Include="..\..\graphplay\OpenGLUtils.h" />
+    <ClInclude Include="..\..\graphplay\PhysicsSystem.h" />
+    <ClInclude Include="..\..\graphplay\PlyFile.h" />
+    <ClInclude Include="..\..\graphplay\Scene.h" />
+    <ClInclude Include="..\..\graphplay\Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\tinyxml2.cpp" />
+    <ClCompile Include="..\..\graphplay\Body.cpp" />
+    <ClCompile Include="..\..\graphplay\Camera.cpp" />
+    <ClCompile Include="..\..\graphplay\Collada.cpp" />
+    <ClCompile Include="..\..\graphplay\Geometry.cpp" />
+    <ClInclude Include="..\..\graphplay\Geometry.tmpl.cpp" />
+    <ClCompile Include="..\..\graphplay\Mesh.cpp" />
+    <ClCompile Include="..\..\graphplay\OpenGLUtils.cpp" />
+    <ClCompile Include="..\..\graphplay\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\graphplay\PlyFile.cpp" />
+    <ClInclude Include="..\..\graphplay\PlyFile.tmpl.cpp" />
+    <ClCompile Include="..\..\graphplay\Scene.cpp" />
+    <ClCompile Include="..\..\graphplay\Shader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
