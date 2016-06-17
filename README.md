@@ -33,7 +33,11 @@ There's also a `Makefile` in the root directory to run the build from there.
 
 #### Visual Studio
 
-Load up `graphplay.sln` and build it.
+Load up `msvc/graphplay.sln` and build it.
+
+The builds will be in `msvc\Debug` and `msvc\Release`, depending on the options you build with.
+
+At the moment, the only working configuration with Visual Studio is the 32-bit Debug configuration.
 
 #### XCode
 
