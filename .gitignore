@@ -2,10 +2,23 @@
 /mingw
 
 msvc/Debug
+msvc/Release
 msvc/glad/Debug
+msvc/glad/Release
 msvc/graphplay/Debug
+msvc/graphplay/Release
+msvc/graphplay_console/Debug
+msvc/graphplay_console/Release
 msvc/graphplay_engine/Debug
+msvc/graphplay_engine/Release
+msvc/graphplay_test/Debug
+msvc/graphplay_test/Release
+msvc/gtest/Debug
+msvc/gtest/Release
+msvc/gtest_main/Debug
+msvc/gtest_main/Release
 msvc/tinyxml2/Debug
+msvc/tinyxml2/Release
 
 *.sdf
 *.suo
