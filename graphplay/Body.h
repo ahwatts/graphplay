@@ -43,8 +43,7 @@ namespace graphplay {
 
     protected:
         float m_mass;
-        glm::vec3 m_position, m_velocity;
-        glm::vec3 m_force, m_prev_force;
+        glm::vec3 m_position, m_velocity, m_force;
     };
 
     std::ostream& operator<<(std::ostream &stream, const Body &body);

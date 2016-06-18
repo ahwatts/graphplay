@@ -92,4 +92,24 @@ namespace graphplay {
         EXPECT_FLOAT_VEC_EQ(pos, b.position());
         EXPECT_FLOAT_VEC_EQ(vel, b.velocity());
     }
+
+    TEST(BodyTest, UpdateAccelerating) {
+        Body b;
+
+        glm::vec3 pos = b.position();
+        glm::vec3 vel = b.velocity();
+
+        float time_step = 0.1;
+        glm::vec3 push(0.0, -10.0, 21.0);
+        glm::vec3 accel = push / b.mass();
+        glm::vec3 dvel = accel * time_step;
+        glm::vec3 dpos = accel * time_step * time_step * 0.5f + vel * time_step;
+
+        b.addForce(push);
+        b.update(time_step);
+
+        EXPECT_FLOAT_VEC_EQ(vel + dvel, b.velocity());
+        EXPECT_FLOAT_VEC_EQ(pos + dpos, b.position());
+        EXPECT_FLOAT_VEC_EQ(ZERO_VEC, b.netForce());
+    }
 }

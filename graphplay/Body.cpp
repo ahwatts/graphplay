@@ -11,8 +11,7 @@ namespace graphplay {
         : m_mass(1.0),
           m_position(),
           m_velocity(),
-          m_force(),
-          m_prev_force()
+          m_force()
     {}
 
     Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel)
@@ -57,18 +56,18 @@ namespace graphplay {
         m_force += force;
     }
 
-    void Body::update(float time_step) {
-        glm::vec3 impulse = (m_prev_force + m_force) * time_step / 2.0f;
-        glm::vec3 dv = impulse / m_mass;
+    void Body::update(float dt) {
+        // Assume constant acceleration over this time step.
+        glm::vec3 a = m_force / m_mass;
+        glm::vec3 dv = a * dt;
+        glm::vec3 ds = a * dt * dt * 0.5f + m_velocity * dt;
 
-        // std::cout << "impulse = " << impulse << std::endl
-        //           << "delta v = " << dv << std::endl;
-
+        // Update values.
         m_velocity += dv;
-        m_position += m_velocity * time_step;
+        m_position += ds;
 
-        m_prev_force = m_force;
-        m_force = glm::vec3();
+        // Set the force to zero fo the next iteration.
+        m_force = { 0.0, 0.0, 0.0 };
     }
 
     glm::mat4x4 Body::modelTransformation(const glm::mat4x4 &base_modelview) const {
