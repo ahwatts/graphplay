@@ -7,34 +7,30 @@
 #include <glm/gtx/io.hpp>
 
 namespace graphplay {
-    // class ConstantVelocity : public FirstOrderDE<glm::vec3, float> {
-    // public:
-    //     ConstantVelocity(const glm::vec3 &velocity)
-    //         : FirstOrderDE(),
-    //           m_velocity(velocity)
-    //     {}
-
-    //     ~ConstantVelocity() {}
-
-    //     virtual glm::vec3 operator()(glm::vec3 pos, float time) const {
-    //         return m_velocity;
-    //     }
-
-    // protected:
-    //     glm::vec3 m_velocity;
-    // };
-
     Body::Body()
-        : m_position(),
-          m_velocity()
-          // m_integrator(std::make_shared<ConstantVelocity>(m_velocity), 0.01)
-          // m_orientation(),
-          // m_angular_velocity(0)
+        : m_mass(1.0),
+          m_position(),
+          m_velocity(),
+          m_force(),
+          m_prev_force()
     {}
 
-    Body::Body(const glm::vec3 &pos, const glm::vec3 &vel) : Body() {
+    Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel)
+        : Body()
+    {
+        mass(_mass);
         position(pos);
         velocity(vel);
+    }
+
+    float Body::mass() const {
+        return m_mass;
+    }
+
+    void Body::mass(float new_mass) {
+        if (new_mass > 0) {
+            m_mass = new_mass;
+        }
     }
 
     glm::vec3 Body::position() const {
@@ -45,59 +41,43 @@ namespace graphplay {
         m_position = new_pos;
     }
 
-    // glm::quat Body::orientation() const {
-    //     return m_orientation;
-    // }
-
-    // void Body::orientation(const glm::quat &new_orientation) {
-    //     m_orientation = glm::normalize(new_orientation);
-    // }
-
     glm::vec3 Body::velocity() const {
         return m_velocity;
     }
 
     void Body::velocity(const glm::vec3 &new_vel) {
-        // m_integrator = Rk4<glm::vec3, float>(std::make_shared<ConstantVelocity>(new_vel), 0.01);
         m_velocity = new_vel;
-        // m_velocity_mag = glm::length(new_vel);
-        // if (m_velocity_mag != 0.0) {
-        //     m_velocity_dir = new_vel / m_velocity_mag;
-        // } else {
-        //     m_velocity_dir = { 1.0, 0.0, 0.0 };
-        // }
     }
 
-    // glm::vec3 Body::angularVelocity() const {
-    //     return m_angular_velocity;
-    // }
+    glm::vec3 Body::netForce() const {
+        return m_force;
+    }
 
-    // void Body::angularVelocity(const glm::vec3 &new_ang_vel) {
-    //     m_angular_velocity = new_ang_vel;
-    // }
+    void Body::addForce(const glm::vec3 &force) {
+        m_force += force;
+    }
 
     void Body::update(float time_step) {
-        glm::vec3 ds = m_velocity * time_step;
-        m_position += ds;
+        glm::vec3 impulse = (m_prev_force + m_force) * time_step / 2.0f;
+        glm::vec3 dv = impulse / m_mass;
 
-        // m_position += m_integrator(m_position, time_step);
+        std::cout << "impulse = " << impulse << std::endl
+                  << "delta v = " << dv << std::endl;
 
-        // glm::quat w(0.0, m_angular_velocity);
-        // glm::quat dq = w * m_orientation * 0.5f * dt;
-        // m_orientation = glm::normalize(m_orientation + dq);
+        m_velocity += dv;
+        m_position += m_velocity * time_step;
+
+        m_prev_force = m_force;
+        m_force = glm::vec3();
     }
 
     glm::mat4x4 Body::modelTransformation(const glm::mat4x4 &base_modelview) const {
-        glm::mat4x4 transform = glm::translate(base_modelview, m_position);
-        // transform = transform * glm::mat4_cast(m_orientation);
-        return transform;
+        return glm::translate(base_modelview, m_position);
     }
 
     std::ostream& operator<<(std::ostream &stream, const Body &body) {
         return stream << "Body:" << std::endl
-            << "  m_position = " << body.m_position << std::endl
-            << "  m_velocity = " << body.m_velocity << std::endl;
-            // << "  m_orientation = " << body.m_orientation << std::endl
-            // << "  m_angular_velocity = " << body.m_angular_velocity << std::endl;
+                      << "  m_position = " << body.m_position << std::endl
+                      << "  m_velocity = " << body.m_velocity << std::endl;
     }
 };

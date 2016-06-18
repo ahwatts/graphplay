@@ -42,6 +42,9 @@ bool ROTATING = false;
 int main(int argc, char **argv) {
     int pixel_width = SCENE.getViewportWidth(), pixel_height = SCENE.getViewportHeight();
     GLFWwindow *window = nullptr;
+    std::random_device random_dev;
+    std::default_random_engine random_eng(random_dev());
+    std::uniform_real_distribution<float> random_unit(-10.0f, 10.0f);
 
     initGLFW(pixel_width, pixel_height, "Graphplay", &window);
     initglad();
@@ -85,7 +88,7 @@ int main(int argc, char **argv) {
     SCENE.addMesh(bbox);
 
     Body::sptr_type object_body = std::make_shared<Body>();
-    object_body->velocity({ 1.5, 0.3, 0.0 });
+    // object_body->velocity({ 1.5, 0.3, 0.0 });
     // object_body->angularVelocity({ M_PI_2, M_PI_4, 0.0 });
     std::cout << "object = " << *object_body << std::endl;
 
@@ -110,6 +113,9 @@ int main(int argc, char **argv) {
         auto time = steady_clock::now();
         duration<float> seconds = time - ptime;
         ptime = time;
+
+        glm::vec3 gust(random_unit(random_eng), random_unit(random_eng), random_unit(random_eng));
+        object_body->addForce(gust);
 
         physics.update(seconds.count());
         object->modelTransformation(object_body->modelTransformation(glm::mat4x4(1)));

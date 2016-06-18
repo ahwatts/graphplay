@@ -21,19 +21,19 @@ namespace graphplay {
         typedef std::weak_ptr<Body> wptr_type;
 
         Body();
-        Body(const glm::vec3 &pos, const glm::vec3 &vel);
+        Body(float mass, const glm::vec3 &pos, const glm::vec3 &vel);
+
+        float mass() const;
+        void mass(float new_mass);
 
         glm::vec3 position() const;
         void position(const glm::vec3& new_pos);
 
-        // glm::quat orientation() const;
-        // void orientation(const glm::quat &new_orientation);
-
         glm::vec3 velocity() const;
         void velocity(const glm::vec3 &new_vel);
 
-        // glm::vec3 angularVelocity() const;
-        // void angularVelocity(const glm::vec3 &new_ang_vel);
+        glm::vec3 netForce() const;
+        void addForce(const glm::vec3 &force);
 
         void update(float dt);
 
@@ -42,11 +42,9 @@ namespace graphplay {
         friend std::ostream& operator<<(std::ostream &stream, const Body &body);
 
     protected:
+        float m_mass;
         glm::vec3 m_position, m_velocity;
-        // Rk4<glm::vec3, float> m_integrator;
-
-        // glm::quat m_orientation;
-        // glm::vec3 m_angular_velocity;
+        glm::vec3 m_force, m_prev_force;
     };
 
     std::ostream& operator<<(std::ostream &stream, const Body &body);

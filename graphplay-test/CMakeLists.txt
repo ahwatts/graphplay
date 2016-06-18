@@ -1,4 +1,5 @@
 add_executable(graphplay-test
+  BodyTest.cpp
   CameraTest.cpp
   GeometryTest.cpp
   MeshTest.cpp
