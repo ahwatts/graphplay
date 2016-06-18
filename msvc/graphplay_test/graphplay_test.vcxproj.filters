@@ -36,6 +36,9 @@
     <ClCompile Include="..\..\graphplay-test\TestOpenGLContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\graphplay-test\BodyTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\graphplay-test\TestOpenGLContext.h">

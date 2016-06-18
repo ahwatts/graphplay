@@ -61,8 +61,8 @@ namespace graphplay {
         glm::vec3 impulse = (m_prev_force + m_force) * time_step / 2.0f;
         glm::vec3 dv = impulse / m_mass;
 
-        std::cout << "impulse = " << impulse << std::endl
-                  << "delta v = " << dv << std::endl;
+        // std::cout << "impulse = " << impulse << std::endl
+        //           << "delta v = " << dv << std::endl;
 
         m_velocity += dv;
         m_position += m_velocity * time_step;

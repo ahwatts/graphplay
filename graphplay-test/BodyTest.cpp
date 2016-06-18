@@ -69,12 +69,12 @@ namespace graphplay {
         EXPECT_EQ(ZERO_VEC, b.netForce());
 
         glm::vec3 pos = b.position();
-        b.update(0.1);
+        b.update(0.1f);
         EXPECT_FLOAT_VEC_EQ(pos, b.position());
 
         pos = { 0.7, 1.9, -8.2 };
         b.position(pos);
-        b.update(0.1);
+        b.update(0.1f);
         EXPECT_FLOAT_VEC_EQ(pos, b.position());
     }
 
@@ -86,7 +86,7 @@ namespace graphplay {
         glm::vec3 vel(1.1, -25.3, 0.0);
         b.velocity(vel);
 
-        b.update(0.1);
+        b.update(0.1f);
         pos += vel * 0.1f;
 
         EXPECT_FLOAT_VEC_EQ(pos, b.position());
