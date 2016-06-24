@@ -15,24 +15,53 @@ namespace graphplay {
         typedef std::weak_ptr<FirstOrderDE<Y, T> > wptr_type;
 
         FirstOrderDE() {}
-        ~FirstOrderDE() {}
+        virtual ~FirstOrderDE() {}
 
         virtual Y operator()(Y pos, T time) const = 0;
     };
 
     template <typename Y, typename T>
-    class Rk4 {
+    class Integrator {
     public:
         typedef Y dependent_type;
         typedef T independent_type;
 
-        Rk4(typename FirstOrderDE<Y, T>::sptr_type equation)
+        Integrator(typename FirstOrderDE<Y, T>::sptr_type equation)
             : m_equation(equation)
         {}
 
-        ~Rk4() {}
+        virtual ~Integrator() {}
 
-        Y operator()(Y yn, T tn) const {
+        virtual Y operator()(Y yn, T tn) const = 0;
+
+    protected:
+        typename FirstOrderDE<Y, T>::sptr_type m_equation;
+    };
+
+    template <typename Y, typename T>
+    class Euler : public Integrator<Y, T> {
+    public:
+        Euler(typename FirstOrderDE<Y, T>::sptr_type equation)
+            : Integrator(equation)
+        {}
+
+        virtual ~Euler() {}
+
+        virtual Y operator()(Y yn, T tn) const {
+
+        }
+    };
+
+    template <typename Y, typename T>
+    class Rk4 : public Integrator<Y, T> {
+    public:
+        Rk4(typename FirstOrderDE<Y, T>::sptr_type equation)
+            : Integrator(equation)
+        {}
+
+        virtual ~Rk4() {}
+
+        virtual Y operator()(Y yn, T tn) const {
             T h = tn;
             T half_h = h / 2.0;
             T sixth_h = h / 6.0;

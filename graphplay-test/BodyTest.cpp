@@ -99,7 +99,7 @@ namespace graphplay {
         glm::vec3 pos = b.position();
         glm::vec3 vel = b.velocity();
 
-        float time_step = 0.1;
+        float time_step = 0.1f;
         glm::vec3 push(0.0, -10.0, 21.0);
         glm::vec3 accel = push / b.mass();
         glm::vec3 dvel = accel * time_step;
