@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
     SCENE.addMesh(bbox);
 
     Body::sptr_type object_body = std::make_shared<Body>();
+    object_body->position({ 1.0, 1.0, 1.0 });
     // object_body->velocity({ 1.5, 0.3, 0.0 });
     // object_body->angularVelocity({ M_PI_2, M_PI_4, 0.0 });
     std::cout << "object = " << *object_body << std::endl;
@@ -116,6 +117,11 @@ int main(int argc, char **argv) {
 
         glm::vec3 gust(random_unit(random_eng), random_unit(random_eng), random_unit(random_eng));
         object_body->addForce(gust);
+
+        glm::vec3 displacement = object_body->position(); // - glm::vec3(0.0, 0.0, 0.0)
+        float distance = glm::length(displacement);
+        glm::vec3 restoring = displacement * distance * -1.0f;
+        object_body->addForce(restoring);
 
         physics.update(seconds.count());
         object->modelTransformation(object_body->modelTransformation(glm::mat4x4(1)));

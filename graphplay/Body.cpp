@@ -57,14 +57,25 @@ namespace graphplay {
     }
 
     void Body::update(float dt) {
-        // Assume constant acceleration over this time step.
-        glm::vec3 a = m_force / m_mass;
-        glm::vec3 dv = a * dt;
-        glm::vec3 ds = a * dt * dt * 0.5f + m_velocity * dt;
+        glm::vec3 q0 = m_position;
+        glm::vec3 p0 = m_velocity * m_mass;
+        // std::cout << "q0   = " << q0   << " p0   = " << p0   << std::endl;
 
-        // Update values.
-        m_velocity += dv;
-        m_position += ds;
+        glm::vec3 qdot = p0 / m_mass;
+        glm::vec3 pdot = m_force;
+        // std::cout << "qdot = " << qdot << " pdot = " << pdot << std::endl;
+
+        glm::vec3 dq = qdot * dt;
+        glm::vec3 dp = pdot * dt;
+        // std::cout << "dq   = " << dq   << " dp   = " << dp   << std::endl;
+
+        glm::vec3 q1 = q0 + dq;
+        glm::vec3 p1 = p0 + dp;
+        // std::cout << "q1   = " << q1   << " p1   = " << p1   << std::endl;
+        // std::cout << std::endl;
+
+        m_velocity = p1 / m_mass;
+        m_position = q1;
 
         // Set the force to zero fo the next iteration.
         m_force = { 0.0, 0.0, 0.0 };
