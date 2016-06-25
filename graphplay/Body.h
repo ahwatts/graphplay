@@ -13,6 +13,19 @@
 #include "Integrator.h"
 
 namespace graphplay {
+    class Phase {
+    public:
+        Phase();
+        Phase(const glm::vec3 &pos, const glm::vec3 &momentum);
+        glm::vec3 position, momentum;
+    };
+
+    Phase operator+(const Phase &p1, const Phase &p2);
+    Phase operator*(const Phase &p, float t);
+    Phase& operator+=(Phase &p, const Phase &dp);
+    Phase& operator*=(Phase &p, float dt);
+    std::ostream& operator<<(std::ostream &stream, const Phase &body);
+
     class Body
     {
     public:
@@ -44,9 +57,20 @@ namespace graphplay {
     protected:
         float m_mass;
         glm::vec3 m_position, m_velocity, m_force;
+        typename FirstOrderODE<Phase, float>::sptr_type m_equation;
+        typename Integrator<Phase, float>::uptr_type m_integrator;
     };
 
     std::ostream& operator<<(std::ostream &stream, const Body &body);
+
+    class BodyStateEquation : public FirstOrderODE<Phase, float> {
+    public:
+        BodyStateEquation(const Body &body);
+        virtual Phase operator()(Phase pos, float time) const;
+
+    protected:
+        const Body &m_body;
+    };
 };
 
 #endif

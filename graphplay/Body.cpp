@@ -7,12 +7,59 @@
 #include <glm/gtx/io.hpp>
 
 namespace graphplay {
+    // Class Phase.
+    Phase::Phase()
+        : position(),
+          momentum()
+    {}
+
+    Phase::Phase(const glm::vec3 &pos, const glm::vec3 &mom)
+        : position(pos),
+          momentum(mom)
+    {}
+
+    Phase operator+(const Phase &p1, const Phase &p2) {
+        Phase rv(p1);
+        return rv += p2;
+    }
+
+    Phase operator*(const Phase &p, float t) {
+        Phase rv(p);
+        return rv *= t;
+    }
+
+    Phase& operator+=(Phase &p, const Phase &dp) {
+        p.position += dp.position;
+        p.momentum += dp.momentum;
+        return p;
+    }
+
+    Phase& operator*=(Phase &p, float dt) {
+        p.position *= dt;
+        p.momentum *= dt;
+        return p;
+    }
+
+    // Class BodyStateEquation.
+    BodyStateEquation::BodyStateEquation(const Body &body)
+        : m_body(body)
+    {}
+
+    Phase BodyStateEquation::operator()(Phase y, float t) const {
+        return Phase(m_body.velocity(), m_body.netForce());
+    }
+
+    // Class Body.
     Body::Body()
         : m_mass(1.0),
           m_position(),
           m_velocity(),
-          m_force()
-    {}
+          m_force(),
+          m_equation(std::make_shared<BodyStateEquation>(*this)),
+          m_integrator()
+    {
+        m_integrator.reset(new Euler<Phase, float>(m_equation));
+    }
 
     Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel)
         : Body()
@@ -57,25 +104,12 @@ namespace graphplay {
     }
 
     void Body::update(float dt) {
-        glm::vec3 q0 = m_position;
-        glm::vec3 p0 = m_velocity * m_mass;
-        // std::cout << "q0   = " << q0   << " p0   = " << p0   << std::endl;
+        // Step the integrator.
+        Phase next = m_integrator->step(dt);
 
-        glm::vec3 qdot = p0 / m_mass;
-        glm::vec3 pdot = m_force;
-        // std::cout << "qdot = " << qdot << " pdot = " << pdot << std::endl;
-
-        glm::vec3 dq = qdot * dt;
-        glm::vec3 dp = pdot * dt;
-        // std::cout << "dq   = " << dq   << " dp   = " << dp   << std::endl;
-
-        glm::vec3 q1 = q0 + dq;
-        glm::vec3 p1 = p0 + dp;
-        // std::cout << "q1   = " << q1   << " p1   = " << p1   << std::endl;
-        // std::cout << std::endl;
-
-        m_velocity = p1 / m_mass;
-        m_position = q1;
+        // Update self.
+        m_position = next.position;
+        m_velocity = next.momentum / m_mass;
 
         // Set the force to zero fo the next iteration.
         m_force = { 0.0, 0.0, 0.0 };
