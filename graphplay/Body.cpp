@@ -46,7 +46,9 @@ namespace graphplay {
     {}
 
     Phase BodyStateEquation::operator()(Phase y, float t) const {
-        return Phase(m_body.velocity(), m_body.netForce());
+        return Phase(
+            y.momentum / m_body.mass(),
+            m_body.netForce());
     }
 
     // Class Body.
