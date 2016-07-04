@@ -65,32 +65,33 @@ namespace graphplay {
         }
     };
 
-    // template <typename Y, typename T>
-    // class Rk4 : public Integrator<Y, T> {
-    // public:
-    //     Rk4(typename FirstOrderDE<Y, T>::sptr_type equation)
-    //         : Integrator<Y, T>(equation)
-    //     {}
+    template <typename Y, typename T>
+    class Rk4 : public Integrator<Y, T> {
+    public:
+        Rk4(typename FirstOrderODE<Y, T>::sptr_type equation)
+            : Integrator<Y, T>(equation) {}
+        virtual ~Rk4() {}
 
-    //     virtual ~Rk4() {}
+        virtual Y step(T h) {
+            Y y = this->dependent();
+            T t = this->independent();
+            T half_h = h / 2.0;
+            T sixth_h = h / 6.0;
+            T two = 2.0;
 
-    //     virtual Y operator()(Y yn, T tn) const {
-    //         T h = tn;
-    //         T half_h = h / 2.0;
-    //         T sixth_h = h / 6.0;
-    //         T two = 2.0;
+            Y k1 = (*this->equation())(y,             t);
+            Y k2 = (*this->equation())(y + k1*half_h, t + half_h);
+            Y k3 = (*this->equation())(y + k2*half_h, t + half_h);
+            Y k4 = (*this->equation())(y + k3*h,      t + h);
 
-    //         Y k1 = (*m_equation)(yn,             tn);
-    //         Y k2 = (*m_equation)(yn + half_h*k1, tn + half_h);
-    //         Y k3 = (*m_equation)(yn + half_h*k2, tn + half_h);
-    //         Y k4 = (*m_equation)(yn + h*k3,      tn + h);
+            this->dependent(y + (k1 + k2*two + k3*two + k4)*sixth_h);
+            this->independent(t + h);
+            return this->dependent();
+        }
 
-    //         return (k1 + k2*two + k3*two + k4)*sixth_h;
-    //     }
-
-    // protected:
-    //     typename FirstOrderDE<Y, T>::sptr_type m_equation;
-    // };
+    protected:
+        typename FirstOrderODE<Y, T>::sptr_type m_equation;
+    };
 }
 
 #endif

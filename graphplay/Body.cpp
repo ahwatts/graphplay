@@ -60,7 +60,8 @@ namespace graphplay {
           m_equation(std::make_shared<BodyStateEquation>(*this)),
           m_integrator()
     {
-        m_integrator.reset(new Euler<Phase, float>(m_equation));
+         m_integrator.reset(new Euler<Phase, float>(m_equation));
+         //m_integrator.reset(new Rk4<Phase, float>(m_equation));
     }
 
     Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel)
