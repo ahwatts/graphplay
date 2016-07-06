@@ -45,10 +45,9 @@ namespace graphplay {
         : m_body(body)
     {}
 
-    Phase BodyStateEquation::operator()(Phase y, float t) const {
-        return Phase(
-            y.momentum / m_body.mass(),
-            m_body.netForce());
+    Phase BodyStateEquation::operator()(Phase y, float base, float step) const {
+        glm::vec3 force = m_body.netForce() + (m_body.jerk() * m_body.mass() * step);
+        return Phase(y.momentum / m_body.mass(), force);
     }
 
     // Class Body.
@@ -57,11 +56,13 @@ namespace graphplay {
           m_position(),
           m_velocity(),
           m_force(),
+          m_prev_force(),
+          m_jerk(),
           m_equation(std::make_shared<BodyStateEquation>(*this)),
           m_integrator()
     {
-         m_integrator.reset(new Euler<Phase, float>(m_equation));
-         //m_integrator.reset(new Rk4<Phase, float>(m_equation));
+        // m_integrator.reset(new Euler<Phase, float>(m_equation));
+         m_integrator.reset(new Rk4<Phase, float>(m_equation));
     }
 
     Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel)
@@ -88,6 +89,9 @@ namespace graphplay {
 
     void Body::position(const glm::vec3 &new_pos) {
         m_position = new_pos;
+        Phase dependent = m_integrator->dependent();
+        dependent.position = new_pos;
+        m_integrator->dependent(dependent);
     }
 
     glm::vec3 Body::velocity() const {
@@ -106,6 +110,10 @@ namespace graphplay {
         m_force += force;
     }
 
+    glm::vec3 Body::jerk() const {
+        return m_jerk;
+    }
+
     void Body::update(float dt) {
         // Step the integrator.
         Phase next = m_integrator->step(dt);
@@ -114,7 +122,9 @@ namespace graphplay {
         m_position = next.position;
         m_velocity = next.momentum / m_mass;
 
-        // Set the force to zero fo the next iteration.
+        // Update the force bits.
+        m_jerk = (m_force - m_prev_force) / dt / m_mass;
+        m_prev_force = m_force;
         m_force = { 0.0, 0.0, 0.0 };
     }
 

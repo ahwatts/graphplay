@@ -48,6 +48,9 @@ namespace graphplay {
         glm::vec3 netForce() const;
         void addForce(const glm::vec3 &force);
 
+        // jerk, i.e, the derivative of acceleration.
+        glm::vec3 jerk() const;
+
         void update(float dt);
 
         glm::mat4x4 modelTransformation(const glm::mat4x4 &base_transform) const;
@@ -56,7 +59,8 @@ namespace graphplay {
 
     protected:
         float m_mass;
-        glm::vec3 m_position, m_velocity, m_force;
+        glm::vec3 m_position, m_velocity;
+        glm::vec3 m_force, m_prev_force, m_jerk;
         typename FirstOrderODE<Phase, float>::sptr_type m_equation;
         typename Integrator<Phase, float>::uptr_type m_integrator;
     };
@@ -66,7 +70,7 @@ namespace graphplay {
     class BodyStateEquation : public FirstOrderODE<Phase, float> {
     public:
         BodyStateEquation(const Body &body);
-        virtual Phase operator()(Phase pos, float time) const;
+        virtual Phase operator()(Phase pos, float base_time, float step_time) const;
 
     protected:
         const Body &m_body;

@@ -14,7 +14,7 @@ namespace graphplay {
         FirstOrderODE() {}
         virtual ~FirstOrderODE() {}
 
-        virtual Y operator()(Y pos, T time) const = 0;
+        virtual Y operator()(Y pos, T base_time, T step_time) const = 0;
     };
 
     template <typename Y, typename T>
@@ -33,12 +33,14 @@ namespace graphplay {
         virtual Y step(T h) = 0;
 
         inline const eqn_ptr equation() const { return m_equation; }
+
         inline const Y& dependent() const { return m_dep; }
+        inline void dependent(const Y &new_dep) { m_dep = new_dep; }
+
         inline T independent() const { return m_indep; }
+        inline void independent(T new_indep) { m_indep = new_indep; }
 
     protected:
-        inline void dependent(const Y &new_dep) { m_dep = new_dep; }
-        inline void independent(T new_indep) { m_indep = new_indep; }
         eqn_ptr m_equation;
         Y m_dep;
         T m_indep;
@@ -54,7 +56,7 @@ namespace graphplay {
         virtual Y step(T h) {
             Y y = this->dependent();
             T t = this->independent();
-            Y ydot = (*this->equation())(y, t);
+            Y ydot = (*this->equation())(y, t, 0.0);
 
             y += ydot * h;
             t += h;
@@ -79,10 +81,10 @@ namespace graphplay {
             T sixth_h = h / 6.0;
             T two = 2.0;
 
-            Y k1 = (*this->equation())(y,             t);
-            Y k2 = (*this->equation())(y + k1*half_h, t + half_h);
-            Y k3 = (*this->equation())(y + k2*half_h, t + half_h);
-            Y k4 = (*this->equation())(y + k3*h,      t + h);
+            Y k1 = (*this->equation())(y,             t, 0.0);
+            Y k2 = (*this->equation())(y + k1*half_h, t, half_h);
+            Y k3 = (*this->equation())(y + k2*half_h, t, half_h);
+            Y k4 = (*this->equation())(y + k3*h,      t, h);
 
             this->dependent(y + (k1 + k2*two + k3*two + k4)*sixth_h);
             this->independent(t + h);
