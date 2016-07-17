@@ -77,8 +77,8 @@ namespace graphplay {
         virtual Y step(T h) {
             Y y = this->dependent();
             T t = this->independent();
-            T half_h = h / 2.0;
-            T sixth_h = h / 6.0;
+            T half_h = h / static_cast<T>(2.0);
+            T sixth_h = h / static_cast<T>(6.0);
             T two = 2.0;
 
             Y k1 = (*this->equation())(y,             t, 0.0);
