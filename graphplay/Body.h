@@ -3,13 +3,16 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_BODY_H_
 #define _GRAPHPLAY_GRAPHPLAY_BODY_H_
 
+#include <deque>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include <glm/gtc/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+#include "Constraint.h"
 #include "Integrator.h"
 
 namespace graphplay {
@@ -40,29 +43,34 @@ namespace graphplay {
         void mass(float new_mass);
 
         glm::vec3 position() const;
+        glm::vec3 position(float alpha) const;
         void position(const glm::vec3& new_pos);
 
         glm::vec3 velocity() const;
+        glm::vec3 velocity(float alpha) const;
         void velocity(const glm::vec3 &new_vel);
 
         glm::vec3 netForce() const;
+        glm::vec3 netForce(float alpha) const;
         void addForce(const glm::vec3 &force);
 
-        // jerk, i.e, the derivative of acceleration.
-        glm::vec3 jerk() const;
+        glm::vec3 constraintForce(const glm::vec3 &self_pos, const glm::vec3 &other_pos) const;
+        void addConstraint(AttachedSpring constraint);
 
         void update(float dt);
 
-        glm::mat4x4 modelTransformation(const glm::mat4x4 &base_transform) const;
+        glm::mat4x4 modelTransformation(float alpha, const glm::mat4x4 &base_transform) const;
 
+        friend class BodyStateEquation;
         friend std::ostream& operator<<(std::ostream &stream, const Body &body);
 
     protected:
         float m_mass;
-        glm::vec3 m_position, m_velocity;
-        glm::vec3 m_force, m_prev_force, m_jerk;
+        std::deque<Phase> m_states;
+        std::deque<glm::vec3> m_forces;
         typename FirstOrderODE<Phase, float>::sptr_type m_equation;
         typename Integrator<Phase, float>::uptr_type m_integrator;
+        std::vector<AttachedSpring> m_constraints;
     };
 
     std::ostream& operator<<(std::ostream &stream, const Body &body);

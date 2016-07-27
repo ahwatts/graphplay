@@ -2,6 +2,7 @@ add_library(graphplay_engine
   Body.cpp
   Camera.cpp
   Collada.cpp
+  Constraint.cpp
   Geometry.cpp
   Mesh.cpp
   OpenGLUtils.cpp

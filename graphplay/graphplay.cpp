@@ -8,12 +8,14 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <thread>
 
 #include <boost/filesystem.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/io.hpp>
 
 #include "Body.h"
+#include "Constraint.h"
 #include "Geometry.h"
 #include "Mesh.h"
 #include "PhysicsSystem.h"
@@ -34,6 +36,9 @@ void mouse_move(GLFWwindow *wnd, double xpos, double ypos);
 using namespace graphplay;
 using namespace boost::filesystem;
 using namespace std::chrono;
+
+const duration<float> FRAME_RATE(1.0f / 60.0f);
+const float TIME_STEP = FRAME_RATE.count() / 5;
 
 Scene SCENE(1024, 768);
 double MOUSE_X = 0.0, MOUSE_Y = 0.0;
@@ -87,13 +92,15 @@ int main(int argc, char **argv) {
     bbox->modelTransformation(glm::scale(bbox->modelTransformation(), glm::vec3(10.0f, 10.0f, 10.0f)));
     SCENE.addMesh(bbox);
 
+    Body::sptr_type origin_body = std::make_shared<Body>();
     Body::sptr_type object_body = std::make_shared<Body>();
     object_body->position({ 10.0, 0.0, 0.0 });
+    object_body->addConstraint(AttachedSpring(0.7, *origin_body));
     // object_body->velocity({ 1.5, 0.3, 0.0 });
     // object_body->angularVelocity({ M_PI_2, M_PI_4, 0.0 });
     std::cout << "object = " << *object_body << std::endl;
 
-    PhysicsSystem physics(0.01f);
+    PhysicsSystem physics(TIME_STEP);
     physics.addBody(object_body);
 
     Camera &camera = SCENE.getCamera();
@@ -118,18 +125,23 @@ int main(int argc, char **argv) {
         // glm::vec3 gust(random_unit(random_eng), random_unit(random_eng), random_unit(random_eng));
         // object_body->addForce(gust);
 
-        glm::vec3 displacement = object_body->position();
-        glm::vec3 restoring = displacement * 1.5f * -1.0f;
-        object_body->addForce(restoring);
+        // glm::vec3 displacement = object_body->position();
+        // glm::vec3 restoring = displacement * 1.5f * -1.0f;
+        // object_body->addForce(restoring);
 
-        physics.update(seconds.count());
-        object->modelTransformation(object_body->modelTransformation(glm::mat4x4(1)));
+        float alpha = physics.update(seconds.count());
+        object->modelTransformation(object_body->modelTransformation(alpha, glm::mat4x4(1)));
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         SCENE.render();
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        auto update_time = steady_clock::now();
+        duration<float> update_seconds = update_time - time;
+        duration<float> sleep_seconds = FRAME_RATE - update_seconds;
+        std::this_thread::sleep_for(sleep_seconds);
     }
 
     glfwTerminate();

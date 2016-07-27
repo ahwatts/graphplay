@@ -21,13 +21,14 @@ namespace graphplay {
         std::vector<Body::wptr_type>& bodies() { return m_bodies; }
 
         void addBody(Body::sptr_type new_body);
-        void update(float total_step);
+        float update(float total_step);
 
     protected:
         float m_time_step;
+        float m_hangover_time;
         std::vector<Body::wptr_type> m_bodies;
 
-        void stepTime(float *step_size);
+        void stepTime();
     };
 }
 

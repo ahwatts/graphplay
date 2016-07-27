@@ -9,7 +9,10 @@
 #include <gtest/gtest.h>
 
 // #define EXPECT_FLOAT_VEC_EQ(v1, v2) glm::all(glm::lessThanEqual(glm::float_distance((v1), (v2)), { 4, 4, 4 }))
-#define EXPECT_FLOAT_VEC_EQ(v1, v2) EXPECT_EQ((v1), (v2))
+#define EXPECT_FLOAT_VEC_EQ(v1, v2) \
+    EXPECT_FLOAT_EQ((v1).x, (v2).x); \
+    EXPECT_FLOAT_EQ((v1).y, (v2).y); \
+    EXPECT_FLOAT_EQ((v1).z, (v2).z)
 
 namespace graphplay {
     const glm::vec3 ZERO_VEC(0, 0, 0);
