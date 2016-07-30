@@ -68,8 +68,8 @@ namespace graphplay {
         float m_mass;
         std::deque<Phase> m_states;
         std::deque<glm::vec3> m_forces;
-        typename FirstOrderODE<Phase, float>::sptr_type m_equation;
-        typename Integrator<Phase, float>::uptr_type m_integrator;
+        typename FirstOrderODE<Phase, float>::uptr_type m_equation;
+        Integrator<Phase, float> m_integrator;
         std::vector<AttachedSpring> m_constraints;
     };
 
@@ -78,7 +78,7 @@ namespace graphplay {
     class BodyStateEquation : public FirstOrderODE<Phase, float> {
     public:
         BodyStateEquation(const Body &body);
-        virtual Phase operator()(Phase pos, float base_time, float step_time) const;
+        virtual Phase operator()(const Phase &pos) const;
 
     protected:
         const Body &m_body;

@@ -50,7 +50,7 @@ namespace graphplay {
         : m_body(body)
     {}
 
-    Phase BodyStateEquation::operator()(Phase y, float base, float step) const {
+    Phase BodyStateEquation::operator()(const Phase &y) const {
         glm::vec3 force = m_body.netForce();
         for (auto&& c : m_body.m_constraints) {
             force += c.force(y.position, c.attachedTo().position());
@@ -67,11 +67,11 @@ namespace graphplay {
         : m_mass(1.0),
           m_states(KEPT_STATES),
           m_forces(KEPT_STATES),
-          m_equation(std::make_shared<BodyStateEquation>(*this)),
-          m_integrator(),
+          m_equation(),
+          m_integrator(rk4<Phase, float>),
           m_constraints()
     {
-         m_integrator.reset(new Rk4<Phase, float>(m_equation));
+        m_equation.reset(new BodyStateEquation(*this));
     }
 
     Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel)
@@ -105,9 +105,6 @@ namespace graphplay {
     void Body::position(const glm::vec3 &new_pos) {
         m_states[CURRENT_INDEX].position = new_pos;
         m_states[FUTURE_INDEX].position = new_pos;
-        Phase dependent = m_integrator->dependent();
-        dependent.position = new_pos;
-        m_integrator->dependent(dependent);
     }
 
     glm::vec3 Body::velocity() const {
@@ -122,9 +119,6 @@ namespace graphplay {
 
     void Body::velocity(const glm::vec3 &new_vel) {
         glm::vec3 new_momentum = new_vel * m_mass;
-        Phase dependent = m_integrator->dependent();
-        dependent.momentum = new_momentum;
-        m_integrator->dependent(dependent);
         m_states[CURRENT_INDEX].momentum = new_momentum;
         m_states[FUTURE_INDEX].momentum = new_momentum;
     }
@@ -149,7 +143,7 @@ namespace graphplay {
     }
 
     void Body::update(float dt) {
-        Phase next = m_integrator->step(dt);
+        Phase next = (*m_integrator)(m_states[FUTURE_INDEX], dt, *m_equation);
 
         m_states.push_front(next);
         m_states.pop_back();
