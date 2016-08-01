@@ -8,6 +8,19 @@
 #include "Shader.h"
 
 namespace graphplay {
+    // Global functions.
+    Program::sptr_type createUnlitProgram() {
+        Shader::sptr_type vertex = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
+        Shader::sptr_type fragment = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::unlit_fragment_shader_source);
+        return std::make_shared<Program>(vertex, fragment);
+    }
+
+    Program::sptr_type createLitProgram() {
+        Shader::sptr_type vertex = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::lit_vertex_shader_source);
+        Shader::sptr_type fragment = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::lit_fragment_shader_source);
+        return std::make_shared<Program>(vertex, fragment);
+    }
+
     // ViewAndProjectionBlock class.
     ViewAndProjectionBlock::ViewAndProjectionBlock()
         : m_offsets(),

@@ -111,6 +111,9 @@ namespace graphplay {
         Shader::sptr_type m_vertex_shader, m_fragment_shader;
         IndexMap m_attributes, m_uniforms, m_uniform_blocks;
     };
+
+    Program::sptr_type createUnlitProgram();
+    Program::sptr_type createLitProgram();
 };
 
 #endif

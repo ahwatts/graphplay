@@ -78,12 +78,8 @@ int main(int argc, char **argv) {
 
     Geometry<PCNVertex>::sptr_type bbox_geo = makeWireframeCubeGeometry();
 
-    Shader::sptr_type unlit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::unlit_vertex_shader_source);
-    Shader::sptr_type unlit_fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::unlit_fragment_shader_source);
-    Shader::sptr_type lit_vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, Shader::lit_vertex_shader_source);
-    Shader::sptr_type lit_fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Shader::lit_fragment_shader_source);
-    Program::sptr_type unlit_program = std::make_shared<Program>(unlit_vertex_shader, unlit_fragment_shader);
-    Program::sptr_type lit_program = std::make_shared<Program>(lit_vertex_shader, lit_fragment_shader);
+    Program::sptr_type unlit_program = createUnlitProgram();
+    Program::sptr_type lit_program = createLitProgram();
 
     Mesh::sptr_type object = std::make_shared<Mesh>(object_geo, lit_program);
     SCENE.addMesh(object);
@@ -118,9 +114,9 @@ int main(int argc, char **argv) {
     auto ptime = steady_clock::now();
 
     while (!glfwWindowShouldClose(window)) {
-        auto time = steady_clock::now();
-        duration<float> seconds = time - ptime;
-        ptime = time;
+        auto frame_time = steady_clock::now();
+        duration<float> frame_seconds = frame_time - ptime;
+        ptime = frame_time;
 
         // glm::vec3 gust(random_unit(random_eng), random_unit(random_eng), random_unit(random_eng));
         // object_body->addForce(gust);
@@ -129,7 +125,7 @@ int main(int argc, char **argv) {
         // glm::vec3 restoring = displacement * 1.5f * -1.0f;
         // object_body->addForce(restoring);
 
-        float alpha = physics.update(seconds.count());
+        float alpha = physics.update(frame_seconds.count());
         object->modelTransformation(object_body->modelTransformation(alpha, glm::mat4x4(1)));
 
         // render.
@@ -139,7 +135,7 @@ int main(int argc, char **argv) {
         glfwPollEvents();
 
         auto update_time = steady_clock::now();
-        duration<float> update_seconds = update_time - time;
+        duration<float> update_seconds = update_time - frame_time;
         duration<float> sleep_seconds = FRAME_RATE - update_seconds;
         std::this_thread::sleep_for(sleep_seconds);
     }

@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\graphplay\Body.h" />
     <ClInclude Include="..\..\graphplay\Camera.h" />
     <ClInclude Include="..\..\graphplay\Collada.h" />
+    <ClInclude Include="..\..\graphplay\Constraint.h" />
     <ClInclude Include="..\..\graphplay\Geometry.h" />
     <ClInclude Include="..\..\graphplay\graphplay.h" />
     <ClInclude Include="..\..\graphplay\Integrator.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="..\..\graphplay\Body.cpp" />
     <ClCompile Include="..\..\graphplay\Camera.cpp" />
     <ClCompile Include="..\..\graphplay\Collada.cpp" />
+    <ClCompile Include="..\..\graphplay\Constraint.cpp" />
     <ClCompile Include="..\..\graphplay\Geometry.cpp" />
     <ClInclude Include="..\..\graphplay\Geometry.tmpl.cpp" />
     <ClCompile Include="..\..\graphplay\Mesh.cpp" />
