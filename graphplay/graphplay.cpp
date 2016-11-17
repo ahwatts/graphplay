@@ -41,15 +41,42 @@ const duration<float> FRAME_RATE(1.0f / 60.0f);
 const float TIME_STEP = FRAME_RATE.count() / 5;
 
 Scene SCENE(1024, 768);
+Body::sptr_type ORIGIN = std::make_shared<Body>();
 double MOUSE_X = 0.0, MOUSE_Y = 0.0;
 bool ROTATING = false;
+std::random_device RANDOM_DEV;
+std::default_random_engine RANDOM_ENG(RANDOM_DEV());
+
+class GPObject {
+public:
+    GPObject(Geometry<PCNVertex>::sptr_type geo, Program::sptr_type program)
+        : geometry(geo)
+    {
+        std::uniform_real_distribution<float> random_unit(-10.0f, 10.0f);
+
+        mesh = std::make_shared<Mesh>(geo, program);
+        body = std::make_shared<Body>();
+        body->position({
+            random_unit(RANDOM_ENG),
+            random_unit(RANDOM_ENG),
+            random_unit(RANDOM_ENG)
+        });
+        body->velocity({
+            random_unit(RANDOM_ENG) / 2,
+            random_unit(RANDOM_ENG) / 2,
+            random_unit(RANDOM_ENG) / 2
+        });
+        body->addConstraint(AttachedSpring(0.7f, *ORIGIN));
+    }
+
+    Geometry<PCNVertex>::sptr_type geometry;
+    Mesh::sptr_type mesh;
+    Body::sptr_type body;
+};
 
 int main(int argc, char **argv) {
     int pixel_width = SCENE.getViewportWidth(), pixel_height = SCENE.getViewportHeight();
     GLFWwindow *window = nullptr;
-    std::random_device random_dev;
-    std::default_random_engine random_eng(random_dev());
-    std::uniform_real_distribution<float> random_unit(-10.0f, 10.0f);
 
     initGLFW(pixel_width, pixel_height, "Graphplay", &window);
     initglad();
@@ -65,38 +92,34 @@ int main(int argc, char **argv) {
 
     glfwGetCursorPos(window, &MOUSE_X, &MOUSE_Y);
 
-    // Geometry<PCNVertex>::sptr_type object_geo = makeOctohedronGeometry();
-    // Geometry<PCNVertex>::sptr_type object_geo = makeSphereGeometry();
-
     path assets_path("assets");
-    path object_path(assets_path);
-    object_path /= "stanford_bunny.ply";
-    // object_path /= "stanford_bunny.pcn";
-    // object_path /= "stanford_armadillo.ply";
-    // object_path /= "stanford_armadillo.pcn";
-    Geometry<PCNVertex>::sptr_type object_geo = loadPlyFile(object_path.string().c_str());
-
-    Geometry<PCNVertex>::sptr_type bbox_geo = makeWireframeCubeGeometry();
+    path bunny_path(assets_path);
+    bunny_path /= "stanford_bunny.ply";
+    path armadillo_path(assets_path);
+    armadillo_path /= "stanford_armadillo.ply";
 
     Program::sptr_type unlit_program = createUnlitProgram();
     Program::sptr_type lit_program = createLitProgram();
 
-    Mesh::sptr_type object = std::make_shared<Mesh>(object_geo, lit_program);
-    SCENE.addMesh(object);
+    GPObject octohedron(makeOctohedronGeometry(), unlit_program);
+    GPObject sphere(makeSphereGeometry(), lit_program);
+    GPObject bunny(loadPlyFile(bunny_path.string().c_str()), lit_program);
+    GPObject armadillo(loadPlyFile(armadillo_path.string().c_str()), lit_program);
+    GPObject bbox(makeWireframeCubeGeometry(), unlit_program);
 
-    Mesh::sptr_type bbox = std::make_shared<Mesh>(bbox_geo, unlit_program);
-    bbox->modelTransformation(glm::scale(bbox->modelTransformation(), glm::vec3(10.0f, 10.0f, 10.0f)));
-    SCENE.addMesh(bbox);
+    SCENE.addMesh(octohedron.mesh);
+    SCENE.addMesh(sphere.mesh);
+    SCENE.addMesh(bunny.mesh);
+    SCENE.addMesh(armadillo.mesh);
+    SCENE.addMesh(bbox.mesh);
 
-    Body::sptr_type origin_body = std::make_shared<Body>();
-    Body::sptr_type object_body = std::make_shared<Body>();
-    object_body->position({ 0.0, 0.0, 0.0 });
-    object_body->velocity({ random_unit(random_eng), random_unit(random_eng), random_unit(random_eng) });
-    object_body->addConstraint(AttachedSpring(0.7, *origin_body));
-    std::cout << "object = " << *object_body << std::endl;
+    bbox.mesh->modelTransformation(glm::scale(bbox.mesh->modelTransformation(), glm::vec3(10.0f, 10.0f, 10.0f)));
 
     PhysicsSystem physics(TIME_STEP);
-    physics.addBody(object_body);
+    physics.addBody(octohedron.body);
+    physics.addBody(sphere.body);
+    physics.addBody(bunny.body);
+    physics.addBody(armadillo.body);
 
     Camera &camera = SCENE.getCamera();
     camera.focusPoint(glm::vec3(0.0, 0.0, 0.0));
@@ -117,8 +140,12 @@ int main(int argc, char **argv) {
         duration<float> frame_seconds = frame_time - ptime;
         ptime = frame_time;
 
+        // Update physics; set model transformations.
         float alpha = physics.update(frame_seconds.count());
-        object->modelTransformation(object_body->modelTransformation(alpha, glm::mat4x4(1)));
+        octohedron.mesh->modelTransformation(octohedron.body->modelTransformation(alpha, glm::mat4x4(1)));
+        sphere.mesh->modelTransformation(sphere.body->modelTransformation(alpha, glm::mat4x4(1)));
+        bunny.mesh->modelTransformation(bunny.body->modelTransformation(alpha, glm::mat4x4(1)));
+        armadillo.mesh->modelTransformation(armadillo.body->modelTransformation(alpha, glm::mat4x4(1)));
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
