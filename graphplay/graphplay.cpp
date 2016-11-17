@@ -90,10 +90,9 @@ int main(int argc, char **argv) {
 
     Body::sptr_type origin_body = std::make_shared<Body>();
     Body::sptr_type object_body = std::make_shared<Body>();
-    object_body->position({ 10.0, 0.0, 0.0 });
+    object_body->position({ 0.0, 0.0, 0.0 });
+    object_body->velocity({ random_unit(random_eng), random_unit(random_eng), random_unit(random_eng) });
     object_body->addConstraint(AttachedSpring(0.7, *origin_body));
-    // object_body->velocity({ 1.5, 0.3, 0.0 });
-    // object_body->angularVelocity({ M_PI_2, M_PI_4, 0.0 });
     std::cout << "object = " << *object_body << std::endl;
 
     PhysicsSystem physics(TIME_STEP);
@@ -117,13 +116,6 @@ int main(int argc, char **argv) {
         auto frame_time = steady_clock::now();
         duration<float> frame_seconds = frame_time - ptime;
         ptime = frame_time;
-
-        // glm::vec3 gust(random_unit(random_eng), random_unit(random_eng), random_unit(random_eng));
-        // object_body->addForce(gust);
-
-        // glm::vec3 displacement = object_body->position();
-        // glm::vec3 restoring = displacement * 1.5f * -1.0f;
-        // object_body->addForce(restoring);
 
         float alpha = physics.update(frame_seconds.count());
         object->modelTransformation(object_body->modelTransformation(alpha, glm::mat4x4(1)));
