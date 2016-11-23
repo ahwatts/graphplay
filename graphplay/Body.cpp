@@ -3,6 +3,7 @@
 #include "graphplay.h"
 #include "Body.h"
 
+#include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/io.hpp>
 
@@ -69,17 +70,21 @@ namespace graphplay {
           m_forces(KEPT_STATES),
           m_equation(),
           m_integrator(rk4<Phase, float>),
-          m_constraints()
+          m_constraints(),
+          m_bbox({ -1.0, -1.0, -1.0 }, { 1.0, 1.0, 1.0 }),
+          m_aa_bbox({ -1.0, -1.0, -1.0 }, { 1.0, 1.0, 1.0 })
     {
         m_equation.reset(new BodyStateEquation(*this));
     }
 
-    Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel)
+    Body::Body(float _mass, const glm::vec3 &pos, const glm::vec3 &vel, const BBox &bbox)
         : Body()
     {
         mass(_mass);
         position(pos);
         velocity(vel);
+        boundingBox(bbox);
+        m_aa_bbox = bbox.axisAlignedAfterTransform(glm::mat4x4(1));
     }
 
     float Body::mass() const {
@@ -140,6 +145,14 @@ namespace graphplay {
 
     void Body::addConstraint(graphplay::AttachedSpring constraint) {
         m_constraints.emplace_back(constraint);
+    }
+
+    BBox Body::boundingBox() const {
+        return m_bbox;
+    }
+
+    void Body::boundingBox(const BBox &bbox) {
+        m_bbox = bbox;
     }
 
     void Body::update(float dt) {

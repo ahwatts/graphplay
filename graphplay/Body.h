@@ -12,6 +12,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+#include "BBox.h"
 #include "Constraint.h"
 #include "Integrator.h"
 
@@ -37,7 +38,7 @@ namespace graphplay {
         typedef std::weak_ptr<Body> wptr_type;
 
         Body();
-        Body(float mass, const glm::vec3 &pos, const glm::vec3 &vel);
+        Body(float mass, const glm::vec3 &pos, const glm::vec3 &vel, const BBox &bbox);
 
         float mass() const;
         void mass(float new_mass);
@@ -57,6 +58,9 @@ namespace graphplay {
         glm::vec3 constraintForce(const glm::vec3 &self_pos, const glm::vec3 &other_pos) const;
         void addConstraint(AttachedSpring constraint);
 
+        BBox boundingBox() const;
+        void boundingBox(const BBox &bbox);
+
         void update(float dt);
 
         glm::mat4x4 modelTransformation(float alpha, const glm::mat4x4 &base_transform) const;
@@ -71,6 +75,7 @@ namespace graphplay {
         typename FirstOrderODE<Phase, float>::uptr_type m_equation;
         Integrator<Phase, float> m_integrator;
         std::vector<AttachedSpring> m_constraints;
+        BBox m_bbox, m_aa_bbox;
     };
 
     std::ostream& operator<<(std::ostream &stream, const Body &body);
