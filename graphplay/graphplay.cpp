@@ -69,9 +69,34 @@ public:
         body->addConstraint(AttachedSpring(0.7f, *ORIGIN));
     }
 
+    void update(float alpha) {
+        glm::mat4x4 model_xform = body->modelTransformation(alpha, glm::mat4x4(1));
+        mesh->modelTransformation(model_xform);
+    }
+
     Geometry<PCNVertex>::sptr_type geometry;
     Mesh::sptr_type mesh;
     Body::sptr_type body;
+};
+
+class BoundedGPObject {
+public:
+    BoundedGPObject(Geometry<PCNVertex>::sptr_type geo, Program::sptr_type object_program, Program::sptr_type bbox_program)
+        : object(geo, object_program)
+    {
+        bbox_geometry = makeBoundingBoxGeometry(geo->boundingBox());
+        bbox_mesh = std::make_shared<Mesh>(bbox_geometry, bbox_program);
+    }
+
+    void update(float alpha) {
+        glm::mat4x4 model_xform = object.body->modelTransformation(alpha, glm::mat4x4(1));
+        object.mesh->modelTransformation(model_xform);
+        bbox_mesh->modelTransformation(model_xform);
+    }
+
+    GPObject object;
+    MutableGeometry<PCNVertex>::sptr_type bbox_geometry;
+    Mesh::sptr_type bbox_mesh;
 };
 
 int main(int argc, char **argv) {
@@ -101,25 +126,29 @@ int main(int argc, char **argv) {
     Program::sptr_type unlit_program = createUnlitProgram();
     Program::sptr_type lit_program = createLitProgram();
 
-    GPObject octohedron(makeOctohedronGeometry(), unlit_program);
-    GPObject sphere(makeSphereGeometry(), lit_program);
-    GPObject bunny(loadPlyFile(bunny_path.string().c_str()), lit_program);
-    GPObject armadillo(loadPlyFile(armadillo_path.string().c_str()), lit_program);
+    BoundedGPObject octohedron(makeOctohedronGeometry(), unlit_program, unlit_program);
+    BoundedGPObject sphere(makeSphereGeometry(), lit_program, unlit_program);
+    BoundedGPObject bunny(loadPlyFile(bunny_path.string().c_str()), lit_program, unlit_program);
+    BoundedGPObject armadillo(loadPlyFile(armadillo_path.string().c_str()), lit_program, unlit_program);
     GPObject bbox(makeWireframeCubeGeometry(), unlit_program);
 
-    SCENE.addMesh(octohedron.mesh);
-    SCENE.addMesh(sphere.mesh);
-    SCENE.addMesh(bunny.mesh);
-    SCENE.addMesh(armadillo.mesh);
+    SCENE.addMesh(octohedron.object.mesh);
+    SCENE.addMesh(octohedron.bbox_mesh);
+    SCENE.addMesh(sphere.object.mesh);
+    SCENE.addMesh(sphere.bbox_mesh);
+    SCENE.addMesh(bunny.object.mesh);
+    SCENE.addMesh(bunny.bbox_mesh);
+    SCENE.addMesh(armadillo.object.mesh);
+    SCENE.addMesh(armadillo.bbox_mesh);
     SCENE.addMesh(bbox.mesh);
 
     bbox.mesh->modelTransformation(glm::scale(bbox.mesh->modelTransformation(), glm::vec3(10.0f, 10.0f, 10.0f)));
 
     PhysicsSystem physics(TIME_STEP);
-    physics.addBody(octohedron.body);
-    physics.addBody(sphere.body);
-    physics.addBody(bunny.body);
-    physics.addBody(armadillo.body);
+    physics.addBody(octohedron.object.body);
+    physics.addBody(sphere.object.body);
+    physics.addBody(bunny.object.body);
+    physics.addBody(armadillo.object.body);
 
     Camera &camera = SCENE.getCamera();
     camera.focusPoint(glm::vec3(0.0, 0.0, 0.0));
@@ -142,10 +171,10 @@ int main(int argc, char **argv) {
 
         // Update physics; set model transformations.
         float alpha = physics.update(frame_seconds.count());
-        octohedron.mesh->modelTransformation(octohedron.body->modelTransformation(alpha, glm::mat4x4(1)));
-        sphere.mesh->modelTransformation(sphere.body->modelTransformation(alpha, glm::mat4x4(1)));
-        bunny.mesh->modelTransformation(bunny.body->modelTransformation(alpha, glm::mat4x4(1)));
-        armadillo.mesh->modelTransformation(armadillo.body->modelTransformation(alpha, glm::mat4x4(1)));
+        octohedron.update(alpha);
+        sphere.update(alpha);
+        bunny.update(alpha);
+        armadillo.update(alpha);
 
         // render.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

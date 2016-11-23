@@ -1,4 +1,5 @@
 add_library(graphplay_engine
+  BBox.cpp
   Body.cpp
   Camera.cpp
   Collada.cpp

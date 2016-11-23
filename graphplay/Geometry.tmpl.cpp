@@ -3,6 +3,9 @@
 #ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 #define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
 
+#include <glm/gtx/io.hpp>
+
+#include "BBox.h"
 #include "OpenGLUtils.h"
 #include "Shader.h"
 
@@ -33,6 +36,7 @@ namespace graphplay {
           m_elems(std::move(other.m_elems)),
           m_attr_infos(V::description)
     {
+        m_bbox = other.m_bbox;
         m_vertex_buffer = other.m_vertex_buffer;
         m_elem_buffer = other.m_elem_buffer;
         m_array_object = other.m_array_object;
@@ -44,12 +48,15 @@ namespace graphplay {
     }
 
     template <typename V>
-    Geometry<V>::~Geometry() {}
+    Geometry<V>::~Geometry() {
+        // std::cout << "Geometry<V> destructor: " << this << std::endl;
+    }
 
     template <typename V>
     AbstractGeometry& Geometry<V>::operator=(const AbstractGeometry &abstract_other) {
         // std::cout << "Geometry<V> abstract geometry copy assignment: " << &abstract_other << " -> " << this << std::endl;
         const Geometry<V> &other = dynamic_cast<const Geometry<V>&>(abstract_other);
+        updateBoundingBox();
         return *this = other;
     }
 
@@ -58,6 +65,7 @@ namespace graphplay {
         // std::cout << "Geometry<V> geometry copy assignment: " << &other << " -> " << this << std::endl;
         Geometry<V> tmp(other);
         std::swap(*this, tmp);
+        updateBoundingBox();
         return *this;
     }
 
@@ -66,6 +74,7 @@ namespace graphplay {
         // std::cout << "Geometry<V> abstract geometry move assignment: " << &abstract_other << " -> " << this << std::endl;
         Geometry<V> &other = dynamic_cast<Geometry<V>&>(abstract_other);
         *this = std::move(other);
+        updateBoundingBox();
         return *this;
     }
 
@@ -77,7 +86,13 @@ namespace graphplay {
         std::swap(m_array_object, other.m_array_object);
         std::swap(m_vertices, other.m_vertices);
         std::swap(m_elems, other.m_elems);
+        updateBoundingBox();
         return *this;
+    }
+
+    template <typename V>
+    void Geometry<V>::updateBoundingBox() {
+        m_bbox = BBox::fromVertices(m_vertices.cbegin(), m_vertices.cend());
     }
 
     template <typename V>
@@ -88,6 +103,7 @@ namespace graphplay {
         // std::cout << "Geometry<V> setVertexData copy from refs" << std::endl;
         m_elems = new_elems;
         m_vertices = new_verts;
+        updateBoundingBox();
     }
 
     template <typename V>
@@ -98,6 +114,7 @@ namespace graphplay {
         // std::cout << "Geometry<V> setVertexData move from refs" << std::endl;
         m_elems = std::move(new_elems);
         m_vertices = std::move(new_verts);
+        updateBoundingBox();
     }
 
     template <typename V>
@@ -182,6 +199,76 @@ namespace graphplay {
 
         glDrawElements(draw_type, (GLsizei)m_elems.size(), elem_gl_type, BUFFER_OFFSET_BYTES(0));
         glBindVertexArray(0);
+    }
+
+    template <typename V>
+    MutableGeometry<V>::MutableGeometry()
+        : Geometry<V>()
+    {
+        // std::cout << "MutableGeometry<V> default constructor: " << this << std::endl;
+    }
+
+    template <typename V>
+    MutableGeometry<V>::MutableGeometry(const Geometry<V> &other)
+        : Geometry<V>(other)
+    {
+        // std::cout << "MutableGeometry<V> copy constructor: " << &other << " -> " << this << std::endl;
+    }
+
+    template <typename V>
+    MutableGeometry<V>::MutableGeometry(Geometry<V> &&other)
+        : Geometry<V>(std::forward(other))
+    {
+        // std::cout << "MutableGeometry<V> move constructor: " << &other << " -> " << this << std::endl;
+    }
+
+    template <typename V>
+    MutableGeometry<V>::~MutableGeometry() {
+        // std::cout << "MutableGeometry<V> destructor: " << this << std::endl;
+    }
+
+    template <typename V>
+    MutableGeometry<V>& MutableGeometry<V>::operator=(const Geometry<V> &other) {
+        // std::cout << "MutableGeometry<V> geometry copy assignment: " << &other << " -> " << this << std::endl;
+        *dynamic_cast<Geometry<V>*>(this) = other;
+        return *this;
+    }
+
+    template <typename V>
+    MutableGeometry<V>& MutableGeometry<V>::operator=(Geometry<V> &&other) {
+        // std::cout << "MutableGeometry<V> geometry move assignment: " << &other << " -> " << this << std::endl;
+        *dynamic_cast<Geometry<V>*>(this) = std::move(other);
+        return *this;
+    }
+
+    template <typename V>
+    void MutableGeometry<V>::createBuffers() {
+        this->deleteBuffers();
+
+        GLuint buffers[2];
+        glGenBuffers(2, buffers);
+        this->m_vertex_buffer = buffers[0];
+        this->m_elem_buffer = buffers[1];
+
+        this->updateBuffers();
+    }
+
+    template <typename V>
+    void MutableGeometry<V>::updateBuffers() {
+        glBindBuffer(GL_ARRAY_BUFFER, this->m_vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER,
+                     this->m_vertices.size()*sizeof(typename MutableGeometry<V>::vertex_type),
+                     this->m_vertices.data(),
+                     GL_DYNAMIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_elem_buffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     this->m_elems.size()*sizeof(typename MutableGeometry<V>::elem_type),
+                     this->m_elems.data(),
+                     GL_DYNAMIC_DRAW);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 };
 

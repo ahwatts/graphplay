@@ -36,7 +36,8 @@ namespace graphplay {
         : draw_type{GL_TRIANGLES},
           m_vertex_buffer{0},
           m_elem_buffer{0},
-          m_array_object{0}
+          m_array_object{0},
+          m_bbox{}
     {}
 
     AbstractGeometry::AbstractGeometry(const AbstractGeometry &other) : AbstractGeometry() {
@@ -44,6 +45,7 @@ namespace graphplay {
         m_elem_buffer = duplicateBuffer(GL_ELEMENT_ARRAY_BUFFER, other.m_elem_buffer);
         m_vertex_buffer = duplicateBuffer(GL_ARRAY_BUFFER, other.m_vertex_buffer);
         m_array_object = duplicateVertexArrayObject(other.m_array_object);
+        m_bbox = other.m_bbox;
     }
 
     AbstractGeometry::AbstractGeometry(AbstractGeometry &&other) : AbstractGeometry() {
@@ -52,6 +54,7 @@ namespace graphplay {
         m_array_object = other.m_array_object;
         m_elem_buffer = other.m_elem_buffer;
         m_vertex_buffer = other.m_vertex_buffer;
+        m_bbox = other.m_bbox;
 
         // Make other stop referencing its GL objects.
         other.m_array_object = 0;
@@ -77,6 +80,12 @@ namespace graphplay {
         std::swap(m_vertex_buffer, other.m_vertex_buffer);
         return *this;
     }
+
+    const BBox& AbstractGeometry::boundingBox() const {
+        return m_bbox;
+    }
+
+    void AbstractGeometry::updateBoundingBox() {}
 
     void AbstractGeometry::createBuffers() {}
 
@@ -334,6 +343,29 @@ namespace graphplay {
         return rv;
     }
 
+    MutableGeometry<PCNVertex>::sptr_type makeBoundingBoxGeometry(const BBox &bbox) {
+        MutableGeometry<PCNVertex>::sptr_type rv = std::make_shared<MutableGeometry<PCNVertex> >();
+        rv->draw_type = GL_LINES;
+        rv->setVertexData(WIREFRAME_CUBE_VERTEX_ELEMS, 24, WIREFRAME_CUBE_VERTEX_ARRAY, 8);
+
+        std::vector<PCNVertex> &vertices = rv->vertices();
+        for (unsigned int i = 0; i < vertices.size(); ++i) {
+            const PCNVertex &base = WIREFRAME_CUBE_VERTEX_ARRAY[i];
+            PCNVertex &vert = vertices[i];
+
+            for (unsigned int j = 0; j < 3; ++j) {
+                if (base.position[j] > 0) {
+                    vert.position[j] = bbox.max[j];
+                } else {
+                    vert.position[j] = bbox.min[j];
+                }
+            }
+        }
+
+        rv->createBuffers();
+        return rv;
+    }
+
     Geometry<PCNVertex>::sptr_type loadPCNFile(const char *filename) {
         Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
         std::fstream file(filename, std::ios::in | std::ios::binary);
@@ -442,22 +474,12 @@ namespace graphplay {
         }
 
         // Determine the bounding box of the mesh.
-        glm::vec3 bb_min, bb_max;
-        for (Geometry<PCNVertex>::vertex_array_type::iterator v = verts.begin(); v != verts.end(); ++v) {
-            glm::vec3 pos = glm::make_vec3(v->position);
-
-            if (v == verts.begin()) {
-                bb_min = bb_max = pos;
-            }
-
-            bb_min = glm::min(bb_min, pos);
-            bb_max = glm::max(bb_max, pos);
-        }
+        BBox bbox = BBox::fromVertices(verts.cbegin(), verts.cend());
 
         // Convert all the positions to be between -1 and 1 with the
         // barycenter at the origin.
-        glm::vec3 bcenter = (bb_min + bb_max) / 2.0f;
-        glm::vec3 new_bb_max = bb_max - bcenter;
+        glm::vec3 bcenter = (bbox.min + bbox.max) / 2.0f;
+        glm::vec3 new_bb_max = bbox.max - bcenter;
         float max_dim = *std::max_element(glm::begin(new_bb_max), glm::end(new_bb_max));
         for (Geometry<PCNVertex>::vertex_array_type::iterator v = verts.begin(); v != verts.end(); ++v) {
             glm::vec3 pos = glm::make_vec3(v->position);

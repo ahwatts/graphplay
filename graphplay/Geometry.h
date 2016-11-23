@@ -10,6 +10,7 @@
 
 #include "graphplay.h"
 #include "opengl.h"
+#include "BBox.h"
 
 namespace graphplay {
     class Program;
@@ -37,6 +38,9 @@ namespace graphplay {
         virtual AbstractGeometry& operator=(const AbstractGeometry &other);
         virtual AbstractGeometry& operator=(AbstractGeometry &&other);
 
+        const BBox& boundingBox() const;
+        virtual void updateBoundingBox();
+
         inline const GLuint vertexBufferId() const { return m_vertex_buffer; }
         inline const GLuint elemBufferId() const { return m_elem_buffer; }
         inline const GLuint vertexArrayObjectId() const { return m_array_object; }
@@ -54,6 +58,7 @@ namespace graphplay {
         GLuint m_vertex_buffer;
         GLuint m_elem_buffer;
         GLuint m_array_object;
+        BBox m_bbox;
     };
 
     template <typename V>
@@ -80,6 +85,8 @@ namespace graphplay {
         virtual Geometry<V>&      operator=(const Geometry<V> &other);
         virtual Geometry<V>&      operator=(Geometry<V> &&other);
 
+        virtual void updateBoundingBox();
+
         void setVertexData(const elem_array_type &new_elems, const vertex_array_type &new_verts);
         void setVertexData(elem_array_type &&new_elems, vertex_array_type &&new_verts);
         void setVertexData(
@@ -101,6 +108,25 @@ namespace graphplay {
         const AttrMap &m_attr_infos;
     };
 
+    template<typename V>
+    class MutableGeometry : public Geometry<V> {
+    public:
+        typedef std::unique_ptr<MutableGeometry<V> > uptr_type;
+        typedef std::shared_ptr<MutableGeometry<V> > sptr_type;
+        typedef std::weak_ptr<MutableGeometry<V> > wptr_type;
+
+        MutableGeometry();
+        MutableGeometry(const Geometry<V> &other);
+        MutableGeometry(Geometry<V> &&other);
+        virtual ~MutableGeometry();
+
+        virtual MutableGeometry<V>& operator=(const Geometry<V> &other);
+        virtual MutableGeometry<V>& operator=(Geometry<V> &&other);
+
+        virtual void createBuffers();
+        virtual void updateBuffers();
+    };
+
     struct PCNVertex {
         float position[3];
         float color[4];
@@ -115,6 +141,7 @@ namespace graphplay {
     Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();
     Geometry<PCNVertex>::sptr_type makeSphereGeometry();
     Geometry<PCNVertex>::sptr_type makeWireframeCubeGeometry();
+    MutableGeometry<PCNVertex>::sptr_type makeBoundingBoxGeometry(const BBox &bbox);
     Geometry<PCNVertex>::sptr_type loadPCNFile(const char *filename);
     Geometry<PCNVertex>::sptr_type loadPlyFile(const char *filename);
 };
