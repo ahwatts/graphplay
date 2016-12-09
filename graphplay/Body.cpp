@@ -148,7 +148,11 @@ namespace graphplay {
     }
 
     BBox Body::boundingBox() const {
-        return m_bbox;
+        BBox rv(m_bbox);
+        glm::vec3 pos = position();
+        rv.min += pos;
+        rv.max += pos;
+        return rv;
     }
 
     void Body::boundingBox(const BBox &bbox) {

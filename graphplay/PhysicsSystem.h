@@ -29,6 +29,7 @@ namespace graphplay {
         std::vector<Body::wptr_type> m_bodies;
 
         void stepTime();
+        void detectCollisions();
     };
 }
 

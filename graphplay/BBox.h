@@ -57,6 +57,7 @@ namespace graphplay {
         }
 
         BBox axisAlignedAfterTransform(const glm::mat4x4 &transform) const;
+        bool collides(const BBox &other) const;
 
         glm::vec3 min, max;
 

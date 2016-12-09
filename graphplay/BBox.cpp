@@ -36,4 +36,10 @@ namespace graphplay {
 
         return BBox::fromVectors(corners, corners + 8);
     }
+
+    bool BBox::collides(const BBox &other) const {
+        return (min.x < other.max.x && other.min.x < max.x &&
+                min.y < other.max.y && other.min.y < max.y &&
+                min.z < other.max.z && other.min.z < max.z);
+    }
 }

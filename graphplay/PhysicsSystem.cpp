@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include <glm/gtx/io.hpp>
+
 namespace graphplay {
     PhysicsSystem::PhysicsSystem(float time_step)
         : m_time_step(time_step),
@@ -44,6 +46,25 @@ namespace graphplay {
             Body::sptr_type body = weak_body.lock();
             if (body) {
                 body->update(m_time_step);
+            }
+        }
+
+        detectCollisions();
+    }
+
+    void PhysicsSystem::detectCollisions() {
+        for (auto&& weak_body1 : m_bodies) {
+            for (auto&& weak_body2 : m_bodies) {
+                Body::sptr_type body1 = weak_body1.lock();
+                Body::sptr_type body2 = weak_body2.lock();
+
+                if (body1 && body2 && body1 != body2 &&
+                    body1->boundingBox().collides(body2->boundingBox())) {
+                    std::cout << "Collision detected! body1 = " << body1 << " body2 = " << body2
+                              << " body1 bbox min = " << body1->boundingBox().min
+                              << " body2 bbox min = " << body2->boundingBox().min
+                              << std::endl;
+                }
             }
         }
     }

@@ -66,6 +66,7 @@ public:
             random_unit(RANDOM_ENG) / 2,
             random_unit(RANDOM_ENG) / 2
         });
+        body->boundingBox(geo->boundingBox());
         body->addConstraint(AttachedSpring(0.7f, *ORIGIN));
     }
 
@@ -155,6 +156,7 @@ int main(int argc, char **argv) {
     camera.position(glm::vec3(0.0, 0.0, 30.0));
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_FRAMEBUFFER_SRGB);
     glViewport(0, 0, pixel_width, pixel_height);
 
     glfwSetKeyCallback(window, keypress);
