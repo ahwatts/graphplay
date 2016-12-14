@@ -12,7 +12,7 @@ include_directories(AFTER SYSTEM ../vendor/gtest/include)
 
 target_link_libraries(graphplay-test
   tinyxml2
-  ${GLFW_LIBRARIES}
+  glfw
   glad
   ${OPENGL_LIBRARIES}
   ${CMAKE_DL_LIBS}

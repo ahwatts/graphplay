@@ -17,7 +17,7 @@ add_executable(graphplay WIN32
 
 target_link_libraries(graphplay
   tinyxml2
-  ${GLFW_LIBRARIES}
+  glfw
   glad
   ${OPENGL_LIBRARIES}
   ${Boost_LIBRARIES}
@@ -30,7 +30,7 @@ if (WIN32)
 
   target_link_libraries(graphplay-console
     tinyxml2
-    ${GLFW_LIBRARIES}
+    glfw
     glad
     ${OPENGL_LIBRARIES}
     ${Boost_LIBRARIES}
