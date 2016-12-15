@@ -41,7 +41,9 @@ message(STATUS "Found OpenGL libs: " ${OPENGL_LIBRARIES})
 
 # Find GLFW.
 find_package(glfw3 QUIET)
-if(NOT ${glfw3_FOUND})
+if(${glfw3_FOUND})
+  message(STATUS "Found GLFW: " ${glfw3_CONFIG})
+else(${glfw3_FOUND})
   find_path(__GLFW_INCLUDE_DIRS NAMES GL/glfw3.h GLFW/glfw3.h)
 
   if(MSVC)
@@ -55,30 +57,25 @@ if(NOT ${glfw3_FOUND})
   set_property(TARGET glfw PROPERTY IMPORTED_LOCATION ${__GLFW_LIBRARY})
   set_property(TARGET glfw PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${__GLFW_INCLUDE_DIRS})
   set_property(TARGET glfw PROPERTY INTERFACE_LINK_LIBRARIES ${__GLFW_LIBRARIES})
-endif(NOT ${glfw3_FOUND})
-
-# Report where we found GLFW.
-get_target_property(GLFW_LOCATION glfw IMPORTED_LOCATION)
-get_target_property(GLFW_INCLUDE_DIRS glfw INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(GLFW_LIBRARIES glfw INTERFACE_LINK_LIBRARIES)
-message(STATUS "Found GLFW: " ${GLFW_LOCATION})
-message(STATUS "Found GLFW include: " ${GLFW_INCLUDE_DIRS})
-message(STATUS "Found GLFW libs: " ${GLFW_LIBRARIES})
+  message(STATUS "Found GLFW: " ${__GLFW_LIBRARY})
+  message(STATUS "Found GLFW include: " ${__GLFW_INCLUDE_DIRS})
+  message(STATUS "Found GLFW libs: " ${__GLFW_LIBRARIES})
+endif(${glfw3_FOUND})
 
 # Find GLM.
 find_package(glm QUIET)
-if(NOT ${glm_FOUND})
-  find_path(GLM_INCLUDE_PATH glm/glm.hpp PATHS ${CMAKE_PREFIX_PATH}/include NO_DEFAULT_PATH)
-  find_path(GLM_INCLUDE_PATH glm/glm.hpp)
+if(${glm_FOUND})
+  message(STATUS "Found glm: " ${glm_CONFIG})
+else()
+  find_path(__GLM_INCLUDE_PATH glm/glm.hpp PATHS ${CMAKE_PREFIX_PATH}/include NO_DEFAULT_PATH)
+  find_path(__GLM_INCLUDE_PATH glm/glm.hpp)
   add_library(glm STATIC IMPORTED)
-  set_property(TARGET glm PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${GLM_INCLUDE_PATH})
-endif(NOT ${glm_FOUND})
-
-# Report where we found GLM.
-get_target_property(GLM_INCLUDE_DIRS glm INTERFACE_INCLUDE_DIRECTORIES)
-message(STATUS "Found glm include: " ${GLM_INCLUDE_DIRS})
+  set_property(TARGET glm PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${__GLM_INCLUDE_PATH})
+  message(STATUS "Found glm include: " ${__GLM_INCLUDE_PATH})
+endif(${glm_FOUND})
 
 # Generate config.h.
+get_target_property(GLFW_INCLUDE_DIRS glfw INTERFACE_INCLUDE_DIRECTORIES)
 find_file(GLFW_FULL_HEADER_PATH NAMES GL/glfw3.h GLFW/glfw3.h)
 file(RELATIVE_PATH GLFW_HEADER_PATH ${GLFW_INCLUDE_DIRS} ${GLFW_FULL_HEADER_PATH})
 configure_file(config.h.in config.h)
