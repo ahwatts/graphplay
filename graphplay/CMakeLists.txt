@@ -1,5 +1,4 @@
 add_library(graphplay_engine
-  PlyFile.cpp
   fzx/BBox.cpp
   fzx/Body.cpp
   fzx/Constraint.cpp
@@ -9,7 +8,8 @@ add_library(graphplay_engine
   gfx/Mesh.cpp
   gfx/OpenGLUtils.cpp
   gfx/Scene.cpp
-  gfx/Shader.cpp)
+  gfx/Shader.cpp
+  load/PlyFile.cpp)
 
 add_executable(graphplay WIN32
   graphplay.cpp)

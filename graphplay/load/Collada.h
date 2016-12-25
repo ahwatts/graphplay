@@ -1,7 +1,9 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_COLLADA_H_
-#define _GRAPHPLAY_GRAPHPLAY_COLLADA_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_LOAD_COLLADA_H_
+#define _GRAPHPLAY_GRAPHPLAY_LOAD_COLLADA_H_
+
+#include "../graphplay.h"
 
 #include <map>
 #include <string>

@@ -1,12 +1,12 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "graphplay.h"
+#include "../graphplay.h"
+#include "Collada.h"
 
 #include <iostream>
 #include <numeric>
 #include <sstream>
 
-#include "Collada.h"
 #include "tinyxml2.h"
 
 namespace collada {

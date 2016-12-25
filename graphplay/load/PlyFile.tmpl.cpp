@@ -1,7 +1,9 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_PLY_FILE_CPP_
-#define _GRAPHPLAY_GRAPHPLAY_PLY_FILE_CPP_
+#ifndef _GRAPHPLAY_GRAPHPLAY_LOAD_PLY_FILE_CPP_
+#define _GRAPHPLAY_GRAPHPLAY_LOAD_PLY_FILE_CPP_
+
+#include "../graphplay.h"
 
 #include <cmath>
 #include <sstream>

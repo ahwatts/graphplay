@@ -1,11 +1,13 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "../graphplay/PlyFile.h"
+#include "../../graphplay/graphplay.h"
+#include "../../graphplay/load/PlyFile.h"
 
 #include <cstdint>
 #include <iostream>
 #include <string>
 #include <sstream>
+
 #include <gtest/gtest.h>
 
 namespace graphplay {

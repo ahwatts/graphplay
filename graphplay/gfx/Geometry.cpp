@@ -20,7 +20,7 @@
 
 #include "OpenGLUtils.h"
 #include "Geometry.h"
-#include "../PlyFile.h"
+#include "../load/PlyFile.h"
 
 #ifdef min
 #undef min
