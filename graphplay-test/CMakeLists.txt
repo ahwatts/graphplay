@@ -1,12 +1,12 @@
 add_executable(graphplay-test
-  BodyTest.cpp
-  CameraTest.cpp
-  GeometryTest.cpp
-  MeshTest.cpp
   PlyFileTest.cpp
-  SceneTest.cpp
-  ShaderTest.cpp
-  TestOpenGLContext.cpp)
+  fzx/BodyTest.cpp
+  gfx/CameraTest.cpp
+  gfx/GeometryTest.cpp
+  gfx/MeshTest.cpp
+  gfx/SceneTest.cpp
+  gfx/ShaderTest.cpp
+  gfx/TestOpenGLContext.cpp)
 
 include_directories(AFTER SYSTEM ../vendor/gtest/include)
 

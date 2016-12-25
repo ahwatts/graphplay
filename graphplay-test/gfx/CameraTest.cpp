@@ -1,6 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "../graphplay/graphplay.h"
+#include "../../graphplay/graphplay.h"
+#include "../../graphplay/gfx/Camera.h"
 
 #include <iostream>
 #include <glm/glm.hpp>
@@ -8,8 +9,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <gtest/gtest.h>
-
-#include "../graphplay/Camera.h"
 
 namespace graphplay {
     //TEST(CameraTest, DefaultConstructor) {

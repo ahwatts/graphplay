@@ -1,16 +1,17 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
-#define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_GFX_GEOMETRY_H_
+#define _GRAPHPLAY_GRAPHPLAY_GFX_GEOMETRY_H_
+
+#include "../graphplay.h"
 
 #include <iostream>
 #include <map>
 #include <memory>
 #include <vector>
 
-#include "graphplay.h"
-#include "opengl.h"
-#include "BBox.h"
+#include "../opengl.h"
+#include "../fzx/BBox.h"
 
 namespace graphplay {
     class Program;

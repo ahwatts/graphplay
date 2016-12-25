@@ -1,6 +1,6 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "graphplay.h"
+#include "../graphplay.h"
 #include "Body.h"
 
 #include <glm/mat4x4.hpp>

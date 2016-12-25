@@ -1,6 +1,7 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "../graphplay/Body.h"
+#include "../../graphplay/graphplay.h"
+#include "../../graphplay/fzx/Body.h"
 
 #include <iostream>
 

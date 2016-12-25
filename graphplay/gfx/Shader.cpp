@@ -1,11 +1,11 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include <cstdlib>
+#include "../graphplay.h"
+#include "Shader.h"
+
 #include <iostream>
 #include <regex>
 #include <string>
-
-#include "Shader.h"
 
 namespace graphplay {
     // Global functions.

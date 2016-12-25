@@ -1,10 +1,13 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_MESH_H_
-#define _GRAPHPLAY_GRAPHPLAY_MESH_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_GFX_MESH_H_
+#define _GRAPHPLAY_GRAPHPLAY_GFX_MESH_H_
+
+#include "../graphplay.h"
+
+#include <memory>
 
 #include <glm/mat4x4.hpp>
-#include <memory>
 
 #include "Geometry.h"
 #include "Shader.h"

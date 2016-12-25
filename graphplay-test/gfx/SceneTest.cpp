@@ -1,12 +1,11 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "../graphplay/graphplay.h"
+#include "../../graphplay/graphplay.h"
+#include "../../graphplay/gfx/Scene.h"
 
 #include <memory>
-#include <gtest/gtest.h>
 
-#include "../graphplay/Mesh.h"
-#include "../graphplay/Scene.h"
+#include <gtest/gtest.h>
 
 namespace graphplay {
     // TEST(SceneTest, DefaultConstructor) {

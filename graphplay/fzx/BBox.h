@@ -1,7 +1,9 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_BBOX_H_
-#define _GRAPHPLAY_GRAPHPLAY_BBOX_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_FZX_BBOX_H_
+#define _GRAPHPLAY_GRAPHPLAY_FZX_BBOX_H_
+
+#include "../graphplay.h"
 
 #include <array>
 #include <limits>

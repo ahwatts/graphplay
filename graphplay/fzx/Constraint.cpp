@@ -1,5 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil -*-
 
+#include "../graphplay.h"
 #include "Constraint.h"
 
 namespace graphplay {

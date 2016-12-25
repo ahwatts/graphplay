@@ -1,7 +1,8 @@
 // -*- c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "graphplay.h"
+#include "../graphplay.h"
 #include "Mesh.h"
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 

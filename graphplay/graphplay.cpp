@@ -14,14 +14,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/io.hpp>
 
-#include "Body.h"
-#include "Constraint.h"
-#include "Geometry.h"
-#include "Mesh.h"
-#include "PhysicsSystem.h"
-#include "Scene.h"
-#include "Shader.h"
 #include "opengl.h"
+
+#include "fzx/Body.h"
+#include "fzx/Constraint.h"
+#include "fzx/PhysicsSystem.h"
+#include "gfx/Geometry.h"
+#include "gfx/Mesh.h"
+#include "gfx/Scene.h"
+#include "gfx/Shader.h"
 
 void init_glfw(int width, int height, const char *title, GLFWwindow **window);
 void init_glad();

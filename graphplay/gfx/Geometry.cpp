@@ -1,6 +1,6 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "graphplay.h"
+#include "../graphplay.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -20,7 +20,7 @@
 
 #include "OpenGLUtils.h"
 #include "Geometry.h"
-#include "PlyFile.h"
+#include "../PlyFile.h"
 
 #ifdef min
 #undef min

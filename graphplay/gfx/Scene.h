@@ -1,16 +1,16 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_SCENE_H_
-#define _GRAPHPLAY_GRAPHPLAY_SCENE_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_GFX_SCENE_H_
+#define _GRAPHPLAY_GRAPHPLAY_GFX_SCENE_H_
 
-#include "graphplay.h"
+#include "../graphplay.h"
 
 #include <memory>
 #include <vector>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-#include "opengl.h"
+#include "../opengl.h"
 
 #include "Camera.h"
 #include "Mesh.h"

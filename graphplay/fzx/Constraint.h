@@ -1,7 +1,9 @@
 // -*- mode: c++; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_CONSTRAINT_H_
-#define _GRAPHPLAY_GRAPHPLAY_CONSTRAINT_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_FZX_CONSTRAINT_H_
+#define _GRAPHPLAY_GRAPHPLAY_FZX_CONSTRAINT_H_
+
+#include "../graphplay.h"
 
 #include <glm/vec3.hpp>
 

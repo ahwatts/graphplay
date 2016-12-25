@@ -1,12 +1,14 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_OPENGL_UTILS_H_
-#define _GRAPHPLAY_GRAPHPLAY_OPENGL_UTILS_H_
+#ifndef _GRAPHPLAY_GRAPHPLAY_GFX_OPENGL_UTILS_H_
+#define _GRAPHPLAY_GRAPHPLAY_GFX_OPENGL_UTILS_H_
+
+#include "../graphplay.h"
 
 #include <map>
 #include <string>
 #include <vector>
-#include "opengl.h"
+#include "../opengl.h"
 
 namespace graphplay {
     typedef std::map<std::string, GLuint> IndexMap;

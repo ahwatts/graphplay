@@ -1,11 +1,11 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "../graphplay/graphplay.h"
+#include "../../graphplay/graphplay.h"
+#include "../../graphplay/gfx/Shader.h"
 
 #include <gtest/gtest.h>
 
 #include "TestOpenGLContext.h"
-#include "../graphplay/Shader.h"
 
 namespace graphplay {
     class ShaderTest : public TestOpenGLContext {};

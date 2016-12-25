@@ -1,5 +1,6 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include "../graphplay.h"
 #include "BBox.h"
 
 #include <limits>

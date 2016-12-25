@@ -1,11 +1,13 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#ifndef _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
-#define _GRAPHPLAY_GRAPHPLAY_GEOMETRY_CPP_
+#ifndef _GRAPHPLAY_GRAPHPLAY_GFX_GEOMETRY_CPP_
+#define _GRAPHPLAY_GRAPHPLAY_GFX_GEOMETRY_CPP_
+
+#include "../graphplay.h"
 
 #include <glm/gtx/io.hpp>
 
-#include "BBox.h"
+#include "../fzx/BBox.h"
 #include "OpenGLUtils.h"
 #include "Shader.h"
 

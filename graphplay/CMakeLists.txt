@@ -1,22 +1,20 @@
 add_library(graphplay_engine
-  BBox.cpp
-  Body.cpp
-  Camera.cpp
-  Collada.cpp
-  Constraint.cpp
-  Geometry.cpp
-  Mesh.cpp
-  OpenGLUtils.cpp
-  PhysicsSystem.cpp
   PlyFile.cpp
-  Scene.cpp
-  Shader.cpp)
+  fzx/BBox.cpp
+  fzx/Body.cpp
+  fzx/Constraint.cpp
+  fzx/PhysicsSystem.cpp
+  gfx/Camera.cpp
+  gfx/Geometry.cpp
+  gfx/Mesh.cpp
+  gfx/OpenGLUtils.cpp
+  gfx/Scene.cpp
+  gfx/Shader.cpp)
 
 add_executable(graphplay WIN32
   graphplay.cpp)
 
 target_link_libraries(graphplay
-  tinyxml2
   glfw
   glad
   ${OPENGL_LIBRARIES}
