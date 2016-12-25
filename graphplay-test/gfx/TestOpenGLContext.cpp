@@ -1,14 +1,13 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
-#include "../graphplay/graphplay.h"
+#include "../../graphplay/graphplay.h"
+#include "TestOpenGLContext.h"
 
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <gtest/gtest.h>
-
-#include "TestOpenGLContext.h"
 
 #include "../graphplay/opengl.h"
 

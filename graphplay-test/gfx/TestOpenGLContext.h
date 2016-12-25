@@ -20,6 +20,6 @@ namespace graphplay {
         static void handle_glfw_error(int code, const char *desc);
         void bailout(const std::string &msg);
     };
-};
+}
 
 #endif
