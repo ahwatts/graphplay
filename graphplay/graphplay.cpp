@@ -23,8 +23,8 @@
 #include "Shader.h"
 #include "opengl.h"
 
-void initGLFW(int width, int height, const char *title, GLFWwindow **window);
-void initglad();
+void init_glfw(int width, int height, const char *title, GLFWwindow **window);
+void init_glad();
 void handle_glfw_error(int code, const char *desc);
 void bailout(const std::string &msg);
 
@@ -104,8 +104,8 @@ int main(int argc, char **argv) {
     int pixel_width = SCENE.getViewportWidth(), pixel_height = SCENE.getViewportHeight();
     GLFWwindow *window = nullptr;
 
-    initGLFW(pixel_width, pixel_height, "Graphplay", &window);
-    initglad();
+    init_glfw(pixel_width, pixel_height, "Graphplay", &window);
+    init_glad();
 
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
@@ -194,7 +194,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void initGLFW(int width, int height, const char *title, GLFWwindow **window) {
+void init_glfw(int width, int height, const char *title, GLFWwindow **window) {
     glfwSetErrorCallback(handle_glfw_error);
     if (!glfwInit()) {
         bailout("Could not initialize GLFW!");
@@ -214,7 +214,7 @@ void initGLFW(int width, int height, const char *title, GLFWwindow **window) {
     glfwMakeContextCurrent(*window);
 }
 
-void initglad() {
+void init_glad() {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::ostringstream msg;
         msg << "Could not initialize OpenGL context." << std::endl;
