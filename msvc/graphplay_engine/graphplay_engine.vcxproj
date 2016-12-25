@@ -18,6 +18,40 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\graphplay\config.h" />
+    <ClInclude Include="..\..\graphplay\fzx\BBox.h" />
+    <ClInclude Include="..\..\graphplay\fzx\Body.h" />
+    <ClInclude Include="..\..\graphplay\fzx\Constraint.h" />
+    <ClInclude Include="..\..\graphplay\fzx\Integrator.h" />
+    <ClInclude Include="..\..\graphplay\fzx\PhysicsSystem.h" />
+    <ClInclude Include="..\..\graphplay\gfx\Camera.h" />
+    <ClInclude Include="..\..\graphplay\gfx\Geometry.h" />
+    <ClInclude Include="..\..\graphplay\gfx\Mesh.h" />
+    <ClInclude Include="..\..\graphplay\gfx\OpenGLUtils.h" />
+    <ClInclude Include="..\..\graphplay\gfx\Scene.h" />
+    <ClInclude Include="..\..\graphplay\gfx\Shader.h" />
+    <ClInclude Include="..\..\graphplay\graphplay.h" />
+    <ClInclude Include="..\..\graphplay\load\PlyFile.h" />
+    <ClInclude Include="..\..\graphplay\opengl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\graphplay\fzx\BBox.cpp" />
+    <ClCompile Include="..\..\graphplay\fzx\Body.cpp" />
+    <ClCompile Include="..\..\graphplay\fzx\Constraint.cpp" />
+    <ClCompile Include="..\..\graphplay\fzx\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\graphplay\gfx\Camera.cpp" />
+    <ClCompile Include="..\..\graphplay\gfx\Geometry.cpp" />
+    <ClCompile Include="..\..\graphplay\gfx\Geometry.tmpl.cpp">
+      <FileType>CppCode</FileType>
+    </ClCompile>
+    <ClCompile Include="..\..\graphplay\gfx\Mesh.cpp" />
+    <ClCompile Include="..\..\graphplay\gfx\OpenGLUtils.cpp" />
+    <ClCompile Include="..\..\graphplay\gfx\Scene.cpp" />
+    <ClCompile Include="..\..\graphplay\gfx\Shader.cpp" />
+    <ClCompile Include="..\..\graphplay\load\PlyFile.cpp" />
+    <ClCompile Include="..\..\graphplay\load\PlyFile.tmpl.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B41708C9-D3DE-4E84-B7CB-2EA8F6C39C67}</ProjectGuid>
     <RootNamespace>graphplay_engine</RootNamespace>
@@ -120,37 +154,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\graphplay\Body.h" />
-    <ClInclude Include="..\..\graphplay\Camera.h" />
-    <ClInclude Include="..\..\graphplay\Collada.h" />
-    <ClInclude Include="..\..\graphplay\Constraint.h" />
-    <ClInclude Include="..\..\graphplay\Geometry.h" />
-    <ClInclude Include="..\..\graphplay\graphplay.h" />
-    <ClInclude Include="..\..\graphplay\Integrator.h" />
-    <ClInclude Include="..\..\graphplay\Mesh.h" />
-    <ClInclude Include="..\..\graphplay\opengl.h" />
-    <ClInclude Include="..\..\graphplay\OpenGLUtils.h" />
-    <ClInclude Include="..\..\graphplay\PhysicsSystem.h" />
-    <ClInclude Include="..\..\graphplay\PlyFile.h" />
-    <ClInclude Include="..\..\graphplay\Scene.h" />
-    <ClInclude Include="..\..\graphplay\Shader.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\graphplay\Body.cpp" />
-    <ClCompile Include="..\..\graphplay\Camera.cpp" />
-    <ClCompile Include="..\..\graphplay\Collada.cpp" />
-    <ClCompile Include="..\..\graphplay\Constraint.cpp" />
-    <ClCompile Include="..\..\graphplay\Geometry.cpp" />
-    <ClInclude Include="..\..\graphplay\Geometry.tmpl.cpp" />
-    <ClCompile Include="..\..\graphplay\Mesh.cpp" />
-    <ClCompile Include="..\..\graphplay\OpenGLUtils.cpp" />
-    <ClCompile Include="..\..\graphplay\PhysicsSystem.cpp" />
-    <ClCompile Include="..\..\graphplay\PlyFile.cpp" />
-    <ClInclude Include="..\..\graphplay\PlyFile.tmpl.cpp" />
-    <ClCompile Include="..\..\graphplay\Scene.cpp" />
-    <ClCompile Include="..\..\graphplay\Shader.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

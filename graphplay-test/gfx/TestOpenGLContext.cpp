@@ -9,7 +9,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
-#include "../graphplay/opengl.h"
+#include "../../graphplay/opengl.h"
 
 namespace graphplay {
     void TestOpenGLContext::SetUp() {

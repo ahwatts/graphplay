@@ -4,9 +4,11 @@
 #define _GRAPHPLAY_GRAPHPLAY_LOAD_PLY_FILE_CPP_
 
 #include "../graphplay.h"
+#include "PlyFile.h"
 
 #include <cmath>
 #include <sstream>
+#include <vector>
 
 #include <boost/variant.hpp>
 

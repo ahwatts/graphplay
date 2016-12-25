@@ -145,19 +145,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\graphplay-test\BodyTest.cpp" />
-    <ClCompile Include="..\..\graphplay-test\CameraTest.cpp" />
-    <ClCompile Include="..\..\graphplay-test\GeometryTest.cpp" />
-    <ClCompile Include="..\..\graphplay-test\MeshTest.cpp" />
-    <ClCompile Include="..\..\graphplay-test\PlyFileTest.cpp" />
-    <ClCompile Include="..\..\graphplay-test\SceneTest.cpp" />
-    <ClCompile Include="..\..\graphplay-test\ShaderTest.cpp" />
-    <ClCompile Include="..\..\graphplay-test\TestOpenGLContext.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\graphplay-test\TestOpenGLContext.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\glad\glad.vcxproj">
       <Project>{da5eddb0-c6c3-49ab-9071-eed99a4b467c}</Project>
     </ProjectReference>
@@ -170,6 +157,19 @@
     <ProjectReference Include="..\gtest_main\gtest_main.vcxproj">
       <Project>{ff143066-56dd-4336-9212-f98ad05c83b6}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\graphplay-test\fzx\BodyTest.cpp" />
+    <ClCompile Include="..\..\graphplay-test\gfx\CameraTest.cpp" />
+    <ClCompile Include="..\..\graphplay-test\gfx\GeometryTest.cpp" />
+    <ClCompile Include="..\..\graphplay-test\gfx\MeshTest.cpp" />
+    <ClCompile Include="..\..\graphplay-test\gfx\SceneTest.cpp" />
+    <ClCompile Include="..\..\graphplay-test\gfx\ShaderTest.cpp" />
+    <ClCompile Include="..\..\graphplay-test\gfx\TestOpenGLContext.cpp" />
+    <ClCompile Include="..\..\graphplay-test\load\PlyFileTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\graphplay-test\gfx\TestOpenGLContext.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

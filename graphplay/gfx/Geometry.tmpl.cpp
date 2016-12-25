@@ -4,6 +4,7 @@
 #define _GRAPHPLAY_GRAPHPLAY_GFX_GEOMETRY_CPP_
 
 #include "../graphplay.h"
+#include "Geometry.h"
 
 #include <glm/gtx/io.hpp>
 

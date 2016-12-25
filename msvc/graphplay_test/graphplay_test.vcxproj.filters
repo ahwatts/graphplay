@@ -15,33 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\graphplay-test\CameraTest.cpp">
+    <ClCompile Include="..\..\graphplay-test\fzx\BodyTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphplay-test\GeometryTest.cpp">
+    <ClCompile Include="..\..\graphplay-test\gfx\CameraTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphplay-test\MeshTest.cpp">
+    <ClCompile Include="..\..\graphplay-test\gfx\GeometryTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphplay-test\PlyFileTest.cpp">
+    <ClCompile Include="..\..\graphplay-test\gfx\MeshTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphplay-test\SceneTest.cpp">
+    <ClCompile Include="..\..\graphplay-test\gfx\SceneTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphplay-test\ShaderTest.cpp">
+    <ClCompile Include="..\..\graphplay-test\gfx\ShaderTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphplay-test\TestOpenGLContext.cpp">
+    <ClCompile Include="..\..\graphplay-test\gfx\TestOpenGLContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphplay-test\BodyTest.cpp">
+    <ClCompile Include="..\..\graphplay-test\load\PlyFileTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\graphplay-test\TestOpenGLContext.h">
+    <ClInclude Include="..\..\graphplay-test\gfx\TestOpenGLContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
