@@ -10,16 +10,18 @@
 struct GLFWwindow;
 
 namespace graphplay {
-    class TestOpenGLContext : public testing::Test {
-    protected:
-        GLFWwindow *window;
+    namespace gfx {
+        class TestOpenGLContext : public testing::Test {
+        protected:
+            GLFWwindow *window;
 
-        virtual void SetUp();
-        virtual void TearDown();
+            virtual void SetUp();
+            virtual void TearDown();
 
-        static void handle_glfw_error(int code, const char *desc);
-        void bailout(const std::string &msg);
-    };
+            static void handle_glfw_error(int code, const char *desc);
+            void bailout(const std::string &msg);
+        };
+    }
 }
 
 #endif

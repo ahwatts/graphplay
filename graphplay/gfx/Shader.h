@@ -11,111 +11,113 @@
 #include "OpenGLUtils.h"
 
 namespace graphplay {
-    class ViewAndProjectionBlock {
-    public:
-        enum field_name {
-            VIEW,
-            VIEW_INV,
-            PROJECTION,
+    namespace gfx {
+        class ViewAndProjectionBlock {
+        public:
+            enum field_name {
+                VIEW,
+                VIEW_INV,
+                PROJECTION,
+            };
+            typedef std::map<field_name, GLuint> offset_map_type;
+
+            static const ViewAndProjectionBlock& getDescriptor();
+
+            const offset_map_type& getOffsets() const;
+            long getDataSize() const;
+
+        private:
+            ViewAndProjectionBlock();
+            ViewAndProjectionBlock(const ViewAndProjectionBlock &other) = delete;
+            ViewAndProjectionBlock(ViewAndProjectionBlock &&other) = delete;
+            ViewAndProjectionBlock& operator=(const ViewAndProjectionBlock &other) = delete;
+            ViewAndProjectionBlock& operator=(ViewAndProjectionBlock &&other) = delete;
+
+            offset_map_type m_offsets;
+            long m_data_size;
         };
-        typedef std::map<field_name, GLuint> offset_map_type;
 
-        static const ViewAndProjectionBlock& getDescriptor();
+        class LightListBlock {
+        public:
+            static const int MAX_LIGHTS = 10;
 
-        const offset_map_type& getOffsets() const;
-        long getDataSize() const;
+            enum field_name {
+                ENABLED,
+                POSITION,
+                COLOR,
+                SPECULAR_EXP,
+            };
+            typedef std::map<field_name, GLuint> offset_map_type;
 
-    private:
-        ViewAndProjectionBlock();
-        ViewAndProjectionBlock(const ViewAndProjectionBlock &other) = delete;
-        ViewAndProjectionBlock(ViewAndProjectionBlock &&other) = delete;
-        ViewAndProjectionBlock& operator=(const ViewAndProjectionBlock &other) = delete;
-        ViewAndProjectionBlock& operator=(ViewAndProjectionBlock &&other) = delete;
+            static const LightListBlock& getDescriptor();
 
-        offset_map_type m_offsets;
-        long m_data_size;
-    };
+            const std::vector<offset_map_type>& getOffsets() const;
+            long getDataSize() const;
 
-    class LightListBlock {
-    public:
-        static const int MAX_LIGHTS = 10;
+        private:
+            LightListBlock();
+            LightListBlock(const LightListBlock &other) = delete;
+            LightListBlock(LightListBlock &&other) = delete;
+            LightListBlock& operator=(const LightListBlock &other) = delete;
+            LightListBlock& operator=(LightListBlock &&other) = delete;
 
-        enum field_name {
-            ENABLED,
-            POSITION,
-            COLOR,
-            SPECULAR_EXP,
+            std::vector<offset_map_type> m_offsets;
+            long m_data_size;
         };
-        typedef std::map<field_name, GLuint> offset_map_type;
 
-        static const LightListBlock& getDescriptor();
+        class Shader {
+        public:
+            typedef std::unique_ptr<Shader> uptr_type;
+            typedef std::shared_ptr<Shader> sptr_type;
+            typedef std::weak_ptr<Shader> wptr_type;
 
-        const std::vector<offset_map_type>& getOffsets() const;
-        long getDataSize() const;
+            Shader(GLenum type, const char *source);
+            Shader(const Shader &other) = delete;
+            Shader(Shader &&other) = delete;
+            ~Shader();
 
-    private:
-        LightListBlock();
-        LightListBlock(const LightListBlock &other) = delete;
-        LightListBlock(LightListBlock &&other) = delete;
-        LightListBlock& operator=(const LightListBlock &other) = delete;
-        LightListBlock& operator=(LightListBlock &&other) = delete;
+            Shader& operator=(Shader &other) = delete;
+            Shader& operator=(Shader &&other) = delete;
 
-        std::vector<offset_map_type> m_offsets;
-        long m_data_size;
-    };
+            inline const GLuint getShaderId() const { return m_shader; }
 
-    class Shader {
-    public:
-        typedef std::unique_ptr<Shader> uptr_type;
-        typedef std::shared_ptr<Shader> sptr_type;
-        typedef std::weak_ptr<Shader> wptr_type;
+            static const char *unlit_vertex_shader_source, *unlit_fragment_shader_source;
+            static const char *lit_vertex_shader_source, *lit_fragment_shader_source;
 
-        Shader(GLenum type, const char *source);
-        Shader(const Shader &other) = delete;
-        Shader(Shader &&other) = delete;
-        ~Shader();
+        private:
+            GLuint m_shader;
+        };
 
-        Shader& operator=(Shader &other) = delete;
-        Shader& operator=(Shader &&other) = delete;
+        class Program {
+        public:
+            typedef std::unique_ptr<Program> uptr_type;
+            typedef std::shared_ptr<Program> sptr_type;
+            typedef std::weak_ptr<Program> wptr_type;
 
-        inline const GLuint getShaderId() const { return m_shader; }
+            Program(Shader::sptr_type vertex_shader, Shader::sptr_type fragment_shader);
+            Program(const Program &other);
+            Program(Program &&other);
+            ~Program();
 
-        static const char *unlit_vertex_shader_source, *unlit_fragment_shader_source;
-        static const char *lit_vertex_shader_source, *lit_fragment_shader_source;
+            Program& operator=(const Program &other);
+            Program& operator=(Program &&other);
 
-    private:
-        GLuint m_shader;
-    };
+            inline const GLuint getProgramId() const { return m_program; }
+            inline const Shader::sptr_type getVertexShader()   const { return m_vertex_shader; }
+            inline const Shader::sptr_type getFragmentShader() const { return m_fragment_shader; }
+            inline const IndexMap& getAttributes()    const { return m_attributes; }
+            inline const IndexMap& getUniforms()      const { return m_uniforms; }
+            inline const IndexMap& getUniformBlocks() const { return m_uniform_blocks; };
 
-    class Program {
-    public:
-        typedef std::unique_ptr<Program> uptr_type;
-        typedef std::shared_ptr<Program> sptr_type;
-        typedef std::weak_ptr<Program> wptr_type;
+        private:
+            GLuint m_program;
+            Shader::sptr_type m_vertex_shader, m_fragment_shader;
+            IndexMap m_attributes, m_uniforms, m_uniform_blocks;
+        };
 
-        Program(Shader::sptr_type vertex_shader, Shader::sptr_type fragment_shader);
-        Program(const Program &other);
-        Program(Program &&other);
-        ~Program();
-
-        Program& operator=(const Program &other);
-        Program& operator=(Program &&other);
-
-        inline const GLuint getProgramId() const { return m_program; }
-        inline const Shader::sptr_type getVertexShader()   const { return m_vertex_shader; }
-        inline const Shader::sptr_type getFragmentShader() const { return m_fragment_shader; }
-        inline const IndexMap& getAttributes()    const { return m_attributes; }
-        inline const IndexMap& getUniforms()      const { return m_uniforms; }
-        inline const IndexMap& getUniformBlocks() const { return m_uniform_blocks; };
-
-    private:
-        GLuint m_program;
-        Shader::sptr_type m_vertex_shader, m_fragment_shader;
-        IndexMap m_attributes, m_uniforms, m_uniform_blocks;
-    };
-
-    Program::sptr_type createUnlitProgram();
-    Program::sptr_type createLitProgram();
-};
+        Program::sptr_type createUnlitProgram();
+        Program::sptr_type createLitProgram();
+    }
+}
 
 #endif

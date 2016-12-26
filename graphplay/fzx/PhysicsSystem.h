@@ -10,29 +10,31 @@
 #include "Body.h"
 
 namespace graphplay {
-    class PhysicsSystem {
-    public:
-        PhysicsSystem(float time_step);
-        PhysicsSystem(const PhysicsSystem&) = delete;
-        PhysicsSystem(PhysicsSystem&&) = delete;
-        ~PhysicsSystem();
+    namespace fzx {
+        class PhysicsSystem {
+        public:
+            PhysicsSystem(float time_step);
+            PhysicsSystem(const PhysicsSystem&) = delete;
+            PhysicsSystem(PhysicsSystem&&) = delete;
+            ~PhysicsSystem();
 
-        PhysicsSystem& operator=(const PhysicsSystem&) = delete;
-        PhysicsSystem& operator=(PhysicsSystem&&) = delete;
+            PhysicsSystem& operator=(const PhysicsSystem&) = delete;
+            PhysicsSystem& operator=(PhysicsSystem&&) = delete;
 
-        std::vector<Body::wptr_type>& bodies() { return m_bodies; }
+            std::vector<Body::wptr_type>& bodies() { return m_bodies; }
 
-        void addBody(Body::sptr_type new_body);
-        float update(float total_step);
+            void addBody(Body::sptr_type new_body);
+            float update(float total_step);
 
-    protected:
-        float m_time_step;
-        float m_hangover_time;
-        std::vector<Body::wptr_type> m_bodies;
+        protected:
+            float m_time_step;
+            float m_hangover_time;
+            std::vector<Body::wptr_type> m_bodies;
 
-        void stepTime();
-        void detectCollisions();
-    };
+            void stepTime();
+            void detectCollisions();
+        };
+    }
 }
 
 #endif

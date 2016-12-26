@@ -8,19 +8,21 @@
 #include <glm/vec3.hpp>
 
 namespace graphplay {
-    class Body;
+    namespace fzx {
+        class Body;
 
-    class AttachedSpring {
-    public:
-        AttachedSpring(float spring_const, const Body &other);
-        const Body& attachedTo() const;
-        float springConstant() const;
-        glm::vec3 force(const glm::vec3 &self_pos, const glm::vec3 &other_pos) const;
+        class AttachedSpring {
+        public:
+            AttachedSpring(float spring_const, const Body &other);
+            const Body& attachedTo() const;
+            float springConstant() const;
+            glm::vec3 force(const glm::vec3 &self_pos, const glm::vec3 &other_pos) const;
 
-    private:
-        const Body &m_other;
-        float m_spring_const;
-    };
+        private:
+            const Body &m_other;
+            float m_spring_const;
+        };
+    }
 }
 
 #endif

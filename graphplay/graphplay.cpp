@@ -41,8 +41,8 @@ using namespace std::chrono;
 const duration<float> FRAME_RATE(1.0f / 60.0f);
 const float TIME_STEP = FRAME_RATE.count() / 5;
 
-Scene SCENE(1024, 768);
-Body::sptr_type ORIGIN = std::make_shared<Body>();
+gfx::Scene SCENE(1024, 768);
+fzx::Body::sptr_type ORIGIN = std::make_shared<fzx::Body>();
 double MOUSE_X = 0.0, MOUSE_Y = 0.0;
 bool ROTATING = false;
 std::random_device RANDOM_DEV;
@@ -50,13 +50,13 @@ std::default_random_engine RANDOM_ENG(RANDOM_DEV());
 
 class GPObject {
 public:
-    GPObject(Geometry<PCNVertex>::sptr_type geo, Program::sptr_type program)
+    GPObject(gfx::Geometry<gfx::PCNVertex>::sptr_type geo, gfx::Program::sptr_type program)
         : geometry(geo)
     {
         std::uniform_real_distribution<float> random_unit(-10.0f, 10.0f);
 
-        mesh = std::make_shared<Mesh>(geo, program);
-        body = std::make_shared<Body>();
+        mesh = std::make_shared<gfx::Mesh>(geo, program);
+        body = std::make_shared<fzx::Body>();
         body->position({
             random_unit(RANDOM_ENG),
             random_unit(RANDOM_ENG),
@@ -68,7 +68,7 @@ public:
             random_unit(RANDOM_ENG) / 2
         });
         body->boundingBox(geo->boundingBox());
-        body->addConstraint(AttachedSpring(0.7f, *ORIGIN));
+        body->addConstraint(fzx::AttachedSpring(0.7f, *ORIGIN));
     }
 
     void update(float alpha) {
@@ -76,18 +76,18 @@ public:
         mesh->modelTransformation(model_xform);
     }
 
-    Geometry<PCNVertex>::sptr_type geometry;
-    Mesh::sptr_type mesh;
-    Body::sptr_type body;
+    gfx::Geometry<gfx::PCNVertex>::sptr_type geometry;
+    gfx::Mesh::sptr_type mesh;
+    fzx::Body::sptr_type body;
 };
 
 class BoundedGPObject {
 public:
-    BoundedGPObject(Geometry<PCNVertex>::sptr_type geo, Program::sptr_type object_program, Program::sptr_type bbox_program)
+    BoundedGPObject(gfx::Geometry<gfx::PCNVertex>::sptr_type geo, gfx::Program::sptr_type object_program, gfx::Program::sptr_type bbox_program)
         : object(geo, object_program)
     {
-        bbox_geometry = makeBoundingBoxGeometry(geo->boundingBox());
-        bbox_mesh = std::make_shared<Mesh>(bbox_geometry, bbox_program);
+        bbox_geometry = gfx::makeBoundingBoxGeometry(geo->boundingBox());
+        bbox_mesh = std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program);
     }
 
     void update(float alpha) {
@@ -97,8 +97,8 @@ public:
     }
 
     GPObject object;
-    MutableGeometry<PCNVertex>::sptr_type bbox_geometry;
-    Mesh::sptr_type bbox_mesh;
+    gfx::MutableGeometry<gfx::PCNVertex>::sptr_type bbox_geometry;
+    gfx::Mesh::sptr_type bbox_mesh;
 };
 
 int main(int argc, char **argv) {
@@ -125,14 +125,14 @@ int main(int argc, char **argv) {
     path armadillo_path(assets_path);
     armadillo_path /= "stanford_armadillo.ply";
 
-    Program::sptr_type unlit_program = createUnlitProgram();
-    Program::sptr_type lit_program = createLitProgram();
+    gfx::Program::sptr_type unlit_program = gfx::createUnlitProgram();
+    gfx::Program::sptr_type lit_program = gfx::createLitProgram();
 
-    BoundedGPObject octohedron(makeOctohedronGeometry(), unlit_program, unlit_program);
-    BoundedGPObject sphere(makeSphereGeometry(), lit_program, unlit_program);
-    BoundedGPObject bunny(loadPlyFile(bunny_path.string().c_str()), lit_program, unlit_program);
-    BoundedGPObject armadillo(loadPlyFile(armadillo_path.string().c_str()), lit_program, unlit_program);
-    GPObject bbox(makeWireframeCubeGeometry(), unlit_program);
+    BoundedGPObject octohedron(gfx::makeOctohedronGeometry(), unlit_program, unlit_program);
+    BoundedGPObject sphere(gfx::makeSphereGeometry(), lit_program, unlit_program);
+    BoundedGPObject bunny(gfx::loadPlyFile(bunny_path.string().c_str()), lit_program, unlit_program);
+    BoundedGPObject armadillo(gfx::loadPlyFile(armadillo_path.string().c_str()), lit_program, unlit_program);
+    GPObject bbox(gfx::makeWireframeCubeGeometry(), unlit_program);
 
     SCENE.addMesh(octohedron.object.mesh);
     SCENE.addMesh(octohedron.bbox_mesh);
@@ -146,13 +146,13 @@ int main(int argc, char **argv) {
 
     bbox.mesh->modelTransformation(glm::scale(bbox.mesh->modelTransformation(), glm::vec3(10.0f, 10.0f, 10.0f)));
 
-    PhysicsSystem physics(TIME_STEP);
+    fzx::PhysicsSystem physics(TIME_STEP);
     physics.addBody(octohedron.object.body);
     physics.addBody(sphere.object.body);
     physics.addBody(bunny.object.body);
     physics.addBody(armadillo.object.body);
 
-    Camera &camera = SCENE.getCamera();
+    gfx::Camera &camera = SCENE.getCamera();
     camera.focusPoint(glm::vec3(0.0, 0.0, 0.0));
     camera.position(glm::vec3(0.0, 0.0, 30.0));
 

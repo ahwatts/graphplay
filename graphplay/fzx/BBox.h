@@ -12,62 +12,66 @@
 #include <glm/vec3.hpp>
 
 namespace graphplay {
-    struct PCNVertex;
+    namespace gfx {
+        class PCNVertex;
+    }
 
-    class BBox {
-    public:
-        BBox();
-        BBox(glm::vec3 min, glm::vec3 max);
-        ~BBox();
+    namespace fzx {
+        class BBox {
+        public:
+            BBox();
+            BBox(glm::vec3 min, glm::vec3 max);
+            ~BBox();
 
-        template <typename I>
-        static BBox fromVertices(I first, I last) {
-            static_assert(
-                std::is_same<typename I::value_type, PCNVertex>::value,
-                "The BBox fromVertices factory function can only be called with iterators over PCNVertex's.");
+            template <typename I>
+            static BBox fromVertices(I first, I last) {
+                static_assert(
+                    std::is_same<typename I::value_type, gfx::PCNVertex>::value,
+                    "The BBox fromVertices factory function can only be called with iterators over PCNVertex's.");
 
-            BBox rv;
-            for (I i = first; i != last; ++i) {
-                for (unsigned int j = 0; j < 3; ++j) {
-                    if (i->position[j] < rv.min[j]) {
-                        rv.min[j] = i->position[j];
-                    }
+                BBox rv;
+                for (I i = first; i != last; ++i) {
+                    for (unsigned int j = 0; j < 3; ++j) {
+                        if (i->position[j] < rv.min[j]) {
+                            rv.min[j] = i->position[j];
+                        }
 
-                    if (i->position[j] > rv.max[j]) {
-                        rv.max[j] = i->position[j];
-                    }
-                }
-            }
-            return rv;
-        }
-
-        template <typename I>
-        static BBox fromVectors(I first, I last) {
-            BBox rv;
-            for (I i = first; i != last; ++i) {
-                for (unsigned int j = 0; j < 3; ++j) {
-                    if ((*i)[j] < rv.min[j]) {
-                        rv.min[j] = (*i)[j];
-                    }
-
-                    if ((*i)[j] > rv.max[j]) {
-                        rv.max[j] = (*i)[j];
+                        if (i->position[j] > rv.max[j]) {
+                            rv.max[j] = i->position[j];
+                        }
                     }
                 }
+                return rv;
             }
-            return rv;
-        }
 
-        BBox axisAlignedAfterTransform(const glm::mat4x4 &transform) const;
-        bool collides(const BBox &other) const;
+            template <typename I>
+            static BBox fromVectors(I first, I last) {
+                BBox rv;
+                for (I i = first; i != last; ++i) {
+                    for (unsigned int j = 0; j < 3; ++j) {
+                        if ((*i)[j] < rv.min[j]) {
+                            rv.min[j] = (*i)[j];
+                        }
 
-        glm::vec3 min, max;
+                        if ((*i)[j] > rv.max[j]) {
+                            rv.max[j] = (*i)[j];
+                        }
+                    }
+                }
+                return rv;
+            }
 
-    protected:
-    };
+            BBox axisAlignedAfterTransform(const glm::mat4x4 &transform) const;
+            bool collides(const BBox &other) const;
 
-    // class BBoxGeometry : public MutableGeometry<PCNVertex> {
-    // };
+            glm::vec3 min, max;
+
+        protected:
+        };
+
+        // class BBoxGeometry : public MutableGeometry<PCNVertex> {
+        // };
+    }
 }
 
 #endif
