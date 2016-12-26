@@ -16,13 +16,9 @@
 
 #include "opengl.h"
 
-#include "fzx/Body.h"
-#include "fzx/Constraint.h"
 #include "fzx/PhysicsSystem.h"
-#include "gfx/Geometry.h"
-#include "gfx/Mesh.h"
 #include "gfx/Scene.h"
-#include "gfx/Shader.h"
+#include "Driver.h"
 
 void init_glfw(int width, int height, const char *title, GLFWwindow **window);
 void init_glad();
@@ -47,59 +43,6 @@ double MOUSE_X = 0.0, MOUSE_Y = 0.0;
 bool ROTATING = false;
 std::random_device RANDOM_DEV;
 std::default_random_engine RANDOM_ENG(RANDOM_DEV());
-
-class GPObject {
-public:
-    GPObject(gfx::Geometry<gfx::PCNVertex>::sptr_type geo, gfx::Program::sptr_type program)
-        : geometry(geo)
-    {
-        std::uniform_real_distribution<float> random_unit(-10.0f, 10.0f);
-
-        mesh = std::make_shared<gfx::Mesh>(geo, program);
-        body = std::make_shared<fzx::Body>();
-        body->position({
-            random_unit(RANDOM_ENG),
-            random_unit(RANDOM_ENG),
-            random_unit(RANDOM_ENG)
-        });
-        body->velocity({
-            random_unit(RANDOM_ENG) / 2,
-            random_unit(RANDOM_ENG) / 2,
-            random_unit(RANDOM_ENG) / 2
-        });
-        body->boundingBox(geo->boundingBox());
-        body->addConstraint(fzx::AttachedSpring(0.7f, *ORIGIN));
-    }
-
-    void update(float alpha) {
-        glm::mat4x4 model_xform = body->modelTransformation(alpha, glm::mat4x4(1));
-        mesh->modelTransformation(model_xform);
-    }
-
-    gfx::Geometry<gfx::PCNVertex>::sptr_type geometry;
-    gfx::Mesh::sptr_type mesh;
-    fzx::Body::sptr_type body;
-};
-
-class BoundedGPObject {
-public:
-    BoundedGPObject(gfx::Geometry<gfx::PCNVertex>::sptr_type geo, gfx::Program::sptr_type object_program, gfx::Program::sptr_type bbox_program)
-        : object(geo, object_program)
-    {
-        bbox_geometry = gfx::makeBoundingBoxGeometry(geo->boundingBox());
-        bbox_mesh = std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program);
-    }
-
-    void update(float alpha) {
-        glm::mat4x4 model_xform = object.body->modelTransformation(alpha, glm::mat4x4(1));
-        object.mesh->modelTransformation(model_xform);
-        bbox_mesh->modelTransformation(model_xform);
-    }
-
-    GPObject object;
-    gfx::MutableGeometry<gfx::PCNVertex>::sptr_type bbox_geometry;
-    gfx::Mesh::sptr_type bbox_mesh;
-};
 
 int main(int argc, char **argv) {
     int pixel_width = SCENE.getViewportWidth(), pixel_height = SCENE.getViewportHeight();

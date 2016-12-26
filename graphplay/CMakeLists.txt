@@ -1,4 +1,5 @@
 add_library(graphplay_engine
+  Driver.cpp
   fzx/BBox.cpp
   fzx/Body.cpp
   fzx/Constraint.cpp
