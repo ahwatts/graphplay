@@ -136,6 +136,8 @@ namespace graphplay {
             static const AttrMap description;
         };
 
+        typedef Geometry<PCNVertex> PCNGeometry;
+
         // Output functions.
         std::ostream& operator<<(std::ostream& stream, const PCNVertex &vertex);
 

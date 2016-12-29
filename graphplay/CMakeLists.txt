@@ -16,24 +16,22 @@ add_executable(graphplay WIN32
   graphplay.cpp)
 
 target_link_libraries(graphplay
-  glfw
+  graphplay_engine
   glad
+  glfw
   ${OPENGL_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${CMAKE_DL_LIBS}
-  graphplay_engine)
+  ${Boost_LIBRARIES})
 
 if (WIN32)
   add_executable(graphplay-console
     graphplay.cpp)
 
   target_link_libraries(graphplay-console
-    tinyxml2
-    glfw
+    graphplay_engine
     glad
+    glfw
     ${OPENGL_LIBRARIES}
-    ${Boost_LIBRARIES}
-    graphplay_engine)
+    ${Boost_LIBRARIES})
 
   if(MINGW)
     set_target_properties(graphplay PROPERTIES

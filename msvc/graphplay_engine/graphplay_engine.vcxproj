@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\graphplay\config.h" />
+    <ClInclude Include="..\..\graphplay\Driver.h" />
     <ClInclude Include="..\..\graphplay\fzx\BBox.h" />
     <ClInclude Include="..\..\graphplay\fzx\Body.h" />
     <ClInclude Include="..\..\graphplay\fzx\Constraint.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="..\..\graphplay\opengl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\graphplay\Driver.cpp" />
     <ClCompile Include="..\..\graphplay\fzx\BBox.cpp" />
     <ClCompile Include="..\..\graphplay\fzx\Body.cpp" />
     <ClCompile Include="..\..\graphplay\fzx\Constraint.cpp" />

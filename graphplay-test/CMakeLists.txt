@@ -11,13 +11,13 @@ add_executable(graphplay-test
 include_directories(AFTER SYSTEM ../vendor/gtest/include)
 
 target_link_libraries(graphplay-test
-  tinyxml2
-  glfw
-  glad
-  ${OPENGL_LIBRARIES}
-  ${CMAKE_DL_LIBS}
   graphplay_engine
-  gtest gtest_main)
+  gtest
+  gtest_main
+  glad
+  glfw
+  ${OPENGL_LIBRARIES}
+  ${Boost_LIBRARIES})
 
 if(MSVC AND CMAKE_CXX_COMPILER_VERSION STRLESS "18.0")
   set_target_properties(graphplay-test PROPERTIES COMPILE_DEFINITIONS _VARIADIC_MAX=10)

@@ -10,8 +10,6 @@
 #include <string>
 #include <thread>
 
-#include <boost/filesystem.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/io.hpp>
 
 #include "opengl.h"
@@ -30,22 +28,22 @@ void mouse_click(GLFWwindow *wnd, int button, int action, int mods);
 void mouse_scroll(GLFWwindow *wnd, double xoffset, double yoffset);
 void mouse_move(GLFWwindow *wnd, double xpos, double ypos);
 
-using namespace graphplay;
-using namespace boost::filesystem;
-using namespace std::chrono;
+// using namespace graphplay;
+// using namespace boost::filesystem;
+// using namespace std::chrono;
 
-const duration<float> FRAME_RATE(1.0f / 60.0f);
-const float TIME_STEP = FRAME_RATE.count() / 5;
+// const duration<float> FRAME_RATE(1.0f / 60.0f);
+// const float TIME_STEP = FRAME_RATE.count() / 5;
 
-gfx::Scene SCENE(1024, 768);
-fzx::Body::sptr_type ORIGIN = std::make_shared<fzx::Body>();
+// gfx::Scene SCENE(1024, 768);
+// fzx::Body::sptr_type ORIGIN = std::make_shared<fzx::Body>();
 double MOUSE_X = 0.0, MOUSE_Y = 0.0;
 bool ROTATING = false;
-std::random_device RANDOM_DEV;
-std::default_random_engine RANDOM_ENG(RANDOM_DEV());
+// std::random_device RANDOM_DEV;
+// std::default_random_engine RANDOM_ENG(RANDOM_DEV());
 
 int main(int argc, char **argv) {
-    int pixel_width = SCENE.getViewportWidth(), pixel_height = SCENE.getViewportHeight();
+    int pixel_width = 1024, pixel_height = 768;
     GLFWwindow *window = nullptr;
 
     init_glfw(pixel_width, pixel_height, "Graphplay", &window);
@@ -57,47 +55,7 @@ int main(int argc, char **argv) {
     std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 
     glfwGetFramebufferSize(window, &pixel_width, &pixel_height);
-    SCENE.setViewport(pixel_width, pixel_height);
-    SCENE.createBuffers();
-
     glfwGetCursorPos(window, &MOUSE_X, &MOUSE_Y);
-
-    path assets_path("assets");
-    path bunny_path(assets_path);
-    bunny_path /= "stanford_bunny.ply";
-    path armadillo_path(assets_path);
-    armadillo_path /= "stanford_armadillo.ply";
-
-    gfx::Program::sptr_type unlit_program = gfx::createUnlitProgram();
-    gfx::Program::sptr_type lit_program = gfx::createLitProgram();
-
-    BoundedGPObject octohedron(gfx::makeOctohedronGeometry(), unlit_program, unlit_program);
-    BoundedGPObject sphere(gfx::makeSphereGeometry(), lit_program, unlit_program);
-    BoundedGPObject bunny(gfx::loadPlyFile(bunny_path.string().c_str()), lit_program, unlit_program);
-    BoundedGPObject armadillo(gfx::loadPlyFile(armadillo_path.string().c_str()), lit_program, unlit_program);
-    GPObject bbox(gfx::makeWireframeCubeGeometry(), unlit_program);
-
-    SCENE.addMesh(octohedron.object.mesh);
-    SCENE.addMesh(octohedron.bbox_mesh);
-    SCENE.addMesh(sphere.object.mesh);
-    SCENE.addMesh(sphere.bbox_mesh);
-    SCENE.addMesh(bunny.object.mesh);
-    SCENE.addMesh(bunny.bbox_mesh);
-    SCENE.addMesh(armadillo.object.mesh);
-    SCENE.addMesh(armadillo.bbox_mesh);
-    SCENE.addMesh(bbox.mesh);
-
-    bbox.mesh->modelTransformation(glm::scale(bbox.mesh->modelTransformation(), glm::vec3(10.0f, 10.0f, 10.0f)));
-
-    fzx::PhysicsSystem physics(TIME_STEP);
-    physics.addBody(octohedron.object.body);
-    physics.addBody(sphere.object.body);
-    physics.addBody(bunny.object.body);
-    physics.addBody(armadillo.object.body);
-
-    gfx::Camera &camera = SCENE.getCamera();
-    camera.focusPoint(glm::vec3(0.0, 0.0, 0.0));
-    camera.position(glm::vec3(0.0, 0.0, 30.0));
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
@@ -108,31 +66,7 @@ int main(int argc, char **argv) {
     glfwSetMouseButtonCallback(window, mouse_click);
     glfwSetScrollCallback(window, mouse_scroll);
 
-    auto ptime = steady_clock::now();
-
-    while (!glfwWindowShouldClose(window)) {
-        auto frame_time = steady_clock::now();
-        duration<float> frame_seconds = frame_time - ptime;
-        ptime = frame_time;
-
-        // Update physics; set model transformations.
-        float alpha = physics.update(frame_seconds.count());
-        octohedron.update(alpha);
-        sphere.update(alpha);
-        bunny.update(alpha);
-        armadillo.update(alpha);
-
-        // render.
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        SCENE.render();
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-
-        auto update_time = steady_clock::now();
-        duration<float> update_seconds = update_time - frame_time;
-        duration<float> sleep_seconds = FRAME_RATE - update_seconds;
-        std::this_thread::sleep_for(sleep_seconds);
-    }
+    graphplay::drive(window);
 
     glfwTerminate();
     return 0;
@@ -205,16 +139,16 @@ void mouse_click(GLFWwindow *window, int button, int action, int mods) {
 }
 
 void mouse_scroll(GLFWwindow *wnd, double xoffset, double yoffset) {
-    SCENE.getCamera().zoom(yoffset);
+    // SCENE.getCamera().zoom(yoffset);
 }
 
 void mouse_move(GLFWwindow *wnd, double xpos, double ypos) {
-    if (ROTATING) {
-        double theta = -1 * 2 * M_PI * ((xpos - MOUSE_X) / SCENE.getViewportWidth());
-        double phi = -1 * M_PI * ((ypos - MOUSE_Y) / SCENE.getViewportHeight());
+    // if (ROTATING) {
+    //     double theta = -1 * 2 * M_PI * ((xpos - MOUSE_X) / SCENE.getViewportWidth());
+    //     double phi = -1 * M_PI * ((ypos - MOUSE_Y) / SCENE.getViewportHeight());
 
-        SCENE.getCamera().rotate(theta, phi);
-        MOUSE_X = xpos;
-        MOUSE_Y = ypos;
-    }
+    //     SCENE.getCamera().rotate(theta, phi);
+    //     MOUSE_X = xpos;
+    //     MOUSE_Y = ypos;
+    // }
 }

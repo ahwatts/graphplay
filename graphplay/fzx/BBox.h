@@ -13,7 +13,7 @@
 
 namespace graphplay {
     namespace gfx {
-        class PCNVertex;
+        struct PCNVertex;
     }
 
     namespace fzx {
