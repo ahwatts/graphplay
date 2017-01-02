@@ -182,6 +182,14 @@ namespace graphplay {
             { {  0.0f, -1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, {  0.577f, -0.577f, -0.577f, } },
         };
 
+#ifdef MSVC
+        const
+#else
+        constexpr
+#endif
+        unsigned int OCTOHEDRON_VERTEX_ARRAY_COUNT = sizeof(OCTOHEDRON_VERTEX_ARRAY) / sizeof(OCTOHEDRON_VERTEX_ARRAY[0]);
+
+
         // This is just each of the vertex data in order, since each
         // repeated position / color has a different normal...
 #ifdef MSVC
@@ -200,11 +208,18 @@ namespace graphplay {
             21, 22, 23,
         };
 
+#ifdef MSVC
+        const
+#else
+        constexpr
+#endif
+        unsigned int OCTOHEDRON_VERTEX_ELEMS_COUNT = sizeof(OCTOHEDRON_VERTEX_ELEMS) / sizeof(OCTOHEDRON_VERTEX_ELEMS[0]);
+
+
         Geometry<PCNVertex>::sptr_type makeOctohedronGeometry() {
-            Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
-            rv->setVertexData(
-                OCTOHEDRON_VERTEX_ELEMS, 24,
-                OCTOHEDRON_VERTEX_ARRAY, 24);
+            Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >(
+                OCTOHEDRON_VERTEX_ELEMS, OCTOHEDRON_VERTEX_ELEMS + OCTOHEDRON_VERTEX_ELEMS_COUNT,
+                OCTOHEDRON_VERTEX_ARRAY, OCTOHEDRON_VERTEX_ARRAY + OCTOHEDRON_VERTEX_ARRAY_COUNT);
             rv->createBuffers();
             return rv;
         }
@@ -300,7 +315,7 @@ namespace graphplay {
                         { pos.x, pos.y, pos.z, },
                         { std::abs(pos.r), std::abs(pos.g), std::abs(pos.b), 1.0f, },
                         { pos.x, pos.y, pos.z, },
-                            });
+                    });
             }
 
             rv->setVertexData(std::move(pne.elems), std::move(verts));

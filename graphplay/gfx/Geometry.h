@@ -81,6 +81,14 @@ namespace graphplay {
             Geometry(Geometry<V> &&other);
             virtual ~Geometry();
 
+            template <class ElemIter, class VertIter>
+            Geometry(ElemIter first_elem, ElemIter last_elem, VertIter first_vert, VertIter last_vert)
+                : AbstractGeometry{},
+                  m_vertices{first_vert, last_vert},
+                  m_elems{first_elem, last_elem},
+                  m_attr_infos{V::description}
+            {}
+
             virtual AbstractGeometry& operator=(const AbstractGeometry &other);
             virtual AbstractGeometry& operator=(AbstractGeometry &&other);
 

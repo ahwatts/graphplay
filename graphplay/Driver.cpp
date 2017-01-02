@@ -29,7 +29,7 @@ namespace graphplay {
     {}
 
     GPObject::GPObject(
-        gfx::Geometry<gfx::PCNVertex>::sptr_type geo,
+        gfx::PCNGeometry::sptr_type geo,
         gfx::Program::sptr_type program)
         : GPObject()
     {
@@ -37,7 +37,7 @@ namespace graphplay {
     }
 
     void GPObject::init(
-        gfx::Geometry<gfx::PCNVertex>::sptr_type geo,
+        gfx::PCNGeometry::sptr_type geo,
         gfx::Program::sptr_type program)
     {
         std::uniform_real_distribution<float> random_unit(-10.0f, 10.0f);
