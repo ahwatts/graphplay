@@ -23,22 +23,6 @@ namespace graphplay {
               m_position(position)
         {}
 
-        glm::vec3 Camera::focusPoint() const {
-            return m_focus_point;
-        }
-
-        void Camera::focusPoint(const glm::vec3 &new_focus_point) {
-            m_focus_point = new_focus_point;
-        }
-
-        glm::vec3 Camera::position() const {
-            return m_position;
-        }
-
-        void Camera::position(const glm::vec3 &new_position) {
-            m_position = new_position;
-        }
-
         void Camera::reset() {
             m_focus_point = DEFAULT_FOCUS_POINT;
             m_position = DEFAULT_POSITION;

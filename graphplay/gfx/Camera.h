@@ -16,11 +16,11 @@ namespace graphplay {
             Camera();
             Camera(const glm::vec3 &position, const glm::vec3 &focus);
 
-            glm::vec3 focusPoint() const;
-            void focusPoint(const glm::vec3 &new_focus);
+            inline glm::vec3 focusPoint() const { return m_focus_point; }
+            inline void focusPoint(const glm::vec3 &new_focus) { m_focus_point = new_focus; }
 
-            glm::vec3 position() const;
-            void position(const glm::vec3 &new_position);
+            inline glm::vec3 position() const { return m_position; }
+            inline void position(const glm::vec3 &new_position) { m_position = new_position; }
 
             void reset();
             void rotate(double dtheta, double dphi);
