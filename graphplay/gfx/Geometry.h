@@ -11,22 +11,20 @@
 #include <vector>
 
 #include "../opengl.h"
-#include "../fzx/BBox.h"
+// #include "../fzx/BBox.h"
 
 namespace graphplay {
     namespace gfx {
         class Program;
 
-        struct VertexDesc
-        {
+        struct VertexDesc {
             void *offset;
             GLenum type;
             unsigned int count;
         };
         typedef std::map<std::string, VertexDesc> AttrMap;
 
-        class AbstractGeometry
-        {
+        class AbstractGeometry {
         public:
             typedef std::unique_ptr<AbstractGeometry> uptr_type;
             typedef std::shared_ptr<AbstractGeometry> sptr_type;
@@ -40,8 +38,8 @@ namespace graphplay {
             virtual AbstractGeometry& operator=(const AbstractGeometry &other);
             virtual AbstractGeometry& operator=(AbstractGeometry &&other);
 
-            const fzx::BBox& boundingBox() const;
-            virtual void updateBoundingBox();
+            // const fzx::BBox& boundingBox() const;
+            // virtual void updateBoundingBox();
 
             inline const GLuint vertexBufferId() const { return m_vertex_buffer; }
             inline const GLuint elemBufferId() const { return m_elem_buffer; }
@@ -60,7 +58,7 @@ namespace graphplay {
             GLuint m_vertex_buffer;
             GLuint m_elem_buffer;
             GLuint m_array_object;
-            fzx::BBox m_bbox;
+            // fzx::BBox m_bbox;
         };
 
         template <typename V>
@@ -95,7 +93,7 @@ namespace graphplay {
             virtual Geometry<V>&      operator=(const Geometry<V> &other);
             virtual Geometry<V>&      operator=(Geometry<V> &&other);
 
-            virtual void updateBoundingBox();
+            // virtual void updateBoundingBox();
 
             void setVertexData(const elem_array_type &new_elems, const vertex_array_type &new_verts);
             void setVertexData(elem_array_type &&new_elems, vertex_array_type &&new_verts);
@@ -118,24 +116,24 @@ namespace graphplay {
             const AttrMap &m_attr_infos;
         };
 
-        template<typename V>
-        class MutableGeometry : public Geometry<V> {
-        public:
-            typedef std::unique_ptr<MutableGeometry<V> > uptr_type;
-            typedef std::shared_ptr<MutableGeometry<V> > sptr_type;
-            typedef std::weak_ptr<MutableGeometry<V> > wptr_type;
+        // template<typename V>
+        // class MutableGeometry : public Geometry<V> {
+        // public:
+        //     typedef std::unique_ptr<MutableGeometry<V> > uptr_type;
+        //     typedef std::shared_ptr<MutableGeometry<V> > sptr_type;
+        //     typedef std::weak_ptr<MutableGeometry<V> > wptr_type;
 
-            MutableGeometry();
-            MutableGeometry(const Geometry<V> &other);
-            MutableGeometry(Geometry<V> &&other);
-            virtual ~MutableGeometry();
+        //     MutableGeometry();
+        //     MutableGeometry(const Geometry<V> &other);
+        //     MutableGeometry(Geometry<V> &&other);
+        //     virtual ~MutableGeometry();
 
-            virtual MutableGeometry<V>& operator=(const Geometry<V> &other);
-            virtual MutableGeometry<V>& operator=(Geometry<V> &&other);
+        //     virtual MutableGeometry<V>& operator=(const Geometry<V> &other);
+        //     virtual MutableGeometry<V>& operator=(Geometry<V> &&other);
 
-            virtual void createBuffers();
-            virtual void updateBuffers();
-        };
+        //     virtual void createBuffers();
+        //     virtual void updateBuffers();
+        // };
 
         struct PCNVertex {
             float position[3];
@@ -153,7 +151,7 @@ namespace graphplay {
         Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();
         Geometry<PCNVertex>::sptr_type makeSphereGeometry();
         Geometry<PCNVertex>::sptr_type makeWireframeCubeGeometry();
-        MutableGeometry<PCNVertex>::sptr_type makeBoundingBoxGeometry(const fzx::BBox &bbox);
+        // MutableGeometry<PCNVertex>::sptr_type makeBoundingBoxGeometry(const fzx::BBox &bbox);
         Geometry<PCNVertex>::sptr_type loadPCNFile(const char *filename);
         Geometry<PCNVertex>::sptr_type loadPlyFile(const char *filename);
     }

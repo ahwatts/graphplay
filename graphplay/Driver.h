@@ -31,17 +31,17 @@ namespace graphplay {
         fzx::Body::sptr_type body;
     };
 
-    class BoundedGPObject {
-    public:
-        BoundedGPObject();
-        BoundedGPObject(GPObject &gp_object, gfx::Program::sptr_type bbox_program);
-        void init(GPObject &gp_object, gfx::Program::sptr_type bbox_program);
-        void update(float alpha);
+    // class BoundedGPObject {
+    // public:
+    //     BoundedGPObject();
+    //     BoundedGPObject(GPObject &gp_object, gfx::Program::sptr_type bbox_program);
+    //     void init(GPObject &gp_object, gfx::Program::sptr_type bbox_program);
+    //     void update(float alpha);
 
-        GPObject object;
-        gfx::PCNGeometry::sptr_type bbox_geometry;
-        gfx::Mesh::sptr_type bbox_mesh;
-    };
+    //     GPObject object;
+    //     gfx::PCNGeometry::sptr_type bbox_geometry;
+    //     gfx::Mesh::sptr_type bbox_mesh;
+    // };
 
     void drive(GLFWwindow *window);
 

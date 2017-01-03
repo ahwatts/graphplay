@@ -55,7 +55,7 @@ namespace graphplay {
                     random_unit(RANDOM_ENG) / 2,
                     random_unit(RANDOM_ENG) / 2
                     });
-        body->boundingBox(geo->boundingBox());
+        // body->boundingBox(geo->boundingBox());
         body->addConstraint(fzx::AttachedSpring(0.7f, *ORIGIN));
     }
 
@@ -65,30 +65,30 @@ namespace graphplay {
         mesh->modelTransformation(model_xform);
     }
 
-    BoundedGPObject::BoundedGPObject()
-        : object(),
-          bbox_geometry(),
-          bbox_mesh()
-    {}
+    // BoundedGPObject::BoundedGPObject()
+    //     : object(),
+    //       bbox_geometry(),
+    //       bbox_mesh()
+    // {}
 
-    BoundedGPObject::BoundedGPObject(GPObject &object, gfx::Program::sptr_type bbox_program)
-        : object(object),
-          bbox_geometry(gfx::makeBoundingBoxGeometry(object.geometry->boundingBox())),
-          bbox_mesh(std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program))
-    {}
+    // BoundedGPObject::BoundedGPObject(GPObject &object, gfx::Program::sptr_type bbox_program)
+    //     : object(object),
+    //       bbox_geometry(gfx::makeBoundingBoxGeometry(object.geometry->boundingBox())),
+    //       bbox_mesh(std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program))
+    // {}
 
-    void BoundedGPObject::init(GPObject &object, gfx::Program::sptr_type bbox_program) {
-        this->object = object;
-        bbox_geometry = gfx::makeBoundingBoxGeometry(object.geometry->boundingBox());
-        bbox_mesh = std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program);
-    }
+    // void BoundedGPObject::init(GPObject &object, gfx::Program::sptr_type bbox_program) {
+    //     this->object = object;
+    //     bbox_geometry = gfx::makeBoundingBoxGeometry(object.geometry->boundingBox());
+    //     bbox_mesh = std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program);
+    // }
 
-    void BoundedGPObject::update(float alpha) {
-        glm::mat4x4 model_xform = object.body->modelTransformation(
-            alpha, glm::mat4x4(1));
-        object.mesh->modelTransformation(model_xform);
-        bbox_mesh->modelTransformation(model_xform);
-    }
+    // void BoundedGPObject::update(float alpha) {
+    //     glm::mat4x4 model_xform = object.body->modelTransformation(
+    //         alpha, glm::mat4x4(1));
+    //     object.mesh->modelTransformation(model_xform);
+    //     bbox_mesh->modelTransformation(model_xform);
+    // }
 
     void drive(GLFWwindow *window) {
         int pixel_width, pixel_height;
