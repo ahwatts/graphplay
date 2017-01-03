@@ -1,35 +1,16 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include "../graphplay.h"
-
-#include <algorithm>
-#include <cstddef>
-#include <fstream>
-#include <iostream>
-#include <limits>
-#include <memory>
-#include <random>
-#include <sstream>
-#include <vector>
-
-#include <glm/vec3.hpp>
-#include <glm/gtc/epsilon.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/range.hpp>
-#include <glm/gtx/io.hpp>
-
-#include "OpenGLUtils.h"
 #include "Geometry.h"
+
+#include <fstream>
+#include <sstream>
+
+#include <glm/gtc/epsilon.hpp>
+#include <glm/gtx/range.hpp>
+
 #include "../load/PlyFile.h"
 #include "../fzx/BBox.h"
-
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
 
 namespace graphplay {
     namespace gfx {
