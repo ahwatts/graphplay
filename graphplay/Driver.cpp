@@ -11,6 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 
+#include "Input.h"
+
 using namespace boost::filesystem;
 using namespace std::chrono;
 
@@ -55,7 +57,6 @@ namespace graphplay {
                     random_unit(RANDOM_ENG) / 2,
                     random_unit(RANDOM_ENG) / 2
                     });
-        // body->boundingBox(geo->boundingBox());
         body->addConstraint(fzx::AttachedSpring(0.7f, *ORIGIN));
     }
 
@@ -64,31 +65,6 @@ namespace graphplay {
             alpha, glm::mat4x4(1));
         mesh->modelTransformation(model_xform);
     }
-
-    // BoundedGPObject::BoundedGPObject()
-    //     : object(),
-    //       bbox_geometry(),
-    //       bbox_mesh()
-    // {}
-
-    // BoundedGPObject::BoundedGPObject(GPObject &object, gfx::Program::sptr_type bbox_program)
-    //     : object(object),
-    //       bbox_geometry(gfx::makeBoundingBoxGeometry(object.geometry->boundingBox())),
-    //       bbox_mesh(std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program))
-    // {}
-
-    // void BoundedGPObject::init(GPObject &object, gfx::Program::sptr_type bbox_program) {
-    //     this->object = object;
-    //     bbox_geometry = gfx::makeBoundingBoxGeometry(object.geometry->boundingBox());
-    //     bbox_mesh = std::make_shared<gfx::Mesh>(bbox_geometry, bbox_program);
-    // }
-
-    // void BoundedGPObject::update(float alpha) {
-    //     glm::mat4x4 model_xform = object.body->modelTransformation(
-    //         alpha, glm::mat4x4(1));
-    //     object.mesh->modelTransformation(model_xform);
-    //     bbox_mesh->modelTransformation(model_xform);
-    // }
 
     void drive(GLFWwindow *window) {
         int pixel_width, pixel_height;
@@ -121,6 +97,15 @@ namespace graphplay {
         physics.addBody(octohedron.body);
         physics.addBody(sphere.body);
 
+        // Set up the input handler.
+        Input input{3};
+        input.initCallbacks(window);
+
+        // Set the window user pointer.
+        Context ctx;
+        ctx.input = &input;
+        glfwSetWindowUserPointer(window, &ctx);
+
         auto ptime = steady_clock::now();
 
         while (!glfwWindowShouldClose(window)) {
@@ -139,7 +124,21 @@ namespace graphplay {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             scene.render();
             glfwSwapBuffers(window);
+
+            // handle input.
+            input.cloneCurrentState();
             glfwPollEvents();
+            if (input.currentState().escape_key) {
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
+            }
+
+            if (input.currentState().rotating) {
+                double dx = input.currentState().mouse_x - input.prevState().mouse_x;
+                double dy = input.currentState().mouse_y - input.prevState().mouse_y;
+                double theta = -1 * 2 * M_PI * (dx / scene.getViewportWidth());
+                double phi = -1 * M_PI * (dy / scene.getViewportHeight());
+                scene.getCamera().rotate(theta, phi);
+            }
 
             auto update_time = steady_clock::now();
             duration<float> update_seconds = update_time - frame_time;

@@ -14,10 +14,18 @@
 #include "gfx/Scene.h"
 #include "gfx/Shader.h"
 
+struct GLFWwindow;
+
 namespace graphplay {
+    class Input;
+
     extern const fzx::Body::sptr_type ORIGIN;
     extern const std::chrono::duration<float> FRAME_RATE;
     extern const float TIME_STEP;
+
+    struct Context {
+        Input *input;
+    };
 
     class GPObject {
     public:
@@ -31,31 +39,7 @@ namespace graphplay {
         fzx::Body::sptr_type body;
     };
 
-    // class BoundedGPObject {
-    // public:
-    //     BoundedGPObject();
-    //     BoundedGPObject(GPObject &gp_object, gfx::Program::sptr_type bbox_program);
-    //     void init(GPObject &gp_object, gfx::Program::sptr_type bbox_program);
-    //     void update(float alpha);
-
-    //     GPObject object;
-    //     gfx::PCNGeometry::sptr_type bbox_geometry;
-    //     gfx::Mesh::sptr_type bbox_mesh;
-    // };
-
     void drive(GLFWwindow *window);
-
-    class Driver {
-    public:
-        
-        // Driver(int width, int height, float time_step);
-        // void mainLoop(GLFWwindow *window);
-
-        // gfx::Scene scene;
-        // fzx::PhysicsSystem physics;
-        // gfx::Program::sptr_type unlit_program, lit_program;
-        // BoundedGPObject octohedron, sphere, bunny, armadillo;
-    };
 }
 
 #endif

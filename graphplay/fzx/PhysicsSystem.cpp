@@ -55,20 +55,20 @@ namespace graphplay {
         }
 
         void PhysicsSystem::detectCollisions() {
-            for (auto&& weak_body1 : m_bodies) {
-                for (auto&& weak_body2 : m_bodies) {
-                    Body::sptr_type body1 = weak_body1.lock();
-                    Body::sptr_type body2 = weak_body2.lock();
+            // for (auto&& weak_body1 : m_bodies) {
+            //     for (auto&& weak_body2 : m_bodies) {
+            //         Body::sptr_type body1 = weak_body1.lock();
+            //         Body::sptr_type body2 = weak_body2.lock();
 
-                    if (body1 && body2 && body1 != body2 &&
-                        body1->boundingBox().collides(body2->boundingBox())) {
-                        std::cout << "Collision detected! body1 = " << body1 << " body2 = " << body2
-                                  << " body1 bbox min = " << body1->boundingBox().min
-                                  << " body2 bbox min = " << body2->boundingBox().min
-                                  << std::endl;
-                    }
-                }
-            }
+            //         if (body1 && body2 && body1 != body2 &&
+            //             body1->boundingBox().collides(body2->boundingBox())) {
+            //             std::cout << "Collision detected! body1 = " << body1 << " body2 = " << body2
+            //                       << " body1 bbox min = " << body1->boundingBox().min
+            //                       << " body2 bbox min = " << body2->boundingBox().min
+            //                       << std::endl;
+            //         }
+            //     }
+            // }
         }
     }
 }
