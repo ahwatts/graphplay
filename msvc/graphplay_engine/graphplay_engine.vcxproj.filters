@@ -63,6 +63,9 @@
     <ClInclude Include="..\..\graphplay\Driver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\graphplay\Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\graphplay\gfx\Camera.cpp">
@@ -105,6 +108,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\graphplay\Driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphplay\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

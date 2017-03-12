@@ -33,6 +33,7 @@
     <ClInclude Include="..\..\graphplay\gfx\Scene.h" />
     <ClInclude Include="..\..\graphplay\gfx\Shader.h" />
     <ClInclude Include="..\..\graphplay\graphplay.h" />
+    <ClInclude Include="..\..\graphplay\Input.h" />
     <ClInclude Include="..\..\graphplay\load\PlyFile.h" />
     <ClInclude Include="..\..\graphplay\opengl.h" />
   </ItemGroup>
@@ -51,6 +52,7 @@
     <ClCompile Include="..\..\graphplay\gfx\OpenGLUtils.cpp" />
     <ClCompile Include="..\..\graphplay\gfx\Scene.cpp" />
     <ClCompile Include="..\..\graphplay\gfx\Shader.cpp" />
+    <ClCompile Include="..\..\graphplay\Input.cpp" />
     <ClCompile Include="..\..\graphplay\load\PlyFile.cpp" />
     <ClCompile Include="..\..\graphplay\load\PlyFile.tmpl.cpp" />
   </ItemGroup>
