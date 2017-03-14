@@ -9,9 +9,12 @@
 #include <boost/filesystem.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 #include "Input.h"
+#include "gfx/Camera.h"
 
 using namespace boost::filesystem;
 using namespace std::chrono;
@@ -74,28 +77,43 @@ namespace graphplay {
         gfx::Program::sptr_type unlit_program = gfx::createUnlitProgram();
         gfx::Program::sptr_type lit_program = gfx::createLitProgram();
 
-        // path assets_path("assets");
-        // path bunny_path(assets_path);
-        // bunny_path /= "stanford_bunny.ply";
-        // path armadillo_path(assets_path);
-        // armadillo_path /= "stanford_armadillo.ply";
+        // Find the PLY files.
+        path assets_path("assets");
+        path bunny_path(assets_path);
+        bunny_path /= "stanford_bunny.ply";
+        path armadillo_path(assets_path);
+        armadillo_path /= "stanford_armadillo.ply";
 
         // Create the objects in the scene.
         GPObject octohedron(gfx::makeOctohedronGeometry(), unlit_program);
         GPObject sphere(gfx::makeSphereGeometry(), lit_program);
-        // bunny.object.init(gfx::loadPlyFile(bunny_path.string().c_str()), lit_program);
-        // armadillo.object.init(gfx::loadPlyFile(armadillo_path.string().c_str()), lit_program);
+        GPObject bunny(gfx::loadPlyFile(bunny_path.string().c_str()), lit_program);
+        GPObject armadillo(gfx::loadPlyFile(armadillo_path.string().c_str()), lit_program);
+
+        // Create the "bounding box" geoemtry.
+        GPObject bbox(gfx::makeWireframeCubeGeometry(), unlit_program);
+        bbox.mesh->modelTransformation(glm::scale(glm::vec3(10.0, 10.0, 10.0)));
 
         // Create the scene.
         gfx::Scene scene(pixel_width, pixel_height);
         scene.createBuffers();
+
+        gfx::Camera &camera = scene.getCamera();
+        camera.focusPoint(glm::vec3(0.0, 0.0, 0.0));
+        camera.position(glm::vec3(0.0, 0.0, 30.0));
+
         scene.addMesh(octohedron.mesh);
         scene.addMesh(sphere.mesh);
+        scene.addMesh(bunny.mesh);
+        scene.addMesh(armadillo.mesh);
+        scene.addMesh(bbox.mesh);
 
         // Create the physics.
         fzx::PhysicsSystem physics(TIME_STEP);
         physics.addBody(octohedron.body);
         physics.addBody(sphere.body);
+        physics.addBody(bunny.body);
+        physics.addBody(armadillo.body);
 
         // Set up the input handler.
         Input input{3};
@@ -117,8 +135,8 @@ namespace graphplay {
             float alpha = physics.update(frame_seconds.count());
             octohedron.update(alpha);
             sphere.update(alpha);
-            // bunny.update(alpha);
-            // armadillo.update(alpha);
+            bunny.update(alpha);
+            armadillo.update(alpha);
 
             // render.
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

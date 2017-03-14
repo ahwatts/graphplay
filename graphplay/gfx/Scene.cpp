@@ -22,6 +22,8 @@ namespace graphplay {
               m_light_uniform_buffer(0),
               m_uniform_buffer_bindings()
         {
+            setViewport(vp_width, vp_height);
+
             m_uniform_buffer_bindings["view_and_projection"] = 0;
             m_uniform_buffer_bindings["light_list"] = 1;
 
