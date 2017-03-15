@@ -78,6 +78,7 @@ namespace graphplay {
             if (action == GLFW_PRESS) {
                 m_states.front().rotating = true;
                 glfwGetCursorPos(window, &m_states.front().mouse_x, &m_states.front().mouse_y);
+                cloneCurrentState();
             } else if (action == GLFW_RELEASE) {
                 m_states.front().rotating = false;
             }
