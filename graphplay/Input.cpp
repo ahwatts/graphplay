@@ -77,8 +77,6 @@ namespace graphplay {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
             if (action == GLFW_PRESS) {
                 m_states.front().rotating = true;
-                glfwGetCursorPos(window, &m_states.front().mouse_x, &m_states.front().mouse_y);
-                cloneCurrentState();
             } else if (action == GLFW_RELEASE) {
                 m_states.front().rotating = false;
             }
@@ -86,14 +84,8 @@ namespace graphplay {
     }
 
     void Input::handleMouseMove(GLFWwindow *window, double xpos, double ypos) {
-        if (currentState().rotating) {
-            // double theta = -1 * 2 * M_PI * ((xpos - m_state.mouse_x) / SCENE.getViewportWidth());
-            // double phi = -1 * M_PI * ((ypos - m_state.mouse_y) / SCENE.getViewportHeight());
-
-            // SCENE.getCamera().rotate(theta, phi);
-            m_states.front().mouse_x = xpos;
-            m_states.front().mouse_y = ypos;
-        }
+        m_states.front().mouse_x = xpos;
+        m_states.front().mouse_y = ypos;
     }
 
     void Input::handleMouseScroll(GLFWwindow *window, double xoffset, double yoffset) {
