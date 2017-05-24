@@ -25,6 +25,7 @@ if(WIN32 AND MINGW)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
 endif(WIN32 AND MINGW)
 
+set(Boost_USE_STATIC_LIBS On)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 message(STATUS "Found Boost version: " ${Boost_VERSION})
 message(STATUS "Found Boost headers: " ${Boost_INCLUDE_DIRS})
