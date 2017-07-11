@@ -24,7 +24,7 @@ namespace graphplay {
     {}
 
     unsigned int Input::numStates() const {
-        return m_states.size();
+        return static_cast<unsigned int>(m_states.size());
     }
 
     const InputState& Input::currentState() const {

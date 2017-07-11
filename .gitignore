@@ -1,6 +1,7 @@
 /build
 /mingw
 
+msvc/.vs
 msvc/Debug
 msvc/Release
 msvc/x64

@@ -415,25 +415,25 @@ namespace graphplay {
                     unsigned int offset = 0;
 
                     if (pname == "x") {
-                        offset = offsetof(PCNVertex, position[0]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, position[0]));
                     } else if (pname == "y") {
-                        offset = offsetof(PCNVertex, position[1]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, position[1]));
                     } else if (pname == "z") {
-                        offset = offsetof(PCNVertex, position[2]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, position[2]));
                     } else if (pname == "red") {
-                        offset = offsetof(PCNVertex, color[0]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, color[0]));
                     } else if (pname == "green") {
-                        offset = offsetof(PCNVertex, color[1]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, color[1]));
                     } else if (pname == "blue") {
-                        offset = offsetof(PCNVertex, color[2]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, color[2]));
                     } else if (pname == "alpha") {
-                        offset = offsetof(PCNVertex, color[3]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, color[3]));
                     } else if (pname == "nx") {
-                        offset = offsetof(PCNVertex, normal[0]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, normal[0]));
                     } else if (pname == "ny") {
-                        offset = offsetof(PCNVertex, normal[1]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, normal[1]));
                     } else if (pname == "nz") {
-                        offset = offsetof(PCNVertex, normal[2]);
+                        offset = static_cast<unsigned int>(offsetof(PCNVertex, normal[2]));
                     } else {
                         continue;
                     }
