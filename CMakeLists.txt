@@ -35,6 +35,7 @@ find_package(Threads REQUIRED)
 message(STATUS "Found thread libs: " ${CMAKE_THREAD_LIBS_INIT})
 message(STATUS "Using pthreads: " ${CMAKE_USE_PTHREADS_INIT})
 
+set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
 message(STATUS "Found OpenGL include: " ${OPENGL_INCLUDE_DIRS})
 message(STATUS "Found OpenGL header: " ${OPENGL_HEADER_PATH})

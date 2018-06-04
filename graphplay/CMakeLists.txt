@@ -20,8 +20,10 @@ target_link_libraries(graphplay
   graphplay_engine
   glad
   glfw
-  ${OPENGL_LIBRARIES}
-  ${Boost_LIBRARIES})
+  OpenGL::GL
+  Boost::filesystem
+  Boost::system
+  dl)
 
 if (WIN32)
   add_executable(graphplay-console
@@ -31,8 +33,9 @@ if (WIN32)
     graphplay_engine
     glad
     glfw
-    ${OPENGL_LIBRARIES}
-    ${Boost_LIBRARIES})
+    OpenGL::OpenGL
+    Boost::filesystem
+    Boost::system)
 
   if(MINGW)
     set_target_properties(graphplay PROPERTIES
