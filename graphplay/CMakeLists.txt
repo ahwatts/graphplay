@@ -22,8 +22,7 @@ target_link_libraries(graphplay
   glfw
   OpenGL::GL
   Boost::filesystem
-  Boost::system
-  dl)
+  Boost::system)
 
 if (WIN32)
   add_executable(graphplay-console
@@ -33,7 +32,7 @@ if (WIN32)
     graphplay_engine
     glad
     glfw
-    OpenGL::OpenGL
+    OpenGL::GL
     Boost::filesystem
     Boost::system)
 

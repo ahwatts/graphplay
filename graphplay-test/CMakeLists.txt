@@ -18,8 +18,7 @@ target_link_libraries(graphplay-test
   glfw
   OpenGL::GL
   Boost::filesystem
-  Boost::system
-  dl)
+  Boost::system)
 
 if(MSVC AND CMAKE_CXX_COMPILER_VERSION STRLESS "18.0")
   set_target_properties(graphplay-test PROPERTIES COMPILE_DEFINITIONS _VARIADIC_MAX=10)
