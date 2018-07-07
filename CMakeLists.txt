@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.10)
 project(graphplay)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_PREFIX_PATH ../graphplay-deps)
+cmake_policy(SET CMP0022 NEW)
 
 message(STATUS "Configuring for build type: " ${CMAKE_BUILD_TYPE})
 
@@ -74,19 +75,17 @@ find_file(GLFW_FULL_HEADER_PATH NAMES GL/glfw3.h GLFW/glfw3.h)
 file(RELATIVE_PATH GLFW_HEADER_PATH ${GLFW_INCLUDE_DIRS} ${GLFW_FULL_HEADER_PATH})
 configure_file(config.h.in config.h)
 
-include_directories(AFTER SYSTEM
-  ${Boost_INCLUDE_DIRS}
-  ${OpenGL_INCLUDE_DIR}
-  ${GLFW_INCLUDE_DIRS}
-  ${GLM_INCLUDE_DIRS}
-  vendor/glad/include
-  vendor/tinyxml2/include
-  ${graphplay_BINARY_DIR})
+# include_directories(AFTER SYSTEM
+#   ${Boost_INCLUDE_DIRS}
+#   ${OpenGL_INCLUDE_DIR}
+#   ${GLFW_INCLUDE_DIRS}
+#   ${GLM_INCLUDE_DIRS}
+#   ${graphplay_BINARY_DIR})
 
 add_subdirectory(graphplay)
 add_subdirectory(graphplay-test)
-add_subdirectory(vendor/gtest)
 add_subdirectory(vendor/glad)
+add_subdirectory(vendor/gtest)
 add_subdirectory(vendor/tinyxml2)
 
 enable_testing()

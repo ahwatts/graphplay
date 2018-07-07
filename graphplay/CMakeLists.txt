@@ -13,12 +13,17 @@ add_library(graphplay_engine
   gfx/Shader.cpp
   load/PlyFile.cpp)
 
+target_include_directories(graphplay_engine PUBLIC
+  ${graphplay_BINARY_DIR})
+
+target_link_libraries(graphplay_engine PUBLIC
+  glad)
+
 add_executable(graphplay WIN32
   graphplay.cpp)
 
 target_link_libraries(graphplay
   graphplay_engine
-  glad
   glfw
   OpenGL::GL
   Boost::filesystem
@@ -30,7 +35,6 @@ if (WIN32)
 
   target_link_libraries(graphplay-console
     graphplay_engine
-    glad
     glfw
     OpenGL::GL
     Boost::filesystem
