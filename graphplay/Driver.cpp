@@ -52,14 +52,14 @@ namespace graphplay {
         body = std::make_shared<fzx::Body>();
         body->position({
                 random_unit(RANDOM_ENG),
-                    random_unit(RANDOM_ENG),
-                    random_unit(RANDOM_ENG)
-                    });
+                random_unit(RANDOM_ENG),
+                random_unit(RANDOM_ENG)
+            });
         body->velocity({
                 random_unit(RANDOM_ENG) / 2,
-                    random_unit(RANDOM_ENG) / 2,
-                    random_unit(RANDOM_ENG) / 2
-                    });
+                random_unit(RANDOM_ENG) / 2,
+                random_unit(RANDOM_ENG) / 2
+            });
         body->addConstraint(fzx::AttachedSpring(0.7f, *ORIGIN));
     }
 
@@ -86,6 +86,7 @@ namespace graphplay {
 
         // Create the objects in the scene.
         GPObject octohedron(gfx::makeOctohedronGeometry(), unlit_program);
+        GPObject icosahedron(gfx::makeIcosahedronGeometry(), unlit_program);
         GPObject sphere(gfx::makeSphereGeometry(), lit_program);
         GPObject bunny(gfx::loadPlyFile(bunny_path.string().c_str()), lit_program);
         GPObject armadillo(gfx::loadPlyFile(armadillo_path.string().c_str()), lit_program);
@@ -103,6 +104,7 @@ namespace graphplay {
         camera.position(glm::vec3(0.0, 0.0, 30.0));
 
         scene.addMesh(octohedron.mesh);
+        scene.addMesh(icosahedron.mesh);
         scene.addMesh(sphere.mesh);
         scene.addMesh(bunny.mesh);
         scene.addMesh(armadillo.mesh);
@@ -111,6 +113,7 @@ namespace graphplay {
         // Create the physics.
         fzx::PhysicsSystem physics(TIME_STEP);
         physics.addBody(octohedron.body);
+        physics.addBody(icosahedron.body);
         physics.addBody(sphere.body);
         physics.addBody(bunny.body);
         physics.addBody(armadillo.body);
@@ -134,6 +137,7 @@ namespace graphplay {
             // Update physics; set model transformations.
             float alpha = physics.update(frame_seconds.count());
             octohedron.update(alpha);
+            icosahedron.update(alpha);
             sphere.update(alpha);
             bunny.update(alpha);
             armadillo.update(alpha);

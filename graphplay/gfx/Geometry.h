@@ -149,6 +149,7 @@ namespace graphplay {
 
         // Geometry factory functions.
         Geometry<PCNVertex>::sptr_type makeOctohedronGeometry();
+        Geometry<PCNVertex>::sptr_type makeIcosahedronGeometry();
         Geometry<PCNVertex>::sptr_type makeSphereGeometry();
         Geometry<PCNVertex>::sptr_type makeWireframeCubeGeometry();
         // MutableGeometry<PCNVertex>::sptr_type makeBoundingBoxGeometry(const fzx::BBox &bbox);

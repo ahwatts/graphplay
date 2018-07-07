@@ -206,6 +206,96 @@ namespace graphplay {
             return rv;
         }
 
+#ifndef MSVC
+        const
+#else
+        constexpr
+#endif
+        double PHI = (1.0 + std::sqrt(5.0)) / 2.0;
+
+#ifndef MSVC
+        const
+#else
+        constexpr
+#endif
+        float ICOSAHEDRON_VERTEX_ARRAY[12][3] = {
+            {  1.0,  PHI,  0.0 }, // 0
+            { -1.0,  PHI,  0.0 }, // 1
+            {  1.0, -PHI,  0.0 }, // 2
+            { -1.0, -PHI,  0.0 }, // 3
+            {  PHI,  0.0,  1.0 }, // 4
+            {  PHI,  0.0, -1.0 }, // 5
+            { -PHI,  0.0,  1.0 }, // 6
+            { -PHI,  0.0, -1.0 }, // 7
+            {  0.0,  1.0,  PHI }, // 8
+            {  0.0, -1.0,  PHI }, // 9
+            {  0.0,  1.0, -PHI }, // 10
+            {  0.0, -1.0, -PHI }, // 11
+        };
+
+#ifndef MSVC
+        const
+#else
+        constexpr
+#endif
+        unsigned int ICOSAHEDRON_VERTEX_ARRAY_COUNT = sizeof(ICOSAHEDRON_VERTEX_ARRAY) / sizeof(ICOSAHEDRON_VERTEX_ARRAY[0]);
+
+#ifndef MSVC
+        const
+#else
+        constexpr
+#endif
+        unsigned int ICOSAHEDRON_VERTEX_ELEMS[60] = {
+            1, 7, 6,
+            1, 6, 8,
+            1, 8, 0,
+            1, 0, 10,
+            1, 10, 7,
+            7, 3, 6,
+            6, 3, 9,
+            6, 9, 8,
+            8, 9, 4,
+            8, 4, 0,
+            0, 4, 5,
+            0, 5, 10,
+            10, 5, 11,
+            10, 11, 7,
+            7, 11, 3,
+            3, 2, 9,
+            9, 2, 4,
+            4, 2, 5,
+            5, 2, 11,
+            11, 2, 3,
+        };
+
+#ifndef MSVC
+        const
+#else
+        constexpr
+#endif
+        unsigned int ICOSAHEDRON_VERTEX_ELEMS_COUNT = sizeof(ICOSAHEDRON_VERTEX_ELEMS) / sizeof(ICOSAHEDRON_VERTEX_ELEMS[0]);
+
+        Geometry<PCNVertex>::sptr_type makeIcosahedronGeometry() {
+            std::vector<PCNVertex> vertices;
+
+            for (unsigned int i = 0; i < ICOSAHEDRON_VERTEX_ARRAY_COUNT; ++i) {
+                PCNVertex vert = {
+                    {
+                        ICOSAHEDRON_VERTEX_ARRAY[i][0],
+                        ICOSAHEDRON_VERTEX_ARRAY[i][1],
+                        ICOSAHEDRON_VERTEX_ARRAY[i][2],
+                    },
+                    { 0.0, 0.0, 1.0, 1.0 },
+                    { 1.0, 0.0, 0.0 },
+                };
+                vertices.emplace_back(vert);
+            }
+
+            return std::make_shared<Geometry<PCNVertex> >(
+                ICOSAHEDRON_VERTEX_ELEMS, ICOSAHEDRON_VERTEX_ELEMS + ICOSAHEDRON_VERTEX_ELEMS_COUNT,
+                vertices.begin(), vertices.end());
+        }
+
         // Creating a sphere by refinement of an octohedron.
 
         struct PositionsAndElements {
