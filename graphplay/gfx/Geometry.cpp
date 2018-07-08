@@ -277,22 +277,36 @@ namespace graphplay {
 
         Geometry<PCNVertex>::sptr_type makeIcosahedronGeometry() {
             std::vector<PCNVertex> vertices;
+            std::vector<unsigned int> elems;
 
-            for (unsigned int i = 0; i < ICOSAHEDRON_VERTEX_ARRAY_COUNT; ++i) {
-                PCNVertex vert = {
-                    {
-                        ICOSAHEDRON_VERTEX_ARRAY[i][0],
-                        ICOSAHEDRON_VERTEX_ARRAY[i][1],
-                        ICOSAHEDRON_VERTEX_ARRAY[i][2],
-                    },
-                    { 0.0, 0.0, 1.0, 1.0 },
-                    { 1.0, 0.0, 0.0 },
-                };
-                vertices.emplace_back(vert);
+            for (unsigned int i = 0; i < ICOSAHEDRON_VERTEX_ELEMS_COUNT; i += 3) {
+                unsigned int e1 = ICOSAHEDRON_VERTEX_ELEMS[i+0];
+                unsigned int e2 = ICOSAHEDRON_VERTEX_ELEMS[i+1];
+                unsigned int e3 = ICOSAHEDRON_VERTEX_ELEMS[i+2];
+
+                glm::vec3 p1{ ICOSAHEDRON_VERTEX_ARRAY[e1][0], ICOSAHEDRON_VERTEX_ARRAY[e1][1], ICOSAHEDRON_VERTEX_ARRAY[e1][2] };
+                glm::vec3 p2{ ICOSAHEDRON_VERTEX_ARRAY[e2][0], ICOSAHEDRON_VERTEX_ARRAY[e2][1], ICOSAHEDRON_VERTEX_ARRAY[e2][2] };
+                glm::vec3 p3{ ICOSAHEDRON_VERTEX_ARRAY[e3][0], ICOSAHEDRON_VERTEX_ARRAY[e3][1], ICOSAHEDRON_VERTEX_ARRAY[e3][2] };
+
+                p1 = glm::normalize(p1);
+                p2 = glm::normalize(p2);
+                p3 = glm::normalize(p3);
+                glm::vec3 n = glm::normalize(glm::cross(p2 - p1, p3 - p1));
+
+                PCNVertex v1{ { p1.x, p1.y, p1.z }, { std::abs(p1.x), std::abs(p1.y), std::abs(p1.z), 1.0 }, { n.x, n.y, n.z }};
+                PCNVertex v2{ { p2.x, p2.y, p2.z }, { std::abs(p2.x), std::abs(p2.y), std::abs(p2.z), 1.0 }, { n.x, n.y, n.z }};
+                PCNVertex v3{ { p3.x, p3.y, p3.z }, { std::abs(p3.x), std::abs(p3.y), std::abs(p3.z), 1.0 }, { n.x, n.y, n.z }};
+
+                vertices.push_back(v1);
+                vertices.push_back(v2);
+                vertices.push_back(v3);
+                elems.push_back(i+0);
+                elems.push_back(i+1);
+                elems.push_back(i+2);
             }
 
             return std::make_shared<Geometry<PCNVertex> >(
-                ICOSAHEDRON_VERTEX_ELEMS, ICOSAHEDRON_VERTEX_ELEMS + ICOSAHEDRON_VERTEX_ELEMS_COUNT,
+                elems.begin(), elems.end(),
                 vertices.begin(), vertices.end());
         }
 
