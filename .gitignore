@@ -30,6 +30,8 @@ msvc/tinyxml2/Debug
 msvc/tinyxml2/Release
 msvc/tinyxml2/x64
 
+/.vscode
+
 *.sdf
 *.suo
 *.opensdf

@@ -14,6 +14,7 @@ add_library(graphplay_engine
   load/PlyFile.cpp)
 
 target_include_directories(graphplay_engine PUBLIC
+  ${GLM_INCLUDE_DIRS}
   ${graphplay_BINARY_DIR})
 
 target_link_libraries(graphplay_engine PUBLIC

@@ -128,40 +128,14 @@ namespace graphplay {
         const
 #else
         constexpr
-#endif 
-        PCNVertex OCTOHEDRON_VERTEX_ARRAY[24] = {
-            //   Position                 Color                         Normal
-            { {  0.0f,  0.0f,  1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, { -0.577f,  0.577f,  0.577f, } },
-            { {  0.0f,  1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, { -0.577f,  0.577f,  0.577f, } },
-            { { -1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, { -0.577f,  0.577f,  0.577f, } },
-
-            { {  0.0f,  0.0f,  1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, {  0.577f,  0.577f,  0.577f, } },
-            { {  1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, {  0.577f,  0.577f,  0.577f, } },
-            { {  0.0f,  1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, {  0.577f,  0.577f,  0.577f, } },
-
-            { {  0.0f,  0.0f,  1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, { -0.577f, -0.577f,  0.577f, } },
-            { { -1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, { -0.577f, -0.577f,  0.577f, } },
-            { {  0.0f, -1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, { -0.577f, -0.577f,  0.577f, } },
-
-            { {  0.0f,  0.0f,  1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, {  0.577f, -0.577f,  0.577f, } },
-            { {  0.0f, -1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, {  0.577f, -0.577f,  0.577f, } },
-            { {  1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, {  0.577f, -0.577f,  0.577f, } },
-
-            { {  0.0f,  0.0f, -1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, {  0.577f,  0.577f, -0.577f, } },
-            { {  0.0f,  1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, {  0.577f,  0.577f, -0.577f, } },
-            { {  1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, {  0.577f,  0.577f, -0.577f, } },
-
-            { {  0.0f,  0.0f, -1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, { -0.577f,  0.577f, -0.577f, } },
-            { { -1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, { -0.577f,  0.577f, -0.577f, } },
-            { {  0.0f,  1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, { -0.577f,  0.577f, -0.577f, } },
-
-            { {  0.0f,  0.0f, -1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, { -0.577f, -0.577f, -0.577f, } },
-            { {  0.0f, -1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, { -0.577f, -0.577f, -0.577f, } },
-            { { -1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, { -0.577f, -0.577f, -0.577f, } },
-
-            { {  0.0f,  0.0f, -1.0f, }, { 0.0f, 0.0f, 1.0f, 1.0f, }, {  0.577f, -0.577f, -0.577f, } },
-            { {  1.0f,  0.0f,  0.0f, }, { 1.0f, 0.0f, 0.0f, 1.0f, }, {  0.577f, -0.577f, -0.577f, } },
-            { {  0.0f, -1.0f,  0.0f, }, { 0.0f, 1.0f, 0.0f, 1.0f, }, {  0.577f, -0.577f, -0.577f, } },
+#endif
+        float OCTOHEDRON_VERTEX_ARRAY[6][3] = {
+            {  0.0,  0.0,  1.0 },
+            {  0.0,  0.0, -1.0 },
+            {  0.0,  1.0,  0.0 },
+            {  0.0, -1.0,  0.0 },
+            {  1.0,  0.0,  0.0 },
+            { -1.0,  0.0,  0.0 },
         };
 
 #ifdef MSVC
@@ -180,14 +154,14 @@ namespace graphplay {
         constexpr
 #endif
         unsigned int OCTOHEDRON_VERTEX_ELEMS[24] = {
-            0,  1,  2,
-            3,  4,  5,
-            6,  7,  8,
-            9, 10, 11,
-            12, 13, 14,
-            15, 16, 17,
-            18, 19, 20,
-            21, 22, 23,
+            0, 2, 4,
+            4, 2, 1,
+            1, 2, 5,
+            5, 2, 0,
+            3, 0, 4,
+            3, 4, 1,
+            3, 1, 5,
+            3, 5, 0,
         };
 
 #ifdef MSVC
@@ -197,11 +171,39 @@ namespace graphplay {
 #endif
         unsigned int OCTOHEDRON_VERTEX_ELEMS_COUNT = sizeof(OCTOHEDRON_VERTEX_ELEMS) / sizeof(OCTOHEDRON_VERTEX_ELEMS[0]);
 
-
         Geometry<PCNVertex>::sptr_type makeOctohedronGeometry() {
+            std::vector<PCNVertex> vertices;
+            std::vector<unsigned int> elems;
+
+            for (unsigned int i = 0; i < OCTOHEDRON_VERTEX_ELEMS_COUNT; i += 3) {
+                unsigned int e1 = OCTOHEDRON_VERTEX_ELEMS[i+0];
+                unsigned int e2 = OCTOHEDRON_VERTEX_ELEMS[i+1];
+                unsigned int e3 = OCTOHEDRON_VERTEX_ELEMS[i+2];
+
+                glm::vec3 p1{ OCTOHEDRON_VERTEX_ARRAY[e1][0], OCTOHEDRON_VERTEX_ARRAY[e1][1], OCTOHEDRON_VERTEX_ARRAY[e1][2] };
+                glm::vec3 p2{ OCTOHEDRON_VERTEX_ARRAY[e2][0], OCTOHEDRON_VERTEX_ARRAY[e2][1], OCTOHEDRON_VERTEX_ARRAY[e2][2] };
+                glm::vec3 p3{ OCTOHEDRON_VERTEX_ARRAY[e3][0], OCTOHEDRON_VERTEX_ARRAY[e3][1], OCTOHEDRON_VERTEX_ARRAY[e3][2] };
+
+                p1 = glm::normalize(p1);
+                p2 = glm::normalize(p2);
+                p3 = glm::normalize(p3);
+                glm::vec3 n = glm::normalize(glm::cross(p2 - p1, p3 - p1));
+
+                PCNVertex v1{ { p1.x, p1.y, p1.z }, { std::abs(p1.x), std::abs(p1.y), std::abs(p1.z), 1.0 }, { n.x, n.y, n.z }};
+                PCNVertex v2{ { p2.x, p2.y, p2.z }, { std::abs(p2.x), std::abs(p2.y), std::abs(p2.z), 1.0 }, { n.x, n.y, n.z }};
+                PCNVertex v3{ { p3.x, p3.y, p3.z }, { std::abs(p3.x), std::abs(p3.y), std::abs(p3.z), 1.0 }, { n.x, n.y, n.z }};
+
+                vertices.push_back(v1);
+                vertices.push_back(v2);
+                vertices.push_back(v3);
+                elems.push_back(i+0);
+                elems.push_back(i+1);
+                elems.push_back(i+2);
+            }
+
             Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >(
-                OCTOHEDRON_VERTEX_ELEMS, OCTOHEDRON_VERTEX_ELEMS + OCTOHEDRON_VERTEX_ELEMS_COUNT,
-                OCTOHEDRON_VERTEX_ARRAY, OCTOHEDRON_VERTEX_ARRAY + OCTOHEDRON_VERTEX_ARRAY_COUNT);
+                elems.begin(), elems.end(),
+                vertices.begin(), vertices.end());
             rv->createBuffers();
             return rv;
         }
@@ -376,15 +378,16 @@ namespace graphplay {
             Geometry<PCNVertex>::sptr_type rv = std::make_shared<Geometry<PCNVertex> >();
             Geometry<PCNVertex>::vertex_array_type verts;
             PositionsAndElements pne, prev_pne;
+            const float *vertex_array = &ICOSAHEDRON_VERTEX_ARRAY[0][0];
+            const unsigned int *elem_array = ICOSAHEDRON_VERTEX_ELEMS;
+            const unsigned int num_elems = ICOSAHEDRON_VERTEX_ELEMS_COUNT;
 
-            // Use the octohedron, but only the positions. This means that
-            // we can avoid duplication of vertices with the element
-            // array.
-            for (unsigned int i = 0; i < 24; ++i) {
+            for (unsigned int i = 0; i < num_elems; ++i) {
+                unsigned int elem = elem_array[i];
                 glm::vec3 pos(
-                    OCTOHEDRON_VERTEX_ARRAY[i].position[0],
-                    OCTOHEDRON_VERTEX_ARRAY[i].position[1],
-                    OCTOHEDRON_VERTEX_ARRAY[i].position[2]);
+                    vertex_array[3*elem+0],
+                    vertex_array[3*elem+1],
+                    vertex_array[3*elem+2]);
                 pne.elems.emplace_back(add_position_to_vec(pne.verts, std::move(pos)));
             }
 
