@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/io.hpp>
 
 namespace graphplay {

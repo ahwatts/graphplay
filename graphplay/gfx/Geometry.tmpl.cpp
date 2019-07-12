@@ -6,6 +6,7 @@
 #include "../graphplay.h"
 #include "Geometry.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/io.hpp>
 
 // #include "../fzx/BBox.h"

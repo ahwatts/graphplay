@@ -6,6 +6,8 @@
 #include <iostream>
 
 #include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
 
 namespace graphplay {
@@ -33,7 +35,7 @@ namespace graphplay {
             glm::vec3 cam_dir = m_position - m_focus_point;
             float radius = glm::length(cam_dir);
             cam_dir = glm::normalize(cam_dir);
-        
+
             cam_dir = glm::rotate(cam_dir, (float)dtheta, y_axis);
 
             glm::vec3 horizontal = glm::normalize(glm::cross(y_axis, cam_dir));

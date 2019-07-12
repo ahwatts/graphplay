@@ -6,8 +6,10 @@
 #include <iostream>
 
 #include <glm/gtc/ulp.hpp>
-#include <glm/gtx/io.hpp>
 #include <gtest/gtest.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/io.hpp>
 
 // #define EXPECT_FLOAT_VEC_EQ(v1, v2) glm::all(glm::lessThanEqual(glm::float_distance((v1), (v2)), { 4, 4, 4 }))
 #define EXPECT_FLOAT_VEC_EQ(v1, v2) \

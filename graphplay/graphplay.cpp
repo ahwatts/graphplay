@@ -1,7 +1,6 @@
 // -*- mode: c++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include "graphplay.h"
-#include "config.h"
 
 #include <chrono>
 #include <iostream>
@@ -10,6 +9,7 @@
 #include <string>
 #include <thread>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/io.hpp>
 
 #include "opengl.h"
