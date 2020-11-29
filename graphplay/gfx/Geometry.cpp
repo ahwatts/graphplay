@@ -213,7 +213,7 @@ namespace graphplay {
 #else
         constexpr
 #endif
-        double PHI = (1.0 + std::sqrt(5.0)) / 2.0;
+        float PHI = (1.0 + std::sqrt(5.0)) / 2.0;
 
 #ifndef MSVC
         const
