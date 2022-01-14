@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.0)
+cmake_minimum_required(VERSION 3.22.0)
 project(graphplay)
 
 set(Boost_USE_STATIC_LIBS On)

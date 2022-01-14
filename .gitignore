@@ -57,6 +57,7 @@ Makefile
 *.cmake
 CMakeCache.txt
 config.h
+CMakeUserPresets.json
 
 # Mac garbage.
 .DS_Store
@@ -68,7 +69,7 @@ config.h
 
 # XCode stuff.
 ## Build generated
-build/
+build*
 DerivedData/
 
 ## Various settings

@@ -3,6 +3,7 @@
 #include "../graphplay.h"
 #include "Geometry.h"
 
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 
